@@ -41,5 +41,4 @@
 </style>
 
 <script lang="ts">
-let ce = document.querySelector('.center')
 </script>

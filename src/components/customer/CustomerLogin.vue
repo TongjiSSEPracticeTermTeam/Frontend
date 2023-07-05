@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import {ElMessage} from 'element-plus'
-import {getCurrentInstance} from "vue";
 </script>
 
 <template>
@@ -30,8 +28,8 @@ import {getCurrentInstance} from "vue";
 </template>
 
 <script lang="ts">
-import {ElMessage} from "element-plus";
 import axios from "axios";
+import {ElMessage} from 'element-plus';
 
 export default {
     data: () => {
@@ -44,7 +42,6 @@ export default {
     },
     methods: {
         login: function () {
-            let _this = this;
             let form = this.loginForm;
             if (form.username.length === 0 || form.password.length === 0) {
                 ElMessage({
