@@ -8,7 +8,7 @@
 
       <p style="margin-top: 40px; font-size: 1.2em; margin-bottom: 20px">快速链接</p>
 
-      <a href="/login" style="text-decoration: none">
+      <a href="index.html#/login" style="text-decoration: none">
         <el-button>登录页面</el-button>
       </a>
     </div>
