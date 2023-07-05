@@ -11,7 +11,7 @@ import 'element-plus/theme-chalk/src/message.scss'
 
 // 配置axios
 if (import.meta.env.MODE === 'development') axios.defaults.baseURL = 'http://localhost:5212/'
-else axios.defaults.baseURL = 'https://cinema.cinea.com.cn/'
+else axios.defaults.baseURL = 'http://cinema.cinea.com.cn/'
 
 const router = createRouter({
   history: createWebHashHistory(),
