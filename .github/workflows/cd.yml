@@ -1,0 +1,25 @@
+name: CD
+
+on:
+    push:
+        branches: [master]
+
+jobs:
+    build-and-deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+        - uses: actions/checkout@v2
+
+        -   name: build
+            run: pnpm install && pnpm run build
+
+        -   name: deploy
+            uses: appleboy/scp-action@v0.1.4
+            with:
+                host: ${{secrets.HOST}}
+                username: root
+                key: ${{secrets.PK}}
+                source: "./dist/*"
+                target: "/root/Backend/Cinema/wwwroot"
+                overwrite: true
