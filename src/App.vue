@@ -11,6 +11,6 @@ import HomePage from './components/HomePage.vue'
 
 <style scoped>
 main {
-  font-family: 'PingFang SC', sans-serif; /*默认苹方字体*/
+  font-family: 'PingFang SC', sans-serif; /*默认苹方字体test*/
 }
 </style>
