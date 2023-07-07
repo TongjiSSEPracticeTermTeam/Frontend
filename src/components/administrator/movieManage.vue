@@ -1,6 +1,6 @@
 <script>
-import sideMenus from "./components/sideMenu.vue"
-import movieInfo from "./components/barComponet.vue"
+import sideMenus from "./sideMenu.vue"
+import movieInfo from "./barComponet.vue"
 
 export default {
   components: {

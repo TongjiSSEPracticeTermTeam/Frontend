@@ -6,6 +6,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import App from './App.vue'
 import HomePage from '@/components/HomePage.vue'
 import CustomerLogin from '@/components/customer/CustomerLogin.vue'
+import movieManage from '@/components/administrator/movieManage.vue'
 import axios from 'axios'
 import 'element-plus/theme-chalk/src/message.scss'
 
@@ -17,7 +18,8 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: '/', component: HomePage },
-    { path: '/login', component: CustomerLogin }
+    { path: '/login', component: CustomerLogin },
+    { path: '/admin', component: movieManage },
   ]
 })
 

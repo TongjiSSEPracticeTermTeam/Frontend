@@ -7,13 +7,16 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    BarComponet: typeof import('./src/components/administrator/barComponet.vue')['default']
     CustomerLogin: typeof import('./src/components/customer/CustomerLogin.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElInput: typeof import('element-plus/es')['ElInput']
     HomePage: typeof import('./src/components/HomePage.vue')['default']
+    MovieManage: typeof import('./src/components/administrator/movieManage.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SideMenu: typeof import('./src/components/administrator/sideMenu.vue')['default']
   }
 }

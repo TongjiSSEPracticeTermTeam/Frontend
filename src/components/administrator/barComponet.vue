@@ -54,22 +54,25 @@ export default {
     color: #999;
     margin: 0;
 }
+
 .data-item.name {
     color: orange;
     font-style: bolder;
     width: 30%;
     /* background-color: red; */
 }
+
 .data-item.duration {
     /* background-color: blue; */
     text-align: center;
-    color: rgb(90,90,90);
+    color: rgb(90, 90, 90);
     width: 20%;
 }
-.data-item.releaseDate, .data-item.endDate {
+
+.data-item.releaseDate,
+.data-item.endDate {
     /* background-color: purple; */
     width: 25%;
     text-align: right;
 }
-
 </style>
