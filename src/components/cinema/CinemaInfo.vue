@@ -1,22 +1,22 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>
+
 <template>
     <div class="content">
-        <el-row>
-            <el-col :span="4">
-                <div class="grid-content bg-purple">{{ cinemaName }}</div>
-            </el-col>
-            <el-col :span="9">
-                <div ref="headBarscreen" class="grid-content bg-purple-light" @click="screeningManage()">排片管理
-                </div>
-            </el-col>
-            <el-col :span="9">
-                <div ref="headBarhall" class="grid-content bg-purple" @click="hallManage()">影厅管理</div>
-            </el-col>
-            <el-col :span="2">
-                <div class="grid-content bg-purple-light">登出</div>
-            </el-col>
-        </el-row>
+        <div class="line"></div>
+        <el-menu :default-active="activeIndex1" class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" :ellipsis="false">
+            
+            <el-menu-item index="0" class="disabled-el-menu-item">{{ cinemaName }}</el-menu-item>
+
+
+            <div class="flex-grow" />
+            <el-menu-item index="1">排片管理</el-menu-item>
+            <el-menu-item index="2">影厅管理</el-menu-item>
+            <el-menu-item index="3" class="disabled-el-menu-item">登出</el-menu-item>
+        </el-menu>
     </div>
+    
+
 </template>
 
 <script lang="ts">
@@ -26,48 +26,21 @@ import { ElMessage } from 'element-plus'
 export default {
     data: () => {
         return {
-            loginForm: {
-                username: '',
-                password: '',
-            },
+            activeIndex1: '1',
             cinemaName: '我的影院名',
-            curSection: '排片管理',
+            curIndex: 1,
+            debounceTimeout: null,
+            hallClass: ['bg-purple'],
+            isLeft: true,
         }
     },
     methods: {
         logout() {
 
         },
-        screeningManage() {
-            // 先来一个抖动函数，防止快速多次点击
-            if (this.debounceTimeout) {
-                clearTimeout(this.debounceTimeout);
-            }
-            this.debounceTimeout = setTimeout(() => {
-                // 在这里写入你的点击事件的处理逻辑
-                if (this.curSection === '排片管理') {
-                    return;
-                }
-                alert('点击了排片管理');
-
-                // 清除抖动计时器
-                clearTimeout(this.debounceTimeout);
-                this.debounceTimeout = null;
-            }, 500); // 500毫秒为抖动延迟时间，可以根据需求进行调整
-        },
-        hallManage() {
-            if (this.debounceTimeout) {
-                clearTimeout(this.debounceTimeout);
-            }
-            this.debounceTimeout = setTimeout(() => {
-                if (this.curSection === '影厅管理') {
-                    return;
-                }
-                alert('点击了影厅管理');
-                this.curSection = '影厅管理';
-                clearTimeout(this.debounceTimeout);
-                this.debounceTimeout = null;
-            }, 500);
+        handleSelect(key, keyPath) {
+            this.curIndex = key;
+            this.isLeft = !this.isLeft;
         },
     },
     mounted() {
@@ -75,59 +48,31 @@ export default {
     },
     watch: {
         curSection(newVal) {
-            this.$nextTick(() => {
-                if (newVal === '排片管理') {
-                    this.$refs.headBarscreen.classList.add('bg-purple-light');
-                    this.$refs.headBarhall.classList.remove('bg-purple-light');
-                }
-                else {
-                    this.$refs.headBarscreen.classList.remove('bg-purple-light');
-                    this.$refs.headBarhall.classList.add('bg-purple-light');
-                }
-            });
-
-
         }
     },
     computed: {
+        screeClass() {
 
+        },
+        hallClass() {
+
+        },
     },
 
 }
 </script>
 
 <style scoped>
-.el-row {
-    margin-bottom: 64px;
-
-    &:last-child {
-        margin-bottom: 0;
-    }
+.flex-grow {
+  flex-grow: 1;
 }
 
-.el-col {
-    border-radius: 4px;
+.disabled-el-menu-item {
+    pointer-events: none; /* 禁用鼠标事件 */
+    cursor: default; /* 修改鼠标样式为默认 */
 }
-
-.bg-purple-dark {
-    background: #99a9bf;
-}
-
-.bg-purple {
-    background: #d3dce6;
-}
-
-.bg-purple-light {
-    background: #e5e9f2;
-}
-
-.grid-content {
-    border-radius: 4px;
-    min-height: 48px;
-}
-
-.row-bg {
-    padding: 10px 0;
-    background-color: #f9fafc;
+.disabled-el-menu-item a {
+    color: inherit; /* 保持原本的颜色 */
+    text-decoration: none; /* 去掉链接下划线样式 */
 }
 </style>
