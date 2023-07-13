@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     CinemaInfo: typeof import('./src/components/cinema/CinemaInfo.vue')['default']
     CustomerLogin: typeof import('./src/components/customer/CustomerLogin.vue')['default']
+    DynamicInput: typeof import('./src/components/cinema/DynamicInput.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElForm: typeof import('element-plus/es')['ElForm']
