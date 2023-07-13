@@ -23,6 +23,8 @@ declare module 'vue' {
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElScrollbar: typeof import('element-plus/es')['ElScrollbar']
+    ElTable: typeof import('element-plus/es')['ElTable']
+    ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
     HomePage: typeof import('./src/components/HomePage.vue')['default']
     MovieInfo: typeof import('./src/components/cinema/MovieInfo.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
