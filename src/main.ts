@@ -7,6 +7,7 @@ import App from './App.vue'
 import HomePage from '@/components/HomePage.vue'
 import CustomerLogin from '@/components/customer/CustomerLogin.vue'
 import CinemaInfo from '@/components/cinema/CinemaInfo.vue'
+import MovieInfo from '@/components/cinema/MovieInfo.vue'
 import axios from 'axios'
 import 'element-plus/theme-chalk/src/message.scss'
 
@@ -19,7 +20,8 @@ const router = createRouter({
   routes: [
     { path: '/', component: CinemaInfo },
     //{ path: '/', component: HomePage },
-    { path: '/login', component: CustomerLogin }
+    { path: '/login', component: CustomerLogin },
+    { path: '/movieInfo', component: MovieInfo }
   ]
 })
 
