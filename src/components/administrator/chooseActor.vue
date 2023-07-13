@@ -1,5 +1,6 @@
 <template>
-    <div class="dialog-overlay">
+    <button @click="showDialog">{{ firstNames[0] }}&nbsp;&nbsp;{{ firstNames[1] }}&nbsp;&nbsp;……</button>
+    <div class="dialog-overlay" v-show="dialogVisible">
         <text>已选择演员</text>
 
         <div class="vertical-spacing"></div>
@@ -29,7 +30,7 @@
 
         <div>
             <el-button type="primary" @click="returnData" class="yes-button">确定</el-button>
-            <el-button type="info" @click="close" class="no-button">取消</el-button>
+            <el-button type="info" @click="closeDialog" class="no-button">取消</el-button>
         </div>
     </div>
 </template>
@@ -37,7 +38,11 @@
 <script>
 export default {
     props: {
-        names: {
+        choosedActorNames: {
+            type: Array,
+            required: true,
+        },
+        unchoosedActorNames: {
             type: Array,
             required: true,
         },
@@ -46,32 +51,48 @@ export default {
         return {
             firstNames: [],
             secondNames: [],
+            array1: [],
+            array2: [],
+            dialogVisible: false,
         };
     },
+    emits: ['update:choosedActorNames', 'update:unchoosedActorNames'],
     mounted() {
-        this.firstNames = this.names.slice(0, 11).sort();
-        this.secondNames = this.names.slice(11).sort();
+        this.firstNames = this.choosedActorNames.slice().sort();
+        this.secondNames = this.unchoosedActorNames.slice().sort();
+        this.array1 = this.firstNames.slice();
+        this.array2 = this.secondNames.slice();
     },
     methods: {
-        close() {
-            this.$emit('close');
-        },
-        returnData() {
-            alert(this.firstNames);
-            this.$emit('close', this.secondNames);
-        },
         firstToSecond(index) {
             const name = this.firstNames[index];
             this.firstNames.splice(index, 1);
             this.secondNames.push(name);
-            this.secondNames = this.secondNames.slice().sort();
-
+            this.secondNames = this.secondNames.sort();
         },
         secondToFirst(index) {
             const name = this.secondNames[index];
             this.secondNames.splice(index, 1);
             this.firstNames.push(name);
-            this.firstNames = this.firstNames.slice().sort();
+            this.firstNames = this.firstNames.sort();
+        },
+        // 点击按钮后显示对话框
+        showDialog() {
+            this.dialogVisible = true;
+        },
+        // 对话框中点击取消按钮后关闭对话框，并恢复数据
+        closeDialog() {
+            this.dialogVisible = false;
+            this.firstNames = this.array1.slice();
+            this.secondNames = this.array2.slice();
+        },
+        // 对话框中点击确定按钮后关闭对话框，并返回数据
+        returnData() {
+            this.dialogVisible = false;
+            this.array1 = this.firstNames.slice();
+            this.array2 = this.secondNames.slice();
+            this.$emit('update:choosedActorNames', this.firstNames.slice());
+            this.$emit('update:unchoosedActorNames', this.secondNames.slice());
         },
     }
 };
