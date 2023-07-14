@@ -46,7 +46,7 @@ export default {
                     trigger: "blur"
                 },
                 {
-                    validator: function (rule: any, value: string, callback: (arg0: Error | undefined) => void) {         //邮箱校验
+                    validator: function (rule: any, value: any, callback: any) {         //邮箱校验
                         // console.log("邮箱通过！");
                         // return callback()
                         const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
@@ -76,7 +76,7 @@ export default {
 },
 mounted() {
     for (let i = 0; i < this.cinemas.length; i++) {
-        this.cinemas[i].feature = this.cinemas[i].feature.split(',');
+        (this.cinemas[i].feature as unknown) = this.cinemas[i].feature.split(',');
     }
 },
 methods: {
