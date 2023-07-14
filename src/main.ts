@@ -12,7 +12,7 @@ import 'element-plus/theme-chalk/src/message.scss'
 //管理员页面引入
 import movieManage from "./components/administrator/movieManage.vue"
 import cinemaManage from "./components/administrator/cinemaManage.vue"
-import staffManage from "./components/administrator/staffManage"
+import staffManage from "./components/administrator/staffManage.vue"
 import mainView from "./components/administrator/mainView.vue"
 
 // 配置axios

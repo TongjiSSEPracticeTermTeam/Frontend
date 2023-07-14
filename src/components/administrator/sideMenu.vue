@@ -35,7 +35,7 @@ export default {
             同济影业管理系统
         </div>
         <nav>
-            <router-link v-for="button in buttons" :key="button.text" :class="{ active: button.state }" :to="button.des"
+            <router-link v-for="button in buttons" :key="button.text" :class="{ active: button.state }" :to="'/admin/' + button.des"
                 exact>
                 {{ button.text }}
             </router-link>
