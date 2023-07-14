@@ -1,5 +1,10 @@
+<!-- 使用方式，父组件中动态绑定两个数组，如下： -->
+<!-- <my-dialog v-model:choosed-actor-names="choosedActorNames" -->
+<!-- v-model:unchoosed-actor-names="unchoosedActorNames"></my-dialog> -->
+<!-- 点击弹框中的确定按钮后会同步修改传入的数组内容 -->
+
 <template>
-    <button @click="showDialog">{{ firstNames[0] }}&nbsp;&nbsp;{{ firstNames[1] }}&nbsp;&nbsp;……</button>
+    <text class="mytext" @click="showDialog">{{ firstNames[0] }}/{{ firstNames[1] }}/{{ firstNames[2] }}/……</text>
     <div class="dialog-overlay" v-show="dialogVisible">
         <text>已选择演员</text>
 
@@ -99,6 +104,15 @@ export default {
 </script>
   
 <style scoped>
+.mytext {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.mytext:hover {
+    background-color: lightgray;
+}
+
 .dialog-overlay {
     display: flex;
     flex-direction: column;
@@ -121,6 +135,7 @@ export default {
 }
 
 .first-row-item {
+    cursor: pointer;
     padding: 5px;
     white-space: nowrap;
     flex-basis: 10%;
@@ -140,6 +155,7 @@ export default {
 }
 
 .fixed-item {
+    cursor: pointer;
     margin-right: 10px;
     margin-bottom: 10px;
     width: 100px;
