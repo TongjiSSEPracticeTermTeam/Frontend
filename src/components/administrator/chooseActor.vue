@@ -1,11 +1,6 @@
-<!-- 使用方式，父组件中动态绑定两个数组，如下： -->
-<!-- <my-dialog v-model:choosed-actor-names="choosedActorNames" -->
-<!-- v-model:unchoosed-actor-names="unchoosedActorNames"></my-dialog> -->
-<!-- 点击弹框中的确定按钮后会同步修改传入的数组内容 -->
-
 <template>
-    <text class="mytext" @click="showDialog">{{ firstNames[0] }}/{{ firstNames[1] }}/{{ firstNames[2] }}/……</text>
-    <div class="dialog-overlay" v-show="dialogVisible">
+    <button @click="dialogVisible=true">点我</button>
+    <div class="dialog-overlay" v-show="dialogVisible" @close="closeDialog" :names="names">
         <text>已选择演员</text>
 
         <div class="vertical-spacing"></div>
@@ -35,84 +30,63 @@
 
         <div>
             <el-button type="primary" @click="returnData" class="yes-button">确定</el-button>
-            <el-button type="info" @click="closeDialog" class="no-button">取消</el-button>
+            <el-button type="info" @click="close" class="no-button">取消</el-button>
         </div>
     </div>
 </template>
   
-<script>
+<script lang="ts">
+import { PropType } from "vue"
+
 export default {
     props: {
-        choosedActorNames: {
-            type: Array,
-            required: true,
-        },
-        unchoosedActorNames: {
-            type: Array,
+        names: {
+            type: Array as PropType<string[]>,
             required: true,
         },
     },
     data() {
         return {
-            firstNames: [],
-            secondNames: [],
-            array1: [],
-            array2: [],
+            firstNames: ['1'],
+            secondNames: ['1'],
             dialogVisible: false,
         };
     },
-    emits: ['update:choosedActorNames', 'update:unchoosedActorNames'],
     mounted() {
-        this.firstNames = this.choosedActorNames.slice().sort();
-        this.secondNames = this.unchoosedActorNames.slice().sort();
-        this.array1 = this.firstNames.slice();
-        this.array2 = this.secondNames.slice();
+        this.firstNames = this.names.slice(0, 11).sort();
+        this.secondNames = this.names.slice(11).sort();
     },
     methods: {
-        firstToSecond(index) {
+        close() {
+            this.$emit('close');
+        },
+        returnData() {
+            alert(this.firstNames);
+            this.$emit('close', this.secondNames);
+        },
+        firstToSecond(index: number) {
             const name = this.firstNames[index];
             this.firstNames.splice(index, 1);
             this.secondNames.push(name);
-            this.secondNames = this.secondNames.sort();
+            this.secondNames = this.secondNames.slice().sort();
         },
-        secondToFirst(index) {
+        secondToFirst(index: number) {
             const name = this.secondNames[index];
             this.secondNames.splice(index, 1);
             this.firstNames.push(name);
-            this.firstNames = this.firstNames.sort();
+            this.firstNames = this.firstNames.slice().sort();
         },
-        // 点击按钮后显示对话框
         showDialog() {
             this.dialogVisible = true;
         },
-        // 对话框中点击取消按钮后关闭对话框，并恢复数据
         closeDialog() {
             this.dialogVisible = false;
-            this.firstNames = this.array1.slice();
-            this.secondNames = this.array2.slice();
-        },
-        // 对话框中点击确定按钮后关闭对话框，并返回数据
-        returnData() {
-            this.dialogVisible = false;
-            this.array1 = this.firstNames.slice();
-            this.array2 = this.secondNames.slice();
-            this.$emit('update:choosedActorNames', this.firstNames.slice());
-            this.$emit('update:unchoosedActorNames', this.secondNames.slice());
         },
     }
 };
 </script>
   
 <style scoped>
-.mytext {
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.mytext:hover {
-    background-color: lightgray;
-}
-
 .dialog-overlay {
     display: flex;
     flex-direction: column;
@@ -135,7 +109,6 @@ export default {
 }
 
 .first-row-item {
-    cursor: pointer;
     padding: 5px;
     white-space: nowrap;
     flex-basis: 10%;
@@ -155,7 +128,6 @@ export default {
 }
 
 .fixed-item {
-    cursor: pointer;
     margin-right: 10px;
     margin-bottom: 10px;
     width: 100px;

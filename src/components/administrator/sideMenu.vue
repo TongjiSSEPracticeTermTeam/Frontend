@@ -1,45 +1,31 @@
-<script>
-
-
+<script lang="ts">
 export default {
     data: () => {
         return {
             buttons: [
                 {
                     text: "电影管理",
-                    state: false
+                    des: "movieManage",
+                    state: true
                 },
                 {
                     text: "影院管理",
+                    des: "cinemaManage",
                     state: false
                 },
                 {
                     text: "影人管理",
+                    des: "staffManage",
                     state: false
                 },
-                {
-                    text: "用户管理",
-                    state: false
-                }
+                // {
+                //     text: "用户管理",
+                //     state: false
+                // }
             ],
+            currentSection: 0
         }
     },
-    methods: {
-        sectionChange(button) {
-            // console.log(button.text)
-            const text = button.text
-            if (button.state)
-                return;
-            else {
-                for (let i = 0; i < this.buttons.length; i++) {
-                    if (this.buttons[i].text != text)
-                        this.buttons[i].state = false;
-                    else
-                        this.buttons[i].state = true;
-                }
-            }
-        }
-    }
 }
 </script>
 
@@ -49,11 +35,12 @@ export default {
             同济影业管理系统
         </div>
         <nav>
-            <div v-for="(button, index) in buttons" :key="button.text" :class="{ active: button.state }"
-                @click="sectionChange(button)">
+            <router-link v-for="button in buttons" :key="button.text" :class="{ active: button.state }" :to="button.des"
+                exact>
                 {{ button.text }}
-            </div>
+            </router-link>
         </nav>
+
     </aside>
 </template>
 
@@ -70,6 +57,7 @@ export default {
 }
 
 .sideBar {
+    box-sizing: border-box;
     position: fixed;
     width: 16%;
     height: 100vh;
@@ -97,21 +85,27 @@ nav {
     text-align: center;
 }
 
-nav div {
-    /* background-color: blue; */
+a {
+    text-decoration: none;
     cursor: pointer;
     font-weight: bold;
     color: rgba(90, 90, 90, .6);
 }
 
-nav div:hover {
+a:hover {
     border-bottom: 3px solid purple;
     font-size: 1.2em;
     font-weight: bold;
     color: rgba(128, 0, 128, 0.8);
 }
 
-nav div.active {
+a:active {
+    color: rgb(147, 91, 230);
+}
+
+.router-link-active,
+.router-link-active:hover {
+    text-decoration: none;
     font-size: 1.2em;
     font-weight: bold;
     background-color: purple;
