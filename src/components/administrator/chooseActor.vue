@@ -1,6 +1,12 @@
+<!-- 使用方式，父组件中动态绑定两个数组，如下： -->
+<!-- <my-dialog v-model:choosed-actor-names="choosedActorNames" -->
+<!-- v-model:unchoosed-actor-names="unchoosedActorNames"></my-dialog> -->
+<!-- 点击弹框中的确定按钮后会同步修改传入的数组内容 -->
+
+
 <template>
-    <button @click="dialogVisible=true">点我</button>
-    <div class="dialog-overlay" v-show="dialogVisible" @close="closeDialog" :names="names">
+    <text class="mytext" @click="showDialog">{{ firstNames[0] }}/{{ firstNames[1] }}/{{ firstNames[2] }}/……</text>
+    <div class="dialog-overlay" v-show="dialogVisible">
         <text>已选择演员</text>
 
         <div class="vertical-spacing"></div>
@@ -30,63 +36,86 @@
 
         <div>
             <el-button type="primary" @click="returnData" class="yes-button">确定</el-button>
-            <el-button type="info" @click="close" class="no-button">取消</el-button>
+            <el-button type="info" @click="closeDialog" class="no-button">取消</el-button>
         </div>
     </div>
 </template>
   
 <script lang="ts">
-import { PropType } from "vue"
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     props: {
-        names: {
-            type: Array as PropType<string[]>,
+        choosedActorNames: {
+            type: Array as () => string[],
+            required: true,
+        },
+        unchoosedActorNames: {
+            type: Array as () => string[],
             required: true,
         },
     },
     data() {
         return {
-            firstNames: ['1'],
-            secondNames: ['1'],
+            firstNames: [] as string[],
+            secondNames: [] as string[],
+            array1: [] as string[],
+            array2: [] as string[],
             dialogVisible: false,
         };
     },
+    emits: ['update:choosedActorNames', 'update:unchoosedActorNames'],
     mounted() {
-        this.firstNames = this.names.slice(0, 11).sort();
-        this.secondNames = this.names.slice(11).sort();
+        this.firstNames = [...this.choosedActorNames].sort();
+        this.secondNames = [...this.unchoosedActorNames].sort();
+        this.array1 = [...this.firstNames];
+        this.array2 = [...this.secondNames];
     },
     methods: {
-        close() {
-            this.$emit('close');
-        },
-        returnData() {
-            alert(this.firstNames);
-            this.$emit('close', this.secondNames);
-        },
         firstToSecond(index: number) {
             const name = this.firstNames[index];
             this.firstNames.splice(index, 1);
             this.secondNames.push(name);
-            this.secondNames = this.secondNames.slice().sort();
+            this.secondNames = this.secondNames.sort();
         },
         secondToFirst(index: number) {
             const name = this.secondNames[index];
             this.secondNames.splice(index, 1);
             this.firstNames.push(name);
-            this.firstNames = this.firstNames.slice().sort();
+            this.firstNames = this.firstNames.sort();
         },
+        // 点击按钮后显示对话框
         showDialog() {
             this.dialogVisible = true;
         },
+        // 对话框中点击取消按钮后关闭对话框，并恢复数据
         closeDialog() {
             this.dialogVisible = false;
+            this.firstNames = [...this.array1];
+            this.secondNames = [...this.array2];
         },
-    }
-};
+        // 对话框中点击确定按钮后关闭对话框，并返回数据
+        returnData() {
+            this.dialogVisible = false;
+            this.array1 = [...this.firstNames];
+            this.array2 = [...this.secondNames];
+            this.$emit('update:choosedActorNames', [...this.firstNames]);
+            this.$emit('update:unchoosedActorNames', [...this.secondNames]);
+        },
+    },
+});
 </script>
   
 <style scoped>
+.mytext {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.mytext:hover {
+    background-color: lightgray;
+}
+
 .dialog-overlay {
     display: flex;
     flex-direction: column;
@@ -109,6 +138,7 @@ export default {
 }
 
 .first-row-item {
+    cursor: pointer;
     padding: 5px;
     white-space: nowrap;
     flex-basis: 10%;
@@ -128,6 +158,7 @@ export default {
 }
 
 .fixed-item {
+    cursor: pointer;
     margin-right: 10px;
     margin-bottom: 10px;
     width: 100px;
