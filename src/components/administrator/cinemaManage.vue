@@ -1,44 +1,22 @@
-<script lang="ts">
+<script>
+import axios from "axios";
+import topBar from "./topBar.vue"
+
 export default {
+    components: {
+        topBar
+    },
     data: () => {
         return {
-            cinemas: [
-                {
-                    id: 1,
-                    name: "0090激光影城",
-                    location: "金山区乐购超市一楼",
-                    feature: "IMAX厅,改签,折扣卡"
-                },
-                {
-                    id: 2,
-                    name: "1929电影公园（XWORLD 4DX ）维璟印象城店",
-                    location: "闵行区七莘路1507号4层电影院",
-                    feature: "IMAX厅,杜比全景声厅,折扣卡,退"
-                },
-                {
-                    id: 3,
-                    name: "AMG海上明珠影城（上海大宁音乐广场IMAX店）",
-                    location: "静安区万荣路777号大宁音乐广场A座1层",
-                    feature: "4D厅,IMAX厅,退"
-                },
-                {
-                    id: 4,
-                    name: "AMG海上明珠影城（上海环球港RealDCinema店）",
-                    location: "普陀区中山北路3300号环球港4楼4038室",
-                    feature: "LUXE巨幕厅,4K厅,RealD 6FL厅,折扣"
-                }
-            ],
-            centerDialogVisible: false,
-            selectedCinema: {
-                id: -1,
-                name: "",
-                location: "",
-            },
+            baseURL: 'https://localhost:7299',
 
+            cinemas: [],
+            //表格/分页相关设置
+            loading: true,
+            pageSize: 0,
+            total: 0,
+            currentPage: 1,
             //影院添加的弹出框
-            rules: {
-
-            },
             emailRules: [
                 {
                     required: true,
@@ -46,7 +24,7 @@ export default {
                     trigger: "blur"
                 },
                 {
-                    validator: function (rule: any, value: any, callback: any) {         //邮箱校验
+                    validator: function (rule, value, callback) {         //邮箱校验
                         // console.log("邮箱通过！");
                         // return callback()
                         const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
@@ -60,115 +38,183 @@ export default {
                 }
             ],
             drawer: false,
-                direction: "rtl",
-                    formStatus: false,
-                        featureHint: false,
-                            newCinema: {
-            cinemaURL: "",
+            direction: "rtl",
+            formStatus: false,
+            featureHint: false,
+            newCinema: {
+                cinemaURL: "",
                 name: "",
-                    location: "",
-                        feature: "",
-                            managerName: "",
-                                managerEmail: "",
-                                    managerPassWD: "",
+                location: "",
+                feature: "",
+                managerName: "",
+                managerEmail: "",
+                managerPassWD: "",
             }
-    }
-},
-mounted() {
-    for (let i = 0; i < this.cinemas.length; i++) {
-        (this.cinemas[i].feature as unknown) = this.cinemas[i].feature.split(',');
-    }
-},
-methods: {
-    cinemaSelection(row: { id: number; name: string; location: string; }) {
-        this.selectedCinema.id = row.id;
-        this.selectedCinema.name = row.name;
-        this.selectedCinema.location = row.location;
-    },
-    cinemaDelete() {
-
-    },
-    //添加影院相关
-    formReset() {         //表单内容重置
-        this.formStatus = false;
-        this.newCinema.name = "";
-        this.newCinema.location = "";
-        this.newCinema.feature = "";
-        this.newCinema.managerEmail = "";
-        this.newCinema.managerName = "";
-        this.newCinema.managerPassWD = "";
-        this.newCinema.cinemaURL = "";
-    },
-    handleClose() {       //退出表单回调函数
-        if (!this.formStatus) {
-            this.drawer = false;
-            return;
         }
-        ElMessageBox.confirm('表单中还有填写的数据，要丢弃吗', "Warning", {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-        })
-            .then(() => {
+    },
+    mounted() {
+        // console.log("准备初始化数据");
+        let obj = this;
+        // 前后端交互，初始化数据和相关参数
+        this.loading = true;        //加载等待动画
+        axios.get(this.baseURL + '/api/Cinema')
+            .then(function (response) {
+                // 处理成功情况
+                // console.log("连接成功！");
+                obj.cinemas = response.data;
+                console.log(obj.cinemas);
+
+                // console.log("开始标签化");
+                console.log(obj.cinemas.length)
+                for (let i = 0; i < obj.cinemas.length; i++) {
+                    obj.cinemas[i].feature = obj.cinemas[i].feature.split(',');
+                }
+
+                //分页相关设置
+                obj.total = obj.cinemas.length;
+                obj.pageSize = 10;
+                obj.loading = false;
+            })
+            .catch(function (error) {
+                // 处理错误情况
+                console.log(error);
+                ElMessageBox.alert("数据加载失败！", "错误", {
+                    // if you want to disable its autofocus
+                    // autofocus: false,
+                    confirmButtonText: 'OK',
+                    callback: () => {
+                        ElMessage.error("数据加载错误")
+                    },
+                })
+
+            })
+    },
+    methods: {
+        cinemaDelete(name, id) {     //删除对应ID的影院
+            let obj = this;
+            ElMessageBox.confirm(
+                `确定要删除${name}吗`,
+                'Warning',
+                {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: 'warning',
+                }
+            )
+                .then(() => {
+                    obj.loading = true;
+                    axios.delete(this.baseURL + "/api/Cinema/deleteCinemaById/" + id)
+                        .then(() => {
+                            let targetIndex = obj.cinemas.findIndex(cinema => cinema.cinemaId == id);
+                            obj.cinemas.splice(targetIndex, 1);      //同时维护前端电影数组
+                            // console.log(obj.movies);
+                            obj.loading = false;
+                            ElMessage({
+                                type: 'success',
+                                message: "删除成功",
+                            })
+                        }
+                        )
+                        .catch(() => {
+                            ElMessage({
+                                type: 'error',
+                                message: "删除失败！",
+                            })
+                        }
+                        )
+                })
+                .catch(() => {
+                    ElMessage({
+                        type: 'info',
+                        message: "取消删除",
+                    })
+                })
+        },
+        //添加影院表单相关函数
+        formReset() {         //表单内容重置
+            this.formStatus = false;
+            this.newCinema.name = "";
+            this.newCinema.location = "";
+            this.newCinema.feature = "";
+            this.newCinema.managerEmail = "";
+            this.newCinema.managerName = "";
+            this.newCinema.managerPassWD = "";
+            this.newCinema.cinemaURL = "";
+            this.$refs.formRef.resetFields();
+        },
+        handleClose() {       //退出表单回调函数
+            if (!this.formStatus) {
+                this.drawer = false;
+                this.formReset();
+                return;
+            }
+            ElMessageBox.confirm('表单中还有填写的数据，要丢弃吗', "Warning", {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }).then(() => {
                 this.drawer = false;
                 this.formReset();
             })
-            .catch(() => {
-                // catch error
-            })
-    },
+            // .catch(() => {
+            //     // catch error
+            // })
+        },
         async confirmForm() {      //表单确认函数
-        let formRef = this.$refs.formRef;
-        if (!formRef) {
-            console.log("form is NULL！");
-            return;
-        }
-        console.log("开始进行表单检查！");
-        await formRef.validate((valid: any, fields: any) => {
-            if (valid) {
-                console.log("表单合法！");
-                this.drawer = false;
-                this.formReset();
-                //...前后端交互数据
+            let formRef = this.$refs.formRef;
+            if (!formRef) {
+                console.log("form is NULL！");
+                return;
+            }
+            console.log("开始进行表单检查！");
+            await formRef.validate((valid, fields) => {
+                if (valid) {
+                    console.log("表单合法！");
+                    this.drawer = false;
+                    this.formReset();
+                    //...前后端交互数据
 
 
-            }
-            else {  //表单提交失败
-                console.log('表单不合法！', fields);
-            }
-        })
-    },
-    cancelForm() {       //表单取消函数
-        if (!this.formStatus) {
-            this.drawer = false;
-            return;
-        }
-        ElMessageBox.confirm('表单中还有填写的数据，要丢弃吗', "Warning", {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-        })
-            .then(() => {
+                }
+                else {  //表单提交失败
+                    console.log('表单不合法！', fields);
+                }
+            })
+        },
+        cancelForm() {       //表单取消函数
+            if (!this.formStatus) {
                 this.drawer = false;
                 this.formReset();
-                //退出表单，放弃提交，丢弃数据
+                return;
+            }
+            ElMessageBox.confirm('表单中还有填写的数据，要丢弃吗', "Warning", {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
             })
-            .catch(() => {
-                //点击取消，返回表单继续填写
-            })
+                .then(() => {
+                    this.drawer = false;
+                    this.formReset();
+                    //退出表单，放弃提交，丢弃数据
+                })
+            // .catch(() => {
+            //     //点击取消，返回表单继续填写
+            // })
+        },
     },
-},
 
 }
 
 </script>
 
 <template>
-    <el-table :data="cinemas" style="width: 100%; " :header-cell-style="{ backgroundColor: 'purple', color: 'white' }"
-        @row-click="cinemaSelection">
-        <el-table-column label="序号" type="index" align="left" min-width="5%">
+    <topBar />
+
+    <el-table v-loading="loading" :data="cinemas.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
+        style="width: 100%; " :header-cell-style="{ backgroundColor: 'purple', color: 'white' }">
+        <el-table-column prop="cinemaId" label="影院id" align="left" min-width="10%">
         </el-table-column>
-        <el-table-column prop="name" label="影院名" align="left" min-width="25%">
+        <el-table-column prop="name" label="影院名" align="left" min-width="20%">
         </el-table-column>
         <el-table-column prop="location" label="地址" align="center" min-width="25%">
         </el-table-column>
@@ -186,20 +232,14 @@ methods: {
             </template>
             <template #default="scope">
                 <el-button size="small">编辑</el-button>
-                <el-button size="small" type="danger" @click="centerDialogVisible = true">删除</el-button>
+                <el-button size="small" type="danger"
+                    @click="cinemaDelete(scope.row.name, scope.row.cinemaId)">删除</el-button>
             </template>
         </el-table-column>
     </el-table>
-
-    <el-dialog v-model="centerDialogVisible" title="Warning" width="30%" align-center>
-        <span>确定要删除 {{ selectedCinema.name }} 吗</span>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="centerDialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="centerDialogVisible = false">确定</el-button>
-            </span>
-        </template>
-    </el-dialog>
+    <!-- 分页栏 -->
+    <el-pagination background layout="prev, pager, next" v-model:total="total" v-model:page-size="pageSize"
+        v-model:current-page="currentPage" />
 
     <!-- 添加电影的弹框表单 -->
     <el-drawer v-model="drawer" title="添加影院" :direction="direction" :before-close="handleClose" size="50%">
@@ -242,10 +282,10 @@ methods: {
             <el-form-item label="管理员邮箱" prop="managerEmail" :rules="emailRules">
                 <el-input v-model="newCinema.managerEmail" @change="formStatus = true" placeholder="请输入管理员邮箱" clearable />
             </el-form-item>
-            <el-form-item label="管理密码" prop="managerPassWD" :rules="{ required: true, message: '管理密码不能为空', trigger: 'blur' }">
+            <el-form-item label="管理密码" prop="managerPassWD"
+                :rules="{ required: true, message: '管理密码不能为空', trigger: 'blur' }">
                 <el-input v-model="newCinema.managerPassWD" @change="formStatus = true" placeholder="请输入管理密码" />
             </el-form-item>
-
         </el-form>
 
         <template #footer>
@@ -257,4 +297,9 @@ methods: {
     </el-drawer>
 </template>
 
-<style scoped></style>
+<style scoped>
+.el-pagination {
+    margin: 20px 0;
+    justify-content: center;
+}
+</style>

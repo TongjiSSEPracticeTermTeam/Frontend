@@ -24,7 +24,6 @@ export default {
   align-items: center;
 
   height: 10vh;
-  width: 60%;
   margin: 20px 0;
   border-bottom: 2px solid;
   /* background-color: red; */
