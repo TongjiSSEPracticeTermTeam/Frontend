@@ -3,5 +3,5 @@
 </script>
 
 <template>
-    
+    this is movieInfo section
 </template>

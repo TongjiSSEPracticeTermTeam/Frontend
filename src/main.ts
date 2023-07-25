@@ -1,6 +1,6 @@
 import './assets/application.css'
 
-import {createApp} from 'vue'
+import { createApp } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 import App from './App.vue'
@@ -14,6 +14,8 @@ import movieManage from "./components/administrator/movieManage.vue"
 import cinemaManage from "./components/administrator/cinemaManage.vue"
 import staffManage from "./components/administrator/staffManage.vue"
 import mainView from "./components/administrator/mainView.vue"
+import movieInfo from "./components/administrator/movieInfo.vue"
+import cinemaInfo from "./components/administrator/cinemaInfo.vue"
 
 // 配置axios
 if (import.meta.env.MODE === 'development') axios.defaults.baseURL = 'http://localhost:5212/'
@@ -24,21 +26,37 @@ const router = createRouter({
   routes: [
     { path: '/', component: HomePage },
     { path: '/login', component: CustomerLogin },
-    { 
-      path: '/admin', 
+    {
+      path: '/admin',
       component: mainView,
       children: [
         {
-            path: "movieManage",
-            component: movieManage
+          path: "movieManage",
+          name: "movie",
+          component: movieManage,
+          strict: true
         },
         {
-            path: "cinemaManage",
-            component: cinemaManage
+          path: "cinemaManage",
+          name: "cinema",
+          component: cinemaManage,
+          strict: true
         },
         {
-            path: "staffManage",
-            component: staffManage
+          path: "staffManage",
+          name: "staff",
+          component: staffManage,
+          strict: true
+        },
+        {
+          path: "movieManage/:movieId(\\d+)?",
+          component: movieInfo,
+          props: true,
+        },
+        {
+          path: "cinemaManage/:cinemaId(\\d+)?",
+          component: cinemaInfo,
+          props: true,
         },
       ]
     },

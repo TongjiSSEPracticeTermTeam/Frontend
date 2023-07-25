@@ -62,10 +62,10 @@ export default {
                 // 处理成功情况
                 // console.log("连接成功！");
                 obj.cinemas = response.data;
-                console.log(obj.cinemas);
+                // console.log(obj.cinemas);
 
                 // console.log("开始标签化");
-                console.log(obj.cinemas.length)
+                // console.log(obj.cinemas.length)
                 for (let i = 0; i < obj.cinemas.length; i++) {
                     obj.cinemas[i].feature = obj.cinemas[i].feature.split(',');
                 }
@@ -129,6 +129,9 @@ export default {
                         message: "取消删除",
                     })
                 })
+        },
+        editCinemaEnter(cinemaId) {
+            this.$router.push({ path: `${this.$route.path}/${cinemaId}` });
         },
         //添加影院表单相关函数
         formReset() {         //表单内容重置
@@ -231,7 +234,7 @@ export default {
                 <el-button size="small" type="success" @click="drawer = true">添加影院</el-button>
             </template>
             <template #default="scope">
-                <el-button size="small">编辑</el-button>
+                <el-button size="small" @click="editCinemaEnter(scope.row.cinemaId)">编辑</el-button>
                 <el-button size="small" type="danger"
                     @click="cinemaDelete(scope.row.name, scope.row.cinemaId)">删除</el-button>
             </template>
@@ -244,7 +247,7 @@ export default {
     <!-- 添加电影的弹框表单 -->
     <el-drawer v-model="drawer" title="添加影院" :direction="direction" :before-close="handleClose" size="50%">
         <!-- 表单 -->
-        <el-form :model="newCinema" label-width="120px" class="newMovieForm" ref="formRef" status-icon>
+        <el-form :model="newCinema" label-width="120px" class="newCinemaForm" ref="formRef" status-icon>
             <!-- 电影海报上传 -->
             <el-form-item label="影院图片">
                 <el-input v-model="newCinema.cinemaURL" @change="formStatus = true" placeholder="请输入电影海报URL">
