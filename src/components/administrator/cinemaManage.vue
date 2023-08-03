@@ -42,11 +42,12 @@ export default {
             formStatus: false,
             featureHint: false,
             newCinema: {
-                cinemaURL: "",
+                cinemaImageUrl: "",
+                cinemaId: "",
                 name: "",
                 location: "",
                 feature: "",
-                managerName: "",
+                managerId: "",
                 managerEmail: "",
                 managerPassWD: "",
             }
@@ -136,13 +137,14 @@ export default {
         //添加影院表单相关函数
         formReset() {         //表单内容重置
             this.formStatus = false;
+            this.newCinema.cinemaId = "";
             this.newCinema.name = "";
             this.newCinema.location = "";
             this.newCinema.feature = "";
             this.newCinema.managerEmail = "";
-            this.newCinema.managerName = "";
+            this.newCinema.managerId = "";
             this.newCinema.managerPassWD = "";
-            this.newCinema.cinemaURL = "";
+            this.newCinema.cinemaImageUrl = "";
             this.$refs.formRef.resetFields();
         },
         handleClose() {       //退出表单回调函数
@@ -173,11 +175,50 @@ export default {
             await formRef.validate((valid, fields) => {
                 if (valid) {
                     console.log("表单合法！");
-                    this.drawer = false;
-                    this.formReset();
                     //...前后端交互数据
+                    let obj = this;
+                    this.loading = true;
+                    axios.post(this.baseURL + '/api/Cinema/add', {
+                        cinema_id: obj.newCinema.cinemaId,
+                        location: obj.newCinema.location,
+                        name: obj.newCinema.name,
+                        cinema_image_url: obj.newCinema.cinemaImageUrl,
+                        feature: obj.newCinema.feature,
+                        manager_id: obj.newCinema.managerId,
+                        manager_email: obj.newCinema.managerEmail,
+                        manager_password: obj.newCinema.managerPassWD
+                    }).then((res) => {
+                        if (res.data.status == '10000') {
+                            let newC = {};
+                            Object.assign(newC, obj.newCinema);
+                            newC.feature = newC.feature.split(',');
+                            obj.cinemas.push(newC);
 
+                            ElMessage({
+                                type: "success",
+                                message: '添加成功！'
+                            })
 
+                            obj.total += 1;
+                            obj.drawer = false;
+                            obj.formReset();
+                        }
+                        else if (res.data.status == '10001') {
+                            console.log(res.data.message);
+                            ElMessage({
+                                type: "error",
+                                message: "添加失败！"
+                            })
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                        ElMessage({
+                            type: "error",
+                            message: "添加失败！"
+                        })
+                    })
+
+                    this.loading = false;
                 }
                 else {  //表单提交失败
                     console.log('表单不合法！', fields);
@@ -250,16 +291,19 @@ export default {
         <el-form :model="newCinema" label-width="120px" class="newCinemaForm" ref="formRef" status-icon>
             <!-- 电影海报上传 -->
             <el-form-item label="影院图片">
-                <el-input v-model="newCinema.cinemaURL" @change="formStatus = true" placeholder="请输入电影海报URL">
+                <el-input v-model="newCinema.cinemaImageUrl" @change="formStatus = true" placeholder="请输入电影海报URL">
                     <template #append>URL</template>
                 </el-input>
-                <img v-if="newCinema.cinemaURL" :src="newCinema.cinemaURL" height="300" width="300"
+                <img v-if="newCinema.cinemaImageUrl" :src="newCinema.cinemaImageUrl" height="300" width="300"
                     style="object-fit: contain; margin: 5px 0;">
             </el-form-item>
 
+            <el-form-item label="影院Id" prop="cinemaId" :rules="{ required: true, message: '影院Id不能为空', trigger: 'blur' }">
+                <el-input v-model="newCinema.cinemaId" @change="formStatus = true" placeholder="请输入影院Id" trigger="blur" />
+            </el-form-item>
+
             <el-form-item label="影院名称" prop="name" :rules="{ required: true, message: '影院名称不能为空', trigger: 'blur' }">
-                <el-input v-model="newCinema.name" @change="formStatus = true" placeholder="请输入影院名称" message="test"
-                    trigger="blur" />
+                <el-input v-model="newCinema.name" @change="formStatus = true" placeholder="请输入影院名称" trigger="blur" />
             </el-form-item>
 
             <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
@@ -277,9 +321,8 @@ export default {
                 </span>
             </el-form-item>
 
-            <el-form-item label="管理员姓名" prop="managerName"
-                :rules="{ required: true, message: '管理员名称不能为空', trigger: 'blur' }">
-                <el-input v-model="newCinema.managerName" @change="formStatus = true" placeholder="请输入管理员姓名" />
+            <el-form-item label="管理员ID" prop="managerId" :rules="{ required: true, message: '管理员Id不能为空', trigger: 'blur' }">
+                <el-input v-model="newCinema.managerId" @change="formStatus = true" placeholder="请输入管理员Id" />
             </el-form-item>
 
             <el-form-item label="管理员邮箱" prop="managerEmail" :rules="emailRules">
@@ -287,7 +330,7 @@ export default {
             </el-form-item>
             <el-form-item label="管理密码" prop="managerPassWD"
                 :rules="{ required: true, message: '管理密码不能为空', trigger: 'blur' }">
-                <el-input v-model="newCinema.managerPassWD" @change="formStatus = true" placeholder="请输入管理密码" />
+                <el-input v-model="newCinema.managerPassWD" @change="formStatus = true" placeholder="请输入管理密码" show-password/>
             </el-form-item>
         </el-form>
 
