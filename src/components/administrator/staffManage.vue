@@ -8,6 +8,7 @@ export default {
     },
     data: () => {
         return {
+            targetIndex: 0,
             staff: {
                 staffId: "",
                 name: "",
@@ -26,6 +27,7 @@ export default {
             dialogVisible: false,
             dialogTitle: "修改演员",
             formStatus: false,
+            idInputDisabled: true,
         }
     },
     mounted() {
@@ -42,7 +44,7 @@ export default {
             })
             .catch((err) => {
                 // 处理错误情况
-                console.log(error);
+                console.log(err);
                 ElMessageBox.alert("数据加载失败！", "错误", {
                     // if you want to disable its autofocus
                     // autofocus: false,
@@ -100,30 +102,163 @@ export default {
                 })
             })
         },
-        staffUpdate(id) {       //影人修改确认的前后端交互
+        formReset() {
+            this.$refs.formRef.resetFields();
+            this.formStatus = false;
+        },
+        staffUpdate() {       //影人修改确认的前后端交互
+            if (!this.formStatus) {
+                //影人数据未被修改
+                this.formReset();
+                this.dialogVisible = false;
+                return;
+            }
+            let obj = this;
+            let newStaff = {};
+            Object.assign(newStaff, this.staff);
+            // console.log(newStaff);
+            axios.put(this.baseURL + '/Update', {
+                staff_id: obj.staff.staffId,
+                name: obj.staff.name,
+                gender: Number(obj.staff.gender),
+                introduction: obj.staff.introduction,
+                staff_img_url: obj.staff.imageUrl
+            }).then((res) => {
+                if (res.data.status == '10000') { 
+                    obj.formReset();
+                    obj.dialogVisible = false;
 
+                    Object.assign(obj.staffs[obj.targetIndex], newStaff);
+                    // console.log(obj.staffs[obj.targetIndex]);
+                    ElMessage({
+                        type: 'success',
+                        message: obj.dialogTitle.slice(2) + '成功',
+                    })
+                }
+                else if (res.data.status == '10001') {
+                    console.log(res.data);
+                    ElMessage({
+                        type: 'error',
+                        message: obj.dialogTitle.slice(2) + '失败',
+                    })
+                }
+            }).catch((err) => {
+                console.log(err);
+                ElMessage({
+                    type: 'error',
+                    message: obj.dialogTitle.slice(2) + '失败',
+                })
+            })
+            // console.log(newStaff);
         },
         staffAdd() {            //影人添加的前后端交互
+            let obj = this;
+            let newStaff = {};
+            Object.assign(newStaff, this.staff);
+            // console.log(newStaff);
+            axios.post(this.baseURL + '/Add', {
+                staff_id: obj.staff.staffId,
+                name: obj.staff.name,
+                gender: Number(obj.staff.gender),
+                introduction: obj.staff.introduction,
+                staff_img_url: obj.staff.imageUrl
+            }).then((res) => {
+                if (res.data.status == '10000') {
+                    obj.formReset();
+                    obj.dialogVisible = false;
+                    obj.staffs.push(newStaff);
+                    obj.total += 1;
+                    // console.log(obj.staffs[obj.targetIndex]);
 
+                    ElMessage({
+                        type: 'success',
+                        message: obj.dialogTitle.slice(2) + '成功',
+                    })
+                }
+                else if (res.data.status == '10001') {
+                    console.log(res.data);
+                    ElMessage({
+                        type: 'error',
+                        message: obj.dialogTitle.slice(2) + '失败',
+                    })
+                }
+            }).catch((err) => {
+                console.log(err);
+                ElMessage({
+                    type: 'error',
+                    message: obj.dialogTitle.slice(2) + '失败',
+                })
+            })
+            console.log(newStaff);
         },
         updataForm(id) {        //影人修改的表单初始化
-            console.log(id);
-            let targetIndex = this.staffs.findIndex(staff => staff.staffId == id);
-            this.staff = this.staffs[targetIndex];
+            // console.log(id);
+            this.targetIndex = this.staffs.findIndex(staff => staff.staffId == id);
+            Object.assign(this.staff, this.staffs[this.targetIndex]);
             this.staff.gender = this.staff.gender.toString();
+            this.idInputDisabled = true;
             this.dialogTitle = "影人修改";
             this.dialogVisible = true;
         },
         addForm() {             //添加影人的表单初始化
-
+            this.staff = {
+                staffId: "",
+                name: "",
+                gender: "",
+                introduction: "",
+                imageUrl: ""
+            }
+            this.idInputDisabled = false;
+            this.dialogTitle = "影人添加";
+            this.dialogVisible = true;
+        },
+        async dialogConfirm() {
+            let formRef = this.$refs.formRef;
+            if (!formRef) {
+                console.log("form is NULL");
+                return;
+            }
+            console.log("开始进行表单检查！");
+            await formRef.validate((valid, fields) => {
+                if (valid) {
+                    if (this.dialogTitle == '影人修改')
+                        this.staffUpdate();
+                    else if (this.dialogTitle == '影人添加')
+                        this.staffAdd();
+                }
+                else {
+                    console.log('表单不合法', fields);
+                }
+            })
+        },
+        dialogClose() {
+            if (!this.formStatus) {
+                this.dialogVisible = false;
+                this.formReset();
+                return;
+            }
+            ElMessageBox.confirm('表单中还有填写的数据，要丢弃吗', "Warning", {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }).then(() => {
+                this.dialogVisible = false;
+                this.formReset();
+            })
         },
     },
 }
 </script>
 
 <template>
-    <topBar />
-
+    <el-row align="middle" justify="space-between">
+        <el-col :span="20">
+            <topBar />
+        </el-col>
+        <el-col :span="2" :offset="2">
+            <el-button size="large" type="success" @click="addForm()">添加</el-button>
+        </el-col>
+    </el-row>
     <main style="width: 100%; margin: 0;">
 
         <!-- 加载时的骨架屏 -->
@@ -131,7 +266,7 @@ export default {
             <template #template>
                 <el-row :gutter="10">
                     <el-col :span="4" v-for="n in 12">
-                        <div class="skeleton" style="width: 180px; height: 280px;">
+                        <div class="skeleton" style="height: 280px;">
                             <el-skeleton-item variant="image" style="width: 100%; height: 160px" />
                             <div style="padding: 2px; height: 90px;">
                                 <div class="idAndGen_Ske"
@@ -148,7 +283,7 @@ export default {
             <template #default>
                 <el-row :gutter="10">
                     <el-col :span="4" v-for="staff in staffs.slice((currentPage - 1) * pageSize, currentPage * pageSize)">
-                        <el-card shadow="hover" style="padding: 0; margin-bottom: 20px; height: 280px; width: 180px;">
+                        <el-card shadow="hover" style="padding: 0; margin-bottom: 20px; height: 280px;">
                             <el-image :src="staff.imageUrl" fit="cover"
                                 style="height: 160px; width: 100%; margin: 0; padding: 0;" />
                             <div class="staffInfo"
@@ -178,7 +313,7 @@ export default {
 
 
     <!-- 弹出框 -->
-    <el-dialog v-model="dialogVisible" :title="dialogTitle">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" @close="dialogClose">
         <!-- 表单 -->
         <el-form :model="staff" label-width="80px" class="staffForm" ref="formRef" status-icon style="margin-right: 30px;">
             <el-col>
@@ -191,7 +326,7 @@ export default {
                     <el-col :span="12">
                         <!-- 影人Id查看 -->
                         <el-form-item label="影人ID">
-                            <el-input v-model="staff.staffId" disabled>
+                            <el-input v-model="staff.staffId" :disabled="idInputDisabled">
                             </el-input>
                         </el-form-item>
                         <!-- 影人名字 -->
@@ -211,14 +346,14 @@ export default {
                 </el-row>
                 <el-row>
                     <el-col>
-                        <!-- 电影电影院地址修改 -->
+                        <!-- 影人简介修改 -->
                         <el-form-item label="影人简介" prop="introduction"
                             :rules="{ required: true, message: '影人简介不能为空', trigger: 'blur' }">
                             <el-input v-model="staff.introduction" type="textarea" @change="formStatus = true"
-                                maxlength="25" show-word-limit :autosize="{ minRows: 3, maxRows: 5 }"
+                                maxlength="40" show-word-limit :autosize="{ minRows: 3, maxRows: 5 }"
                                 placeholder="请输入影人简介" />
                         </el-form-item>
-                        <!-- 电影院图片URL -->
+                        <!-- 影人图片URL -->
                         <el-form-item label="图片URL">
                             <el-input v-model="staff.imageUrl" @change="formStatus = true" placeholder="请输入影人海报URL">
                                 <template #append>URL</template>
@@ -231,8 +366,8 @@ export default {
 
         <template #footer>
             <span class="dialog-footer">
-                <el-button @click="dialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="dialogVisible = false">
+                <el-button @click="dialogClose">取消</el-button>
+                <el-button type="primary" @click="dialogConfirm">
                     确认
                 </el-button>
             </span>

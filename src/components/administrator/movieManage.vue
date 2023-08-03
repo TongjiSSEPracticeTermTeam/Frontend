@@ -232,6 +232,7 @@ export default {
                 message: '添加成功！'
               })
 
+              obj.total += 1;
               obj.drawer = false;
               obj.loading = false;
               obj.formReset();
