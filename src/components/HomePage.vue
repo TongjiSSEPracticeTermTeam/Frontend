@@ -1,6 +1,26 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const activeIndex = ref('1')
+const handleSelect = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+</script>
 
 <template>
+  <el-menu
+    :default-active="activeIndex"
+    class="el-menu-demo"
+    mode="horizontal"
+    @select="handleSelect"
+    active-text-color="red"
+  >
+    <el-menu-item index="0">LOGO</el-menu-item>
+    <el-menu-item index="2">电影</el-menu-item>
+    <el-menu-item index="3">影院</el-menu-item>
+    <el-menu-item index="4">我的</el-menu-item>
+  </el-menu>
+
   <div class="content">
     <div class="center">
       <h1>影院管理系统</h1>
@@ -40,5 +60,4 @@
 }
 </style>
 
-<script lang="ts">
-</script>
+<script lang="ts"></script>
