@@ -10,6 +10,6 @@ import axios from 'axios'
 import 'element-plus/theme-chalk/src/message.scss'
 import router from '@/router'
 
-
+import '@/helpers/axios'
 
 createApp(App).use(router).mount('#app')
