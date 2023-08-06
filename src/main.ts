@@ -8,17 +8,8 @@ import HomePage from '@/components/HomePage.vue'
 import CustomerLogin from '@/components/customer/CustomerLogin.vue'
 import axios from 'axios'
 import 'element-plus/theme-chalk/src/message.scss'
+import router from '@/router'
 
-// 配置axios
-if (import.meta.env.MODE === 'development') axios.defaults.baseURL = 'http://localhost:5212/'
-else axios.defaults.baseURL = 'http://cinema.cinea.com.cn/'
 
-const router = createRouter({
-  history: createWebHashHistory(),
-  routes: [
-    { path: '/', component: HomePage },
-    { path: '/login', component: CustomerLogin }
-  ]
-})
 
 createApp(App).use(router).mount('#app')

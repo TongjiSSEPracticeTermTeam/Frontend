@@ -15,10 +15,14 @@ const handleSelect = (key: string, keyPath: string[]) => {
     @select="handleSelect"
     active-text-color="red"
   >
-    <el-menu-item index="0">LOGO</el-menu-item>
-    <el-menu-item index="2">电影</el-menu-item>
-    <el-menu-item index="3">影院</el-menu-item>
-    <el-menu-item index="4">我的</el-menu-item>
+    <el-menu-item index="0">
+      <span style="font-weight: 600; font-size: 1.5em; color: red"> 同济院线 </span>
+    </el-menu-item>
+    <el-menu-item index="2"><span style="font-size: 1.3em">电影</span></el-menu-item>
+    <el-menu-item index="3"><span style="font-size: 1.3em">影院</span></el-menu-item>
+    <el-menu-item index="4"><span style="font-size: 1.3em">我的</span></el-menu-item>
+    <div class="flex-grow" />
+    <el-menu-item index="5"><span style="font-size: 1.3em">注册/登录</span></el-menu-item>
   </el-menu>
 
   <div class="content">
@@ -28,9 +32,9 @@ const handleSelect = (key: string, keyPath: string[]) => {
 
       <p style="margin-top: 40px; font-size: 1.2em; margin-bottom: 20px">快速链接</p>
 
-      <a href="index.html#/login" style="text-decoration: none">
+      <router-link to="/login" style="text-decoration: none">
         <el-button>登录页面</el-button>
-      </a>
+      </router-link>
     </div>
   </div>
 </template>
