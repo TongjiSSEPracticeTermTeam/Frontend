@@ -155,7 +155,10 @@ export default {
           })
         })
     },
-    //添加面板相关处理函数
+    editMovieEnter(movieId) {    //处理电影编辑页面的跳转
+      this.$router.push({ path: `${this.$route.path}/${movieId}` });
+    },
+    //添加面板表单相关处理函数
     formReset() {         //表单内容重置
       this.formStatus = false;
       this.newMovie.name = "";
@@ -187,8 +190,6 @@ export default {
       // })
     },
     async confirmForm() {      //表单确认函数
-
-
       let formRef = this.$refs.formRef;
       if (!formRef) {
         console.log("form is NULL");
@@ -200,7 +201,6 @@ export default {
           console.log("表单合法！");
 
           let obj = this;
-          // this.formReset();
           //...前后端交互数据
           this.loading = true;
           axios.post(this.baseURL + "/api/Movie/add", {
@@ -213,7 +213,6 @@ export default {
             release_date: obj.newMovie.schedule[0],
             removal_date: obj.newMovie.schedule[1]
           }).then((res) => {
-
             if (res.data.status == "10000") {    //添加成功
 
               obj.movies.push({     //维护前端电影数组
@@ -234,29 +233,24 @@ export default {
 
               obj.total += 1;
               obj.drawer = false;
-              obj.loading = false;
               obj.formReset();
             }
             else {    //添加失败
-
-              console.log(res.data.message)
-              obj.loading = false;
+              console.log(res.data.message);
               ElMessage({
                 type: "error",
                 message: "添加失败！"
               })
-
             }
-          })
-            .catch((res) => {
-              console.log(res)
-              obj.loading = false;
-              ElMessage({
-                type: "error",
-                message: "添加失败！"
-              })
-
+          }).catch((res) => {
+            console.log(res)
+            ElMessage({
+              type: "error",
+              message: "添加失败！"
             })
+
+          })
+          obj.loading = false;
         }
         else {  //表单提交失败
           console.log('表单不合法！', fields);
@@ -308,7 +302,7 @@ export default {
         <el-button size="small" type="success" @click="drawer = true">添加电影</el-button>
       </template>
       <template #default="scope">
-        <el-button size="small">编辑</el-button>
+        <el-button size="small" @click="editMovieEnter(scope.row.movieId)">编辑</el-button>
         <el-button size="small" type="danger" @click="MovieDelete(scope.row.name, scope.row.movieId)">删除</el-button>
       </template>
     </el-table-column>

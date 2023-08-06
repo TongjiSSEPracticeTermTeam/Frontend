@@ -251,6 +251,7 @@ export default {
 </script>
 
 <template>
+    <!-- 顶栏 -->
     <el-row align="middle" justify="space-between">
         <el-col :span="20">
             <topBar />
@@ -265,7 +266,7 @@ export default {
         <el-skeleton :loading="loading" animated>
             <template #template>
                 <el-row :gutter="10">
-                    <el-col :span="4" v-for="n in 12">
+                    <el-col :span="4" v-for="n in currentPage">
                         <div class="skeleton" style="height: 280px;">
                             <el-skeleton-item variant="image" style="width: 100%; height: 160px" />
                             <div style="padding: 2px; height: 90px;">
@@ -313,7 +314,7 @@ export default {
 
 
     <!-- 弹出框 -->
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" @close="dialogClose">
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="dialogClose">
         <!-- 表单 -->
         <el-form :model="staff" label-width="80px" class="staffForm" ref="formRef" status-icon style="margin-right: 30px;">
             <el-col>
@@ -326,7 +327,7 @@ export default {
                     <el-col :span="12">
                         <!-- 影人Id查看 -->
                         <el-form-item label="影人ID">
-                            <el-input v-model="staff.staffId" :disabled="idInputDisabled">
+                            <el-input v-model="staff.staffId" :disabled="idInputDisabled" placeholder="请输入影人ID">
                             </el-input>
                         </el-form-item>
                         <!-- 影人名字 -->
