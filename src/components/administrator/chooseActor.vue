@@ -1,182 +1,223 @@
-<!-- 使用方式，父组件中动态绑定两个数组，如下： -->
-<!-- <my-dialog v-model:choosed-actor-names="choosedActorNames" -->
-<!-- v-model:unchoosed-actor-names="unchoosedActorNames"></my-dialog> -->
-<!-- 点击弹框中的确定按钮后会同步修改传入的数组内容 -->
+<script>
+import axios from 'axios';
 
-
-<template>
-    <text class="mytext" @click="showDialog">{{ firstNames[0] }}/{{ firstNames[1] }}/{{ firstNames[2] }}/……</text>
-    <div class="dialog-overlay" v-show="dialogVisible">
-        <text>已选择演员</text>
-
-        <div class="vertical-spacing"></div>
-
-        <div class="scrollable-row">
-            <div class="first-row-item" v-for="(name, index) in firstNames" :key="name">
-                <el-tag disable-transitions @click="firstToSecond(index)">{{ name }}</el-tag>
-            </div>
-        </div>
-
-        <div class="vertical-spacing"></div>
-
-        <text>可选择演员</text>
-
-        <div class="vertical-spacing"></div>
-
-        <div class="fixed-container">
-            <div class="second-row-item">
-                <el-tag class="fixed-item" disable-transitions type="info" @click="secondToFirst(index)"
-                    v-for="(name, index) in secondNames" :key="name">
-                    {{ name }}
-                </el-tag>
-            </div>
-        </div>
-
-        <div class="vertical-spacing"></div>
-
-        <div>
-            <el-button type="primary" @click="returnData" class="yes-button">确定</el-button>
-            <el-button type="info" @click="closeDialog" class="no-button">取消</el-button>
-        </div>
-    </div>
-</template>
-  
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
+export default {
     props: {
-        choosedActorNames: {
-            type: Array as () => string[],
+        selected: {
+            type: Array,
             required: true,
         },
-        unchoosedActorNames: {
-            type: Array as () => string[],
+        mode: {
+            type: Number,
+            required: true,
+        },
+        title: {
+            type: String,
             required: true,
         },
     },
     data() {
         return {
-            firstNames: [] as string[],
-            secondNames: [] as string[],
-            array1: [] as string[],
-            array2: [] as string[],
+            baseUrl: "https://localhost:7299/api/Staff",
+
+            actors: [],
+            selectedActors: [],
+            avalActors: [],
             dialogVisible: false,
+            dialogTitle: "",
+            dialogStatus: false,    //记录数据是否有修改
+            pageSize: 1,
+            currentPage: 1,
+            total: 1,
         };
     },
-    emits: ['update:choosedActorNames', 'update:unchoosedActorNames'],
     mounted() {
-        this.firstNames = [...this.choosedActorNames].sort();
-        this.secondNames = [...this.unchoosedActorNames].sort();
-        this.array1 = [...this.firstNames];
-        this.array2 = [...this.secondNames];
+        this.selectedActors = this.selected.slice(0);
+        this.dialogTitle = this.title;
+        // this.avalActors = this.names.slice(11).sort();
+        console.log(this.dialogTitle);
+        console.log(typeof (this.mode));
+        // console.log(this.mode);
     },
     methods: {
-        firstToSecond(index: number) {
-            const name = this.firstNames[index];
-            this.firstNames.splice(index, 1);
-            this.secondNames.push(name);
-            this.secondNames = this.secondNames.sort();
+        // 影人选取操作相关
+        actorCancel(index) {
+            this.dialogStatus = true;
+            const actor = this.selectedActors[index];
+            this.selectedActors.splice(index, 1);
+            this.avalActors.push(actor);
+            this.avalActors = this.avalActors.slice().sort((a, b) => {
+                return a.name.localeCompare(b.name);
+            });
         },
-        secondToFirst(index: number) {
-            const name = this.secondNames[index];
-            this.secondNames.splice(index, 1);
-            this.firstNames.push(name);
-            this.firstNames = this.firstNames.sort();
+        actorSelect(index) {
+            //导演模式下只能选择一个影人
+            if (this.mode == 1 && this.selectedActors.length >= 1) {
+                console.log("导演模式选人只能一个！");
+                return;
+            }
+
+            this.dialogStatus = true;
+            const actor = this.avalActors[index];
+            this.avalActors.splice(index, 1);
+            this.selectedActors.push(actor);
+            this.selectedActors = this.selectedActors.slice().sort((a, b) => {
+                return a.name.localeCompare(b.name);
+            });
         },
-        // 点击按钮后显示对话框
+        // 打开弹窗才从远端获取所有演员数据
         showDialog() {
             this.dialogVisible = true;
+            this.selectedActors = this.selected.slice(0);
+
+            if (this.actors.length == 0) {
+                // const loading = ElLoading.service({
+                //     lock: true,
+                //     text: 'Loading',
+                //     background: 'rgba(0, 0, 0, 0.7)',
+                // })
+
+                axios.get(this.baseUrl)
+                    .then((res) => {
+                        this.actors = res.data;
+                        this.avalActors = this.actors.slice(0);
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        ElMessage({
+                            type: 'error',
+                            message: '数据获取失败'
+                        })
+                    })
+
+                // loading.close();
+            }
+
+            // 去掉已经选取的影人
+            this.avalActors = this.actors.slice(0);
+            this.selectedActors.map((actor) => {
+                let index = this.avalActors.findIndex(item => item.staffId == actor.staffId);
+                this.avalActors.splice(index, 1);
+            })
         },
-        // 对话框中点击取消按钮后关闭对话框，并恢复数据
-        closeDialog() {
+        // 弹窗关闭相关
+        reset() {
             this.dialogVisible = false;
-            this.firstNames = [...this.array1];
-            this.secondNames = [...this.array2];
+            this.dialogStatus = false;
         },
-        // 对话框中点击确定按钮后关闭对话框，并返回数据
-        returnData() {
-            this.dialogVisible = false;
-            this.array1 = [...this.firstNames];
-            this.array2 = [...this.secondNames];
-            this.$emit('update:choosedActorNames', [...this.firstNames]);
-            this.$emit('update:unchoosedActorNames', [...this.secondNames]);
+        actorUpdate() {
+            if (!this.dialogStatus) {
+                this.reset();
+                return;
+            }
+            console.log(this.selectedActors);
+            this.reset();
+            this.$emit('actorUpdate', this.selectedActors);
         },
-    },
-});
+        dialogClose() {
+            if (!this.dialogStatus) {
+                this.reset();
+                return;
+            }
+            ElMessageBox.confirm('存在修改的数据，要丢弃吗', "Warning", {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }).then(() => {
+                this.reset();
+            })
+        },
+    }
+};
 </script>
+
+<template>
+    <el-button @click="showDialog" text>
+        <span v-if="selected.length > 0" v-for="i in (selected.length <= 3 ? selected.length : 3)">
+            {{ selected[i - 1].name }}
+            <span v-if="i != selected.length">，</span>
+        </span>
+        <span v-else>无</span>
+        <span v-if="selected.length > 3">...</span>
+    </el-button>
+
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="dialogClose">
+        <text>已选择演员</text>
+        <div class="selectedActor">
+            <el-tag class="actor" v-if="selectedActors.length > 0" disable-transitions @click="actorCancel(index)"
+                v-for="(actor, index) in selectedActors" :key="actor.name">
+                {{ actor.name }}
+            </el-tag>
+            <span v-else>暂无</span>
+        </div>
+
+        <text>可选择演员</text>
+        <div class="avalActor">
+            <el-tag class="actor" disable-transitions type="info" @click="actorSelect(index)"
+                v-for="(actor, index) in avalActors" :key="actor.name">
+                {{ actor.name }}
+            </el-tag>
+        </div>
+
+        <!-- <el-pagination background layout="prev, pager, next" v-model:total="total" v-model:page-size="pageSize" small
+            hide-on-single-page v-model:current-page="currentPage" /> -->
+
+        <!-- 按钮组 -->
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button type="info" @click="dialogClose" class="no-button">取消</el-button>
+                <el-button type="primary" @click="actorUpdate" class="yes-button">确定</el-button>
+            </span>
+        </template>
+
+    </el-dialog>
+</template>
+  
   
 <style scoped>
-.mytext {
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.mytext:hover {
-    background-color: lightgray;
-}
-
-.dialog-overlay {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 25%;
-    left: 25%;
-    right: 25%;
-    bottom: 25%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgb(190, 222, 212);
-}
-
-.scrollable-row {
+.selectedActor {
     display: flex;
     padding: 10px;
     width: 100%;
     overflow-x: auto;
+
 }
 
-.first-row-item {
-    cursor: pointer;
+.selectedActor .actor {
     padding: 5px;
+    margin: 5px;
     white-space: nowrap;
-    flex-basis: 10%;
+    flex-basis: 8%;
 }
 
-.fixed-container {
+/* .avalActor {
     overflow: auto;
     padding: 10px;
     max-height: 150px;
     overflow-y: auto;
-}
+} */
 
-.second-row-item {
+.avalActor {
+    overflow: auto;
+    padding: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+
     display: flex;
     flex-wrap: wrap;
     padding: 5px;
 }
 
-.fixed-item {
-    cursor: pointer;
+.avalActor .actor {
     margin-right: 10px;
     margin-bottom: 10px;
     width: 100px;
     /* 固定元素长度 */
 }
 
-.yes-button {
-    padding: 10px 20px;
-    background-color: blue;
-}
-
-.no-button {
-    padding: 10px 20px;
-    background-color: grey;
-}
-
-.vertical-spacing {
-    margin-top: 20px;
-}
+/* .el-pagination {
+    margin: 20px 0;
+    justify-content: center;
+} */
 </style>
   

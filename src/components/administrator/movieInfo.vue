@@ -4,7 +4,7 @@ import actorBtn from './chooseActor.vue'
 
 export default {
     props: ["movieId"],
-    compoment: {
+    components: {
         actorBtn,
     },
     data: () => {
@@ -25,7 +25,8 @@ export default {
                 // comments: [],
                 // sessions: []
             },
-            names: ['James','Harden','Curry','Doncic','Stephen','Shark','Durant'],
+            director: [],
+            actors: [],
             //表单相关
             formStatus: false,
             tagsHint: false,
@@ -89,7 +90,7 @@ export default {
                     Object.assign(obj.movie, res.data.movie);
                     obj.movie.schedule.push(obj.movie.releaseDate);
                     obj.movie.schedule.push(obj.movie.removalDate);
-                    console.log(obj.movie);
+                    // console.log(obj.movie);
                 }
                 else if (res.data.status == '4001') {
                     ElMessage({
@@ -108,6 +109,12 @@ export default {
         loading.close();
     },
     methods: {
+        directorUpdate(newDirector) {
+            this.director = newDirector.slice(0);
+        },
+        actorUpdata(newActors) {
+            this.actors = newActors.slice(0);
+        },
         cancelForm() {
             if (!this.formStatus)
                 this.$router.back();
@@ -128,7 +135,7 @@ export default {
 
             let formRef = this.$refs.formRef;
             await formRef.validate((valid, field) => {
-                if(valid) {
+                if (valid) {
                     //前后端put
 
 
@@ -162,6 +169,20 @@ export default {
                         <el-input-number v-model="movie.duration" :min="0" @change="formStatus = true" />
                     </el-form-item>
 
+                    <!-- 演员修改 -->
+                    <el-row justify="start">
+                        <el-col :span="12">
+                            <el-form-item label="导演:">
+                                <actorBtn :selected="director" :mode="1" :title="'导演修改'" @actor-update="directorUpdate" />
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="12">
+                            <el-form-item label="主演:">
+                                <actorBtn :selected="actors" :mode="0" :title="'演员修改'" @actor-update="actorUpdata" />
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
                     <el-form-item label="电影档期" prop="schedule">
                         <el-date-picker unlink-panels value-format="YYYY-MM-DD" v-model="movie.schedule" type="daterange"
                             range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="formStatus = true">
@@ -181,6 +202,7 @@ export default {
             </el-row>
             <el-row>
                 <el-col>
+
                     <!-- 电影海报修改 -->
                     <el-form-item label="电影海报" prop="postUrl">
                         <el-input v-model="movie.postUrl" @change="formStatus = true" placeholder="请输入电影海报URL">
@@ -193,9 +215,6 @@ export default {
                             :autosize="{ minRows: 4, maxRows: 7 }" placeholder="请输入电影简介" />
                     </el-form-item>
 
-                    <el-form-item>
-                        <actorBtn :names="name"/>
-                    </el-form-item>
 
                 </el-col>
             </el-row>
@@ -206,7 +225,6 @@ export default {
             <el-button @click="cancelForm">取消</el-button>
             <el-button type="success" @click="confirmForm">确定</el-button>
         </div>
-
 
     </div>
 </template>

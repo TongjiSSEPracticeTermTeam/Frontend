@@ -20,7 +20,7 @@ export default {
             baseURL: 'https://localhost:7299/api/Staff',
             //表格/分页相关设置
             loading: true,
-            pageSize: 0,
+            pageSize: 12,
             total: 0,
             currentPage: 1,
             //弹窗表单控制相关
@@ -39,7 +39,6 @@ export default {
 
                 //分页初始化
                 obj.total = obj.staffs.length;
-                obj.pageSize = 12;
                 obj.loading = false;
             })
             .catch((err) => {
@@ -266,7 +265,7 @@ export default {
         <el-skeleton :loading="loading" animated>
             <template #template>
                 <el-row :gutter="10">
-                    <el-col :span="4" v-for="n in currentPage">
+                    <el-col :span="4" v-for="n in pageSize">
                         <div class="skeleton" style="height: 280px;">
                             <el-skeleton-item variant="image" style="width: 100%; height: 160px" />
                             <div style="padding: 2px; height: 90px;">
