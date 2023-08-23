@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 if (import.meta.env.MODE === 'development') axios.defaults.baseURL = 'http://localhost:5212/'
-else axios.defaults.baseURL = 'http://cinema.cinea.com.cn/'
+else axios.defaults.baseURL = 'https://cinema.cinea.com.cn/'
 
 axios.interceptors.request.use(
   function (config) {
