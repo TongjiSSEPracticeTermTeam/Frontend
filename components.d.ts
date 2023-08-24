@@ -7,18 +7,16 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    CinemaHome: typeof import('./src/components/cinema/CinemaHome/CinemaHome.vue')['default']
     CinemaInfo: typeof import('./src/components/cinema/CinemaInfo.vue')['default']
-    copy: typeof import('./src/components/cinema/CinemaInfo copy.vue')['default']
     CustomerLogin: typeof import('./src/components/customer/CustomerLogin.vue')['default']
-    ElAside: typeof import('element-plus/es')['ElAside']
-    ElAsideItem: typeof import('element-plus/es')['ElAsideItem']
     DynamicInput: typeof import('./src/components/cinema/DynamicInput.vue')['default']
+    ElAside: typeof import('element-plus/es')['ElAside']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElContainer: typeof import('element-plus/es')['ElContainer']
     ElFooter: typeof import('element-plus/es')['ElFooter']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
-    ElHeader: typeof import('element-plus/es')['ElHeader']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
