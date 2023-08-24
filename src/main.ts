@@ -8,6 +8,7 @@ import HomePage from '@/components/HomePage.vue'
 import CustomerLogin from '@/components/customer/CustomerLogin.vue'
 import CinemaInfo from '@/components/cinema/CinemaInfo.vue'
 import MovieInfo from '@/components/cinema/MovieInfo.vue'
+import CinemaHome from '@/components/cinema/CinemaHome/CinemaHome.vue'
 import axios from 'axios'
 //import 'element-plus/theme-chalk/src/message.scss'
 import 'element-plus/theme-chalk/src/index.scss'//将element-plus的全部样式导入到项目中
@@ -19,7 +20,9 @@ else axios.defaults.baseURL = 'http://cinema.cinea.com.cn/'
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: '/', component: CinemaInfo },
+    { path: '/', component: CinemaHome },
+    { path: '/CinemaInfo', component: CinemaInfo },
+    //{ path: '/', component: MovieInfo},
     //{ path: '/', component: HomePage },
     { path: '/login', component: CustomerLogin },
     { path: '/movieInfo', component: MovieInfo }
