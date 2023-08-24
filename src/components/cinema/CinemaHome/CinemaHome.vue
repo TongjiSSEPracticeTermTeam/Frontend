@@ -6,13 +6,13 @@ import type { routerKey } from 'vue-router';
 <template>
     <div class="content">
         <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect"
-            background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" :ellipsis="false" style="height: 8vh;">
+                background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" :ellipsis="false" style="height: 7vh;">
 
             <el-menu-item index="0">{{ cinemaName }}</el-menu-item>
             <div class="flex-grow disabled-el-menu-item"></div>
             <el-menu-item index="1">排片管理</el-menu-item>
             <el-menu-item index="2">影厅管理</el-menu-item>
-            <el-menu-item index="3" class="disabled-el-menu-item">登出</el-menu-item>
+            <el-menu-item index="3">登出</el-menu-item>
         </el-menu>
     </div>
 </template>
@@ -31,7 +31,7 @@ export default {
     },
     methods: {
         logout() {
-
+            alert("我退出了");
         },
         handleSelect(key: string) {
             this.curIndex = key;
@@ -47,6 +47,9 @@ export default {
                 case '2':
                     this.$router.push('/CinemaInfo');
                     break;
+                case '3':
+                    this.logout();
+                    return;
             }
         },
     },
