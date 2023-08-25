@@ -11,6 +11,11 @@
       <a href="index.html#/login" style="text-decoration: none">
         <el-button>登录页面</el-button>
       </a>
+        <p>
+          <a href="index.html#/admin">
+            <el-button>管理员页面</el-button>
+          </a>
+        </p>
     </div>
   </div>
 </template>
@@ -20,9 +25,12 @@
   text-align: center;
   padding: 120px 80px;
   position: absolute;
-  top: 50%; /* 垂直定位在 50% 的位置 */
-  left: 50%; /* 水平定位在 50% 的位置 */
-  transform: translate(-50%, -50%); /* 使用 transform 进行位移来居中 */
+  top: 50%;
+  /* 垂直定位在 50% 的位置 */
+  left: 50%;
+  /* 水平定位在 50% 的位置 */
+  transform: translate(-50%, -50%);
+  /* 使用 transform 进行位移来居中 */
   backdrop-filter: blur(11px) saturate(180%) brightness(105%);
   -webkit-backdrop-filter: blur(11px) saturate(180%);
   background-color: rgba(255, 255, 255, 0.45);

@@ -1,6 +1,6 @@
 import './assets/application.css'
 
-import {createApp} from 'vue'
+import { createApp } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 import App from './App.vue'
@@ -8,6 +8,14 @@ import HomePage from '@/components/HomePage.vue'
 import CustomerLogin from '@/components/customer/CustomerLogin.vue'
 import axios from 'axios'
 import 'element-plus/theme-chalk/src/message.scss'
+
+//管理员页面引入
+import movieManage from "./components/administrator/movieManage.vue"
+import cinemaManage from "./components/administrator/cinemaManage.vue"
+import staffManage from "./components/administrator/staffManage.vue"
+import mainView from "./components/administrator/mainView.vue"
+import movieInfo from "./components/administrator/movieInfo.vue"
+import cinemaInfo from "./components/administrator/cinemaInfo.vue"
 
 // 配置axios
 if (import.meta.env.MODE === 'development') axios.defaults.baseURL = 'http://localhost:5212/'
@@ -17,7 +25,41 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     { path: '/', component: HomePage },
-    { path: '/login', component: CustomerLogin }
+    { path: '/login', component: CustomerLogin },
+    {
+      path: '/admin',
+      component: mainView,
+      children: [
+        {
+          path: "movieManage",
+          name: "movie",
+          component: movieManage,
+          strict: true
+        },
+        {
+          path: "cinemaManage",
+          name: "cinema",
+          component: cinemaManage,
+          strict: true
+        },
+        {
+          path: "staffManage",
+          name: "staff",
+          component: staffManage,
+          strict: true
+        },
+        {
+          path: "movieManage/:movieId(\\d+)?",
+          component: movieInfo,
+          props: true,
+        },
+        {
+          path: "cinemaManage/:cinemaId(\\d+)?",
+          component: cinemaInfo,
+          props: true,
+        },
+      ]
+    },
   ]
 })
 
