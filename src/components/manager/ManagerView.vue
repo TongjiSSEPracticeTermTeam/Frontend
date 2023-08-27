@@ -27,6 +27,16 @@ const settingItems: {
       () => import('@/components/manager/StaffManage/StaffManage.vue')
     ),
     needCard: true
+  },
+  {
+    name: '电影院管理',
+    icon: defineAsyncComponent(() =>
+      import('@element-plus/icons-vue').then((module) => module.HomeFilled)
+    ),
+    component: defineAsyncComponent(
+      () => import('@/components/manager/CinemaManage/CinemaManage.vue')
+    ),
+    needCard: true
   }
 ]
 

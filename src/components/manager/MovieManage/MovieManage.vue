@@ -4,6 +4,7 @@ import Movie from '@/models/Movie'
 import axios from 'axios'
 import { ElInput, ElMessage, ElMessageBox } from 'element-plus'
 import { copyTextToClipboard } from '@/helpers/clipboard'
+import UploadImage from '@/helpers/UploadImage.vue'
 
 let movies: Ref<Movie[]> = ref([])
 let moviesLoading = ref(false)
@@ -95,46 +96,46 @@ const copyPosterUrl = () => {
   })
 }
 
-const uploadingPoster = ref(false)
-
-const uploadPoster = () => {
-  uploadingPoster.value = true
-  document.getElementById('upload-poster').click()
-}
-
-const uploaderHandleChange = (event) => {
-  const files = (event.target as HTMLInputElement).files
-  if (!files || files.length !== 1) {
-    return
-  }
-
-  uploadingPoster.value = true
-
-  const file = files[0]
-  const formData = new FormData()
-  formData.append('file', file)
-
-  axios
-    .put('/api/Movies/poster', formData)
-    .then((res) => {
-      uploadingPoster.value = false
-      if (res.data && res.data.status && res.data.status === '10000') {
-        ElMessage({
-          message: '上传成功',
-          type: 'success'
-        })
-        currentMovie.value.postUrl = res.data.data
-      } else {
-        ElMessage({
-          message: `上传失败：${res.data.message}`,
-          type: 'warning'
-        })
-      }
-    })
-    .catch(() => {
-      uploadingPoster.value = false
-    })
-}
+// const uploadingPoster = ref(false)
+//
+// const uploadPoster = () => {
+//   uploadingPoster.value = true
+//   document.getElementById('upload-poster').click()
+// }
+//
+// const uploaderHandleChange = (event) => {
+//   const files = (event.target as HTMLInputElement).files
+//   if (!files || files.length !== 1) {
+//     return
+//   }
+//
+//   uploadingPoster.value = true
+//
+//   const file = files[0]
+//   const formData = new FormData()
+//   formData.append('file', file)
+//
+//   axios
+//     .put('/api/Movies/poster', formData)
+//     .then((res) => {
+//       uploadingPoster.value = false
+//       if (res.data && res.data.status && res.data.status === '10000') {
+//         ElMessage({
+//           message: '上传成功',
+//           type: 'success'
+//         })
+//         currentMovie.value.postUrl = res.data.data
+//       } else {
+//         ElMessage({
+//           message: `上传失败：${res.data.message}`,
+//           type: 'warning'
+//         })
+//       }
+//     })
+//     .catch(() => {
+//       uploadingPoster.value = false
+//     })
+// }
 
 let currentTags = computed({
   get(): string[] {
@@ -436,16 +437,20 @@ const deleteMovie = () => {
               </el-icon>
             </template>
           </el-image>
-          <el-button-group>
-            <el-button @click="uploadPoster" v-loading="uploadingPoster">上传图片</el-button>
-            <input
-              type="file"
-              style="display: none"
-              id="upload-poster"
-              accept="image/*"
-              :onchange="uploaderHandleChange"
-            />
-          </el-button-group>
+          <!--          <el-button-group>-->
+          <!--            <el-button @click="uploadPoster" v-loading="uploadingPoster">上传图片</el-button>-->
+          <!--            <input-->
+          <!--              type="file"-->
+          <!--              style="display: none"-->
+          <!--              id="upload-poster"-->
+          <!--              accept="image/*"-->
+          <!--              :onchange="uploaderHandleChange"-->
+          <!--            />-->
+          <!--          </el-button-group>-->
+          <UploadImage
+            api-path="/api/Movies/poster"
+            @Success="(url) => (currentMovie.postUrl = url)"
+          />
         </el-space>
       </el-form-item>
       <el-form-item label="上映日期">

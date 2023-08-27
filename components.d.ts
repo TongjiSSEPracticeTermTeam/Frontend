@@ -10,6 +10,8 @@ declare module 'vue' {
     Admin: typeof import('./src/components/admin/admin.vue')['default']
     AdminView: typeof import('./src/components/admin/AdminView.vue')['default']
     Anager: typeof import('./src/components/manager/anager.vue')['default']
+    CinemaInfo: typeof import('./src/components/manager/CinemaManage/CinemaInfo.vue')['default']
+    CinemaManage: typeof import('./src/components/manager/CinemaManage/CinemaManage.vue')['default']
     Customer: typeof import('./src/components/customer/customer.vue')['default']
     CustomerLogin: typeof import('./src/components/customer/CustomerLogin.vue')['default']
     CustomerMenu: typeof import('./src/components/CustomerMenu.vue')['default']
