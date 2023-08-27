@@ -7,8 +7,8 @@ else axios.defaults.baseURL = 'https://cinema.cinea.com.cn/'
 axios.interceptors.request.use(
   function (config) {
     // 在发送请求之前做些什么
-    if (window.localStorage.getItem('cc_token')) {
-      config.headers['Authorization'] = window.localStorage.getItem('cc_token')
+    if (window.localStorage.getItem('token')) {
+      config.headers['Authorization'] = window.localStorage.getItem('token')
     }
     return config
   },

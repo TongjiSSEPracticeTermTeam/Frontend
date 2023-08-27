@@ -1,23 +1,58 @@
 <script setup lang="ts">
 import 'font-pingfang-sc' // 苹方字体
-import {onMounted, ref} from 'vue'
-import Store from "@/store";
-import {useStore} from "vuex";
-import axios from "axios";
+import { onMounted, ref } from 'vue'
+import Store from '@/store'
+import { useStore } from 'vuex'
+import axios from 'axios'
+import User from '@/models/User'
+import { useRoute, useRouter } from 'vue-router'
+import CustomerMenu from '@/components/CustomerMenu.vue'
+import ManagerMenu from '@/components/ManagerMenu.vue'
 
 const activeIndex = ref('1')
 const handleSelect = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
 
-const store = useStore();
+const store = useStore()
+const router = useRouter()
 
-onMounted(()=>{
-    // 检查登录状态，获取用户信息
-    let token = window.localStorage.getItem("token");
-    if(token){
-        axios.get()
-    }
+onMounted(() => {
+  // 检查登录状态，获取用户信息
+  let token = window.localStorage.getItem('token')
+  let currentUser = new User()
+  if (token) {
+    axios
+      .get('/api/user')
+      .then((r) => {
+        let data: {
+          status: string
+          type: 'Customer' | 'Manager' | 'Administrator'
+          username: string
+          display_name: string | null
+          avatar: string | null
+        } = r.data
+
+        if (data.status == '10000') {
+          currentUser.avatarUrl = data.avatar ?? ''
+          currentUser.id = data.username
+          currentUser.displayName = data.display_name ?? ''
+          currentUser.type = data.type
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
+  store.commit('setUser', currentUser)
+  store.commit('setLogged', currentUser.type !== 'Anonymous')
+
+  if (currentUser.type === 'Manager') {
+    router.replace('manager')
+  } else if (currentUser.type === 'Administrator') {
+    router.replace('admin')
+  }
 })
 </script>
 
@@ -30,20 +65,13 @@ onMounted(()=>{
       @select="handleSelect"
       active-text-color="red"
     >
-      <el-menu-item index="0">
-        <router-link to="/">
-          <span style="font-weight: 600; font-size: 1.5em; color: red">同济院线</span>
-        </router-link>
-      </el-menu-item>
-      <el-menu-item index="2"><span style="font-size: 1.3em">电影</span></el-menu-item>
-      <el-menu-item index="3"><span style="font-size: 1.3em">影院</span></el-menu-item>
-      <el-menu-item index="4"><span style="font-size: 1.3em">订单</span></el-menu-item>
-      <el-menu-item index="5">
-        <span style="font-size: 1.3em" v-if="store.state.isLogged">{{
-            store.state.currentUser.displayName
-        }}</span>
-        <span style="font-size: 1.3em" v-else>注册/登录</span>
-      </el-menu-item>
+      <CustomerMenu
+        v-if="
+          store.state.currentUser.type === 'Anonymous' ||
+          store.state.currentUser.type === 'Customer'
+        "
+      />
+      <ManagerMenu v-else />
     </el-menu>
   </header>
   <main>
