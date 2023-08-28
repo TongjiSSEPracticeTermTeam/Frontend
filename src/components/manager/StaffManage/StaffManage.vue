@@ -4,6 +4,7 @@ import { ElMessage, ElMessageBox, FormInstance } from 'element-plus'
 import Staff from '@/models/Staff'
 import { onMounted, Ref, ref } from 'vue'
 import TopBar from '@/components/manager/TopBar.vue'
+import UploadImage from '@/helpers/UploadImage.vue'
 
 const targetIndex = ref(0)
 const staff = ref(new Staff())
@@ -143,7 +144,7 @@ const staffAdd = function () {
       if (res.data && res.data.status && res.data.status == '10000') {
         formReset()
         dialogVisible.value = false
-        staffs.value.push(newStaff)
+        staffs.value.push(res.data.data)
         total.value += 1
         // console.log(obj.staffs[obj.targetIndex]);
 
@@ -183,6 +184,7 @@ const updateForm = function (id) {
 const addForm = function () {
   //添加影人的表单初始化
   staff.value = new Staff()
+  staff.value.staffId = 'ID由系统自动设置'
   idInputDisabled.value = false
   dialogTitle.value = '影人添加'
   dialogVisible.value = true
@@ -342,12 +344,7 @@ const dialogClose = function () {
           <el-col :span="12">
             <!-- 影人Id查看 -->
             <el-form-item label="影人ID">
-              <el-input
-                v-model="staff.staffId"
-                :disabled="idInputDisabled"
-                placeholder="请输入影人ID"
-              >
-              </el-input>
+              <el-input v-model="staff.staffId" disabled placeholder="请输入影人ID"></el-input>
             </el-form-item>
             <!-- 影人名字 -->
             <el-form-item
@@ -403,6 +400,9 @@ const dialogClose = function () {
               >
                 <template #append>URL</template>
               </el-input>
+            </el-form-item>
+            <el-form-item>
+              <UploadImage prefix="staff" @Success="(url) => (staff.imageUrl = url)" />
             </el-form-item>
           </el-col>
         </el-row>

@@ -3,6 +3,7 @@ import { ElLoading, ElMessage, ElMessageBox, FormInstance } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
 import Cinema from '@/models/Cinema'
 import axios from 'axios'
+import UploadImage from '@/helpers/UploadImage.vue'
 
 const props = defineProps({
   cinemaId: String,
@@ -220,6 +221,9 @@ defineExpose({ cancelForm })
               >
                 <template #append>URL</template>
               </el-input>
+            </el-form-item>
+            <el-form-item>
+              <UploadImage prefix="cinema" @Success="(url) => (cinema.cinemaImageUrl = url)" />
             </el-form-item>
           </el-col>
         </el-row>

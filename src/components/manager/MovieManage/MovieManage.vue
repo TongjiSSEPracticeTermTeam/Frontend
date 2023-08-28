@@ -21,14 +21,6 @@ const handleCurrentChange = () => {
 let currentMovie: Ref<Movie> = ref(new Movie())
 
 onMounted(() => {
-  // FIXME: 把这个删了
-  if (window.localStorage.getItem('token') == null) {
-    window.localStorage.setItem(
-      'token',
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiZGV2IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ2luZW1hQWRtaW4iLCJqdGkiOiIzODVlNzEyYS03ZmNhLTQxODItOTQ0Ni0zMTg0Y2VkOTEyMTYiLCJuYmYiOjE2OTI4ODY2MDAsImV4cCI6MTY5NTQ3ODYwMCwiaXNzIjoiQ2luZW1hU3lzdGVtIiwiYXVkIjoiQ2luZW1hVXNlciJ9.ME6WzA9tR0SUBvkOAOxuV-qZmOub0td0_FR7mNdepNo'
-    )
-  }
-
   updateTable()
 })
 

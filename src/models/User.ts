@@ -8,6 +8,6 @@ export default class User {
     this.id = ''
     this.displayName = '未登录'
     this.avatarUrl = '/img/default_user_avatar.png'
-    this.type = 'Manager'
+    this.type = 'Anonymous'
   }
 }

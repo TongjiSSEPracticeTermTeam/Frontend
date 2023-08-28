@@ -4,7 +4,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import HomePage from '@/components/HomePage.vue'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import CustomerLogin from '@/components/customer/CustomerLogin.vue'
+import CustomerLogin from '@/components/LoginPage.vue'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import ManagerView from '@/components/manager/ManagerView.vue'

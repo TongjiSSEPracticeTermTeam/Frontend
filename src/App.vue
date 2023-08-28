@@ -10,19 +10,22 @@ import CustomerMenu from '@/components/CustomerMenu.vue'
 import ManagerMenu from '@/components/ManagerMenu.vue'
 
 const activeIndex = ref('1')
+
+const menu = ref<CustomerMenu>(null)
 const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
+  console.log(menu.value)
+  menu.value.handle_select(key)
 }
 
 const store = useStore()
 const router = useRouter()
 
-onMounted(() => {
+onMounted(async () => {
   // 检查登录状态，获取用户信息
   let token = window.localStorage.getItem('token')
   let currentUser = new User()
   if (token) {
-    axios
+    await axios
       .get('/api/user')
       .then((r) => {
         let data: {
@@ -49,9 +52,9 @@ onMounted(() => {
   store.commit('setLogged', currentUser.type !== 'Anonymous')
 
   if (currentUser.type === 'Manager') {
-    router.replace('manager')
+    router.push('/manager')
   } else if (currentUser.type === 'Administrator') {
-    router.replace('admin')
+    router.push('/admin')
   }
 })
 </script>
@@ -66,12 +69,13 @@ onMounted(() => {
       active-text-color="red"
     >
       <CustomerMenu
+        ref="menu"
         v-if="
           store.state.currentUser.type === 'Anonymous' ||
           store.state.currentUser.type === 'Customer'
         "
       />
-      <ManagerMenu v-else />
+      <ManagerMenu ref="menu" v-else />
     </el-menu>
   </header>
   <main>

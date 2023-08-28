@@ -15,6 +15,10 @@ export default createStore({
     },
     setLogged(state, isLogged: boolean) {
       state.isLogged = isLogged
+    },
+    logout(state) {
+      state.isLogged = false
+      state.currentUser = new User()
     }
   }
 })
