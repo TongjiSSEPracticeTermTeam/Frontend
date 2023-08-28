@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, Ref, ref } from 'vue'
+import { computed, nextTick, onMounted, Ref, ref } from 'vue'
 import Movie from '@/models/Movie'
 import axios from 'axios'
 import { ElInput, ElMessage, ElMessageBox } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import { copyTextToClipboard } from '@/helpers/clipboard'
 import UploadImage from '@/helpers/UploadImage.vue'
+import { Message } from '@element-plus/icons-vue/dist/types'
 
 let movies: Ref<Movie[]> = ref([])
 let moviesLoading = ref(false)
@@ -16,6 +18,7 @@ let paginationLoading = ref(false)
 
 const handleCurrentChange = () => {
   updateTable()
+  //缺少页数相关设置
 }
 
 let currentMovie: Ref<Movie> = ref(new Movie())
@@ -59,22 +62,36 @@ const truncateString = (str: string, maxLength: number = 30): string => {
 }
 
 const changeCurrentIndex = (row: Movie) => {
-  currentMovie.value = row
+  Object.assign(currentMovie.value, row)
+  // currentMovie.value = row.
 }
 
 let detailView = ref(false)
 let detailEdit = ref(false)
+let editStatus = ref(false)
+let formRef = ref<FormInstance | null>(null)
 const handleDrawerClose = (done: () => void) => {
-  if (detailEdit.value) {
-    ElMessageBox.confirm('确定要退出编辑吗？')
+  if (detailEdit.value && editStatus.value) {
+    ElMessageBox.confirm(
+      '有未保存的数据，确定要退出编辑吗？',
+      'Warning',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+    )
       .then(() => {
-        done()
+        formRef.value?.clearValidate()
+        detailView.value = false
+        editStatus.value = false
       })
       .catch(() => {
         // catch error
       })
   } else {
-    done()
+    detailView.value = false
+    editStatus.value = false
   }
 }
 
@@ -149,6 +166,7 @@ const removeTag = (tag: string) => {
     /*下面的代码不能删：用来刷新标签用的，虽然我也不知道为什么，但是它就是有用*/
     tagInputVisible.value = true
     tagInputVisible.value = false
+    editStatus.value = true
   }
 }
 
@@ -161,46 +179,122 @@ const tagHandleInputConfirm = () => {
     let tags = currentTags.value
     tags.push(tagInputValue.value)
     currentTags.value = tags
+    editStatus.value = true
   }
   tagInputVisible.value = false
   tagInputValue.value = ''
 }
 
-const tagShowInput = () => {
+const tagShowInput = async () => {
   if (detailEdit.value) {
     tagInputVisible.value = true
+    await nextTick()
+    InputRef.value?.focus()
   }
 }
 
 const savingDetail = ref(false)
+const rules = ref<FormRules<typeof currentMovie>>(
+  {
+    //表单检验规则
+    name: [
+      {
+        required: true,
+        message: "请输入电影名称",
+        trigger: "blur",
+      },
+    ],
+    postUrl: [
+      {
+        required: true,
+        message: "请输入电影海报URL",
+        trigger: "blur",
+      },
+    ],
+    releaseDate: [
+      {
+        required: true,
+        message: "请设置发行档期",
+        trigger: "blur",
+      },
+    ],
+    removalDate: [
+      {
+        required: true,
+        message: "请设置发行档期",
+        trigger: "blur",
+      },
+    ],
+    duration: [
+      {
+        validator: (rule, value, callback) => {
+          if (!value) {
+            callback(new Error("请输入电影时长"));
+          } else {
+            callback();
+          }
+        },
+        trigger: "blur",
+      }
+    ],
+  }
+)
+const disableDateforStart = (time: any) => {
+  if (currentMovie.value.removalDate != null) {
+    return (
+      time.getTime() >= new Date(currentMovie.value.removalDate).getTime()
+    )
+  }
+}
+const disableDateforEnd = (time: any) => {
+  if (currentMovie.value.releaseDate != null) {
+    return (
+      time.getTime() <= new Date(currentMovie.value.releaseDate).getTime()
+    )
+  }
+}
 
-const saveDetail = () => {
-  if (addingMovie.value) {
-    addSaveMovie()
+const saveDetail = async () => {
+  if (!formRef.value || (!editStatus.value)) {
+    console.log('表单无改动内容')
     return
   }
-  savingDetail.value = true
-  axios
-    .post('/api/Movies', currentMovie.value)
-    .then((res) => {
-      savingDetail.value = false
-      if (res.data && res.data.status && res.data.status === '10000') {
-        ElMessage({
-          message: '修改成功',
-          type: 'success'
-        })
-        detailView.value = false
-        updateTable()
-      } else {
-        ElMessage({
-          message: `修改失败：${res.data.message}`,
-          type: 'warning'
-        })
+  await formRef.value.validate((valid, fields) => {
+    // 表单检验
+    if (valid) {
+      if (addingMovie.value) {
+        addSaveMovie()
+        return
       }
-    })
-    .catch(() => {
-      savingDetail.value = false
-    })
+      savingDetail.value = true
+      axios
+        .post('/api/Movies', currentMovie.value)
+        .then((res) => {
+          savingDetail.value = false
+          if (res.data && res.data.status && res.data.status === '10000') {
+            ElMessage({
+              message: '修改成功',
+              type: 'success'
+            })
+            detailView.value = false
+            updateTable()
+          } else {
+            ElMessage({
+              message: `修改失败：${res.data.message}`,
+              type: 'warning'
+            })
+          }
+        })
+        .catch(() => {
+          savingDetail.value = false
+        })
+      formRef.value?.clearValidate()
+      editStatus.value = false
+
+    } else {
+      console.log('表单不合法', fields)
+    }
+  })
 }
 
 const addingMovie = ref(false)
@@ -279,13 +373,8 @@ const deleteMovie = () => {
       <el-button type="primary" @click="addMovie">添加电影</el-button>
     </el-space>
     <div class="table-container my-5">
-      <el-table
-        :data="movies"
-        style="width: 100%"
-        :stripe="true"
-        v-loading="moviesLoading"
-        @cell-mouse-enter="changeCurrentIndex"
-      >
+      <el-table :data="movies" style="width: 100%" :stripe="true" v-loading="moviesLoading"
+        @cell-mouse-enter="changeCurrentIndex">
         <el-table-column prop="movieId" label="电影Id" width="80" />
         <el-table-column prop="name" label="电影名称" width="150">
           <template #default="{ $index }">
@@ -303,22 +392,10 @@ const deleteMovie = () => {
             <el-space>
               <span>{{ truncateString(movies[$index]['postUrl']) }}</span>
               <el-tooltip effect="dark" content="查看海报" placement="bottom">
-                <el-button
-                  link
-                  type="primary"
-                  size="small"
-                  icon="Picture"
-                  @click="showImage = true"
-                />
+                <el-button link type="primary" size="small" icon="Picture" @click="showImage = true" />
               </el-tooltip>
               <el-tooltip effect="dark" content="复制链接" placement="bottom">
-                <el-button
-                  link
-                  type="primary"
-                  size="small"
-                  icon="CopyDocument"
-                  @click="copyPosterUrl"
-                />
+                <el-button link type="primary" size="small" icon="CopyDocument" @click="copyPosterUrl" />
               </el-tooltip>
             </el-space>
           </template>
@@ -326,8 +403,7 @@ const deleteMovie = () => {
         <el-table-column prop="tags" label="标签" width="200">
           <template #default="{ $index }">
             <el-space wrap>
-              <el-tag v-for="tag in movies[$index]['tags']?.split(',')" :key="tag"
-                >{{ tag }}
+              <el-tag v-for="tag in movies[$index]['tags']?.split(',')" :key="tag">{{ tag }}
               </el-tag>
             </el-space>
           </template>
@@ -336,39 +412,22 @@ const deleteMovie = () => {
         <el-table-column prop="releaseDate" label="上映日期" width="200" />
         <el-table-column prop="removalDate" label="到期日期" width="200" />
         <el-table-column fixed="right" prop="operation" label="操作" width="130">
-          <template #default>
-            <el-button
-              link
-              type="primary"
-              size="small"
-              @click="
-                () => {
-                  detailEdit = false
-                  detailView = true
-                }
-              "
-              >查看
+          <template #default="{ $index }">
+            <el-button link type="primary" size="small" @click="() => {
+              detailEdit = false
+              detailView = true
+            }
+              ">查看
             </el-button>
-            <el-button
-              link
-              type="primary"
-              size="small"
-              @click="
-                () => {
-                  detailEdit = true
-                  detailView = true
-                  addingMovie = false
-                }
-              "
-              >编辑
+            <el-button link type="primary" size="small" @click="() => {
+              Object.assign(currentMovie, movies[$index])
+              detailEdit = true
+              detailView = true
+              addingMovie = false
+            }
+              ">编辑
             </el-button>
-            <el-button
-              link
-              type="danger"
-              size="small"
-              v-loading="deletingMovie"
-              @click="deleteMovie"
-              >删除
+            <el-button link type="danger" size="small" v-loading="deletingMovie" @click="deleteMovie">删除
             </el-button>
           </template>
         </el-table-column>
@@ -376,53 +435,33 @@ const deleteMovie = () => {
     </div>
     <div style="display: flex">
       <div style="flex-grow: 1" />
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        v-loading="paginationLoading"
-        :page-sizes="[10, 20, 50, 100]"
-        :background="true"
-        layout="sizes, prev, pager, next"
-        :total="itemTotal"
-        @current-change="handleCurrentChange"
-      />
+      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" v-loading="paginationLoading"
+        :page-sizes="[10, 20, 50, 100]" :background="true" layout="sizes, prev, pager, next" :total="itemTotal"
+        @current-change="handleCurrentChange" />
     </div>
   </div>
   <el-dialog v-model="showImage" title="海报查看">
     <div>
-      <img
-        class="mx-auto"
-        :src="currentMovie['postUrl']"
-        alt="Movie Poster"
-        style="max-height: 600px; max-width: 600px"
-      />
+      <img class="mx-auto" :src="currentMovie['postUrl']" alt="Movie Poster"
+        style="max-height: 600px; max-width: 600px" />
     </div>
   </el-dialog>
-  <el-drawer
-    v-model="detailView"
-    title="电影详情"
-    direction="rtl"
-    :before-close="handleDrawerClose"
-    style="min-width: 600px"
-  >
-    <el-form :model="currentMovie" label-width="120px" :disabled="!detailEdit">
+  <el-drawer v-model="detailView" title="电影详情" direction="rtl" :before-close="handleDrawerClose" style="min-width: 600px">
+    <el-form :model="currentMovie" label-width="120px" :disabled="!detailEdit" :rules="rules" ref="formRef">
       <el-form-item label="电影id">
         <el-input v-model="currentMovie.movieId" disabled />
       </el-form-item>
-      <el-form-item label="电影名称">
-        <el-input v-model="currentMovie.name" />
+      <el-form-item label="电影名称" prop="name">
+        <el-input v-model="currentMovie.name" @change="editStatus = true" />
       </el-form-item>
       <el-form-item label="电影简介">
-        <el-input v-model="currentMovie.instruction" :rows="5" type="textarea" />
+        <el-input v-model="currentMovie.instruction" :rows="5" type="textarea" @change="editStatus = true" />
       </el-form-item>
-      <el-form-item label="电影海报" class="w-full">
+      <el-form-item label="电影海报" class="w-full" prop="postUrl">
         <el-space direction="vertical" alignment="normal" wrap>
-          <el-input v-model="currentMovie.postUrl" :rows="3" type="textarea" style="width: 350px" />
-          <el-image
-            :src="currentMovie.postUrl"
-            :fit="'contain'"
-            style="height: 300px; width: 300px"
-          >
+          <el-input v-model="currentMovie.postUrl" :rows="3" type="textarea" style="width: 350px"
+            @change="editStatus = true" />
+          <el-image :src="currentMovie.postUrl" :fit="'contain'" style="height: 300px; width: 300px">
             <template #error>
               <el-icon>
                 <Picture />
@@ -439,42 +478,27 @@ const deleteMovie = () => {
           <!--              :onchange="uploaderHandleChange"-->
           <!--            />-->
           <!--          </el-button-group>-->
-          <UploadImage
-            api-path="/api/Movies/poster"
-            @Success="(url) => (currentMovie.postUrl = url)"
-          />
+          <UploadImage api-path="/api/Movies/poster" @Success="(url) => (currentMovie.postUrl = url)" />
         </el-space>
       </el-form-item>
-      <el-form-item label="上映日期">
-        <el-date-picker v-model="currentMovie.releaseDate" type="date" />
+      <el-form-item label="上映日期" prop="releaseDate">
+        <el-date-picker v-model="currentMovie.releaseDate" type="date" @change="editStatus = true" :disabled-date="disableDateforStart"/>
       </el-form-item>
-      <el-form-item label="结束日期">
-        <el-date-picker v-model="currentMovie.removalDate" type="date" />
+      <el-form-item label="结束日期" prop="removalDate">
+        <el-date-picker v-model="currentMovie.removalDate" type="date" @change="editStatus = true" :disabled-date="disableDateforEnd"/>
       </el-form-item>
-      <el-form-item label="时长">
-        <el-input v-model="currentMovie.duration">
+      <el-form-item label="时长" prop="duration">
+        <el-input v-model="currentMovie.duration" @change="editStatus = true">
           <template #append>分钟</template>
         </el-input>
       </el-form-item>
       <el-form-item label="标签">
         <el-space wrap>
-          <el-tag
-            v-for="tag in currentTags"
-            :key="tag"
-            closable
-            :disable-transitions="false"
-            @close="removeTag(tag)"
-            >{{ tag }}
+          <el-tag v-for="tag in currentTags" :key="tag" closable :disable-transitions="false" @close="removeTag(tag)">{{
+            tag }}
           </el-tag>
-          <el-input
-            v-if="tagInputVisible"
-            ref="InputRef"
-            v-model="tagInputValue"
-            class="ml-1 w-20"
-            size="small"
-            @keyup.enter="tagHandleInputConfirm"
-            @blur="tagHandleInputConfirm"
-          />
+          <el-input v-if="tagInputVisible" ref="InputRef" v-model="tagInputValue" class="ml-1 w-20" size="small"
+            @keyup.enter="tagHandleInputConfirm" @blur="tagHandleInputConfirm" />
           <el-button v-else class="button-new-tag ml-1" size="small" @click="tagShowInput">
             + New Tag
           </el-button>
@@ -482,7 +506,7 @@ const deleteMovie = () => {
       </el-form-item>
       <el-form-item v-if="detailEdit">
         <el-button type="primary" @click="saveDetail" v-loading="savingDetail">保存</el-button>
-        <el-button @click="detailView = false">取消</el-button>
+        <el-button @click="handleDrawerClose">取消</el-button>
       </el-form-item>
     </el-form>
   </el-drawer>
