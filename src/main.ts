@@ -1,24 +1,21 @@
 import './assets/application.css'
 
-import {createApp} from 'vue'
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createApp } from 'vue'
 
-import App from './App.vue'
-import HomePage from '@/components/HomePage.vue'
-import CustomerLogin from '@/components/customer/CustomerLogin.vue'
-import axios from 'axios'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import App from '@/App.vue'
 import 'element-plus/theme-chalk/src/message.scss'
+import 'element-plus/theme-chalk/src/message-box.scss'
+import router from '@/router'
 
-// 配置axios
-if (import.meta.env.MODE === 'development') axios.defaults.baseURL = 'http://localhost:5212/'
-else axios.defaults.baseURL = 'http://cinema.cinea.com.cn/'
+import '@/helpers/axios'
+import store from './store'
 
-const router = createRouter({
-  history: createWebHashHistory(),
-  routes: [
-    { path: '/', component: HomePage },
-    { path: '/login', component: CustomerLogin }
-  ]
-})
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
-createApp(App).use(router).mount('#app')
+const app = createApp(App).use(router).use(store)
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
+app.mount('#app')
