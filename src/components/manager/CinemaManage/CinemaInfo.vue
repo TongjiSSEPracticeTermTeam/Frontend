@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ElLoading, ElMessage, ElMessageBox, FormInstance } from 'element-plus'
-import { computed, onMounted, ref } from 'vue'
+import { ElLoading, ElMessage, ElMessageBox, ElInput } from 'element-plus'
+import type { FormInstance } from 'element-plus';
+import { computed, onMounted, ref, nextTick } from 'vue'
 import Cinema from '@/models/Cinema'
 import axios from 'axios'
 import UploadImage from '@/helpers/UploadImage.vue'
@@ -9,7 +10,7 @@ const props = defineProps({
   cinemaId: String,
   modelValue: Boolean
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:cinema'])
 
 const show = computed({
   get(): boolean {
@@ -22,7 +23,53 @@ const show = computed({
 
 const cinema = ref(new Cinema())
 const formStatus = ref(false)
-const featureHint = ref(false)
+// const featureHint = ref(false)
+let currentTags = computed({
+  get(): string[] {
+    if (cinema.value.feature) {
+      return cinema.value.feature.split(',')
+    } else {
+      return []
+    }
+  },
+  set(newValue: string[]) {
+    cinema.value.feature = newValue.join(',')
+    console.log('set', cinema.value.feature)
+  }
+})
+
+const removeTag = (tag: string) => {
+  currentTags.value.splice(currentTags.value.indexOf(tag), 1)
+  let tmp = currentTags.value
+  console.log(tmp)
+  currentTags.value = tmp
+  /*下面的代码不能删：用来刷新标签用的，虽然我也不知道为什么，但是它就是有用*/
+  tagInputVisible.value = true
+  tagInputVisible.value = false
+  formStatus.value = true
+}
+
+const tagInputVisible = ref(false)
+const tagInputValue = ref('')
+const InputRef = ref<InstanceType<typeof ElInput>>()
+
+const tagHandleInputConfirm = () => {
+  if (tagInputValue.value) {
+    let tags = currentTags.value
+    tags.push(tagInputValue.value)
+    currentTags.value = tags
+    formStatus.value = true
+  }
+  tagInputVisible.value = false
+  tagInputValue.value = ''
+}
+
+const tagShowInput = async () => {
+  tagInputVisible.value = true
+  await nextTick()
+  InputRef.value?.focus()
+}
+
 
 onMounted(() => {
   if (!props.cinemaId) {
@@ -78,7 +125,7 @@ const cancelForm = () => {
 
 const formRef = ref<FormInstance>()
 const confirmForm = async () => {
-  if (!this.formStatus) {
+  if (!formStatus.value) {
     //未存在更改
     show.value = false
     return
@@ -95,7 +142,9 @@ const confirmForm = async () => {
               message: '修改上传成功'
             })
             console.log('修改成功！')
-            console.log(res.data.data)
+            // console.log(res.data.data)
+            // console.log(cinema.value)
+            emit('update:cinema', cinema.value)
             show.value = false
             return
           } else {
@@ -133,11 +182,7 @@ defineExpose({ cancelForm })
         <el-row align="middle">
           <el-col :span="10" :offset="2">
             <!-- 电影院预览 -->
-            <el-image
-              :src="cinema.cinemaImageUrl"
-              fit="contain"
-              style="height: 400px; width: 400px; margin: 10px"
-            />
+            <el-image :src="cinema.cinemaImageUrl" fit="contain" style="height: 400px; width: 400px; margin: 10px" />
           </el-col>
           <el-col :span="12">
             <!-- 电影院Id查看 -->
@@ -157,37 +202,30 @@ defineExpose({ cancelForm })
         <el-row>
           <el-col>
             <!-- 电影院名字修改 -->
-            <el-form-item
-              label="影院名"
-              prop="name"
-              :rules="{ required: true, message: '影院名称不能为空', trigger: 'blur' }"
-            >
-              <el-input
-                v-model="cinema.name"
-                maxlength="20"
-                @change="formStatus = true"
-                show-word-limit
-                placeholder="请输入影院名"
-              />
+            <el-form-item label="影院名" prop="name" :rules="{ required: true, message: '影院名称不能为空', trigger: 'blur' }">
+              <el-input v-model="cinema.name" maxlength="20" @change="formStatus = true" show-word-limit
+                placeholder="请输入影院名" />
             </el-form-item>
             <!-- 电影院地址修改 -->
-            <el-form-item
-              label="影院地址"
-              prop="location"
-              :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }"
-            >
-              <el-input
-                v-model="cinema.location"
-                type="textarea"
-                @change="formStatus = true"
-                maxlength="25"
-                show-word-limit
-                :autosize="{ minRows: 2, maxRows: 3 }"
-                placeholder="请输入影院地址"
-              />
+            <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
+              <el-input v-model="cinema.location" type="textarea" @change="formStatus = true" maxlength="25"
+                show-word-limit :autosize="{ minRows: 2, maxRows: 3 }" placeholder="请输入影院地址" />
             </el-form-item>
             <!-- 电影院特点 -->
             <el-form-item label="影院标签">
+              <el-space wrap>
+                <el-tag v-for="tag in currentTags" :key="tag" closable :disable-transitions="false"
+                  @close="removeTag(tag)">{{
+                    tag }}
+                </el-tag>
+                <el-input v-if="tagInputVisible" ref="InputRef" v-model="tagInputValue" class="ml-1 w-20" size="small"
+                  @keyup.enter="tagHandleInputConfirm" @blur="tagHandleInputConfirm" />
+                <el-button v-else class="button-new-tag ml-1" size="small" @click="tagShowInput">
+                  + 新标签
+                </el-button>
+              </el-space>
+            </el-form-item>
+            <!-- <el-form-item label="影院标签">
               <el-input
                 v-model="cinema.feature"
                 maxlength="20"
@@ -211,14 +249,10 @@ defineExpose({ cancelForm })
               >
                 标签之间请用半角逗号`,`隔开
               </span>
-            </el-form-item>
+            </el-form-item> -->
             <!-- 电影院图片URL -->
             <el-form-item label="图片URL">
-              <el-input
-                v-model="cinema.cinemaImageUrl"
-                @change="formStatus = true"
-                placeholder="请输入电影海报URL"
-              >
+              <el-input v-model="cinema.cinemaImageUrl" @change="formStatus = true" placeholder="请输入电影海报URL">
                 <template #append>URL</template>
               </el-input>
             </el-form-item>

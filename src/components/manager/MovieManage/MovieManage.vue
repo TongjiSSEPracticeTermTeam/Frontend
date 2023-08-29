@@ -6,7 +6,7 @@ import { ElInput, ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { copyTextToClipboard } from '@/helpers/clipboard'
 import UploadImage from '@/helpers/UploadImage.vue'
-import { Message } from '@element-plus/icons-vue/dist/types'
+// import { Message } from '@element-plus/icons-vue/dist/types'
 
 let movies: Ref<Movie[]> = ref([])
 let moviesLoading = ref(false)
@@ -18,7 +18,10 @@ let paginationLoading = ref(false)
 
 const handleCurrentChange = () => {
   updateTable()
-  //缺少页数相关设置
+}
+const handleSizeChange = () => {
+  currentPage.value = 1
+  updateTable()
 }
 
 let currentMovie: Ref<Movie> = ref(new Movie())
@@ -70,7 +73,7 @@ let detailView = ref(false)
 let detailEdit = ref(false)
 let editStatus = ref(false)
 let formRef = ref<FormInstance | null>(null)
-const handleDrawerClose = (done: () => void) => {
+const handleDrawerClose = () => {
   if (detailEdit.value && editStatus.value) {
     ElMessageBox.confirm(
       '有未保存的数据，确定要退出编辑吗？',
@@ -163,6 +166,10 @@ let currentTags = computed({
 const removeTag = (tag: string) => {
   if (detailEdit.value) {
     currentTags.value.splice(currentTags.value.indexOf(tag), 1)
+    let tmp = currentTags.value
+    console.log(tmp)
+    currentTags.value = tmp
+    // console.log(currentMovie.value.tags)
     /*下面的代码不能删：用来刷新标签用的，虽然我也不知道为什么，但是它就是有用*/
     tagInputVisible.value = true
     tagInputVisible.value = false
@@ -384,13 +391,13 @@ const deleteMovie = () => {
         <el-table-column prop="duration" label="时长" width="80" />
         <el-table-column prop="instruction" label="简介" width="200">
           <template #default="{ $index }">
-            {{ truncateString(movies[$index]['instruction'], 150) }}
+            {{ truncateString(movies[$index]['instruction'] as string, 150) }}
           </template>
         </el-table-column>
         <el-table-column prop="postUrl" label="海报链接" width="200">
           <template #default="{ $index }">
             <el-space>
-              <span>{{ truncateString(movies[$index]['postUrl']) }}</span>
+              <span>{{ truncateString(movies[$index]['postUrl'] as string) }}</span>
               <el-tooltip effect="dark" content="查看海报" placement="bottom">
                 <el-button link type="primary" size="small" icon="Picture" @click="showImage = true" />
               </el-tooltip>
@@ -437,12 +444,12 @@ const deleteMovie = () => {
       <div style="flex-grow: 1" />
       <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" v-loading="paginationLoading"
         :page-sizes="[10, 20, 50, 100]" :background="true" layout="sizes, prev, pager, next" :total="itemTotal"
-        @current-change="handleCurrentChange" />
+        @current-change="handleCurrentChange" @size-change="handleSizeChange"/>
     </div>
   </div>
   <el-dialog v-model="showImage" title="海报查看">
     <div>
-      <img class="mx-auto" :src="currentMovie['postUrl']" alt="Movie Poster"
+      <img class="mx-auto" :src="(currentMovie['postUrl'] as string)" alt="Movie Poster"
         style="max-height: 600px; max-width: 600px" />
     </div>
   </el-dialog>
