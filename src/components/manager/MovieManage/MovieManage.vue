@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, Ref, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
+import type { Ref } from 'vue'
 import Movie from '@/models/Movie'
 import axios from 'axios'
 import { ElInput, ElMessage, ElMessageBox } from 'element-plus'
@@ -48,12 +49,30 @@ const updateTable = () => {
           }
           moviesLoading.value = false
         })
-        .catch(() => {
+        .catch((err) => {
           moviesLoading.value = false
+          console.log(err)
+          ElMessageBox.alert('数据加载失败！', '错误', {
+            // if you want to disable its autofocus
+            // autofocus: false,
+            confirmButtonText: 'OK',
+            callback: () => {
+              ElMessage.error('数据加载错误')
+            }
+          })
         })
     })
-    .catch(() => {
+    .catch((err) => {
       paginationLoading.value = false
+      console.log(err)
+      ElMessageBox.alert('数据加载失败！', '错误', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: 'OK',
+        callback: () => {
+          ElMessage.error('数据加载错误')
+        }
+      })
     })
 }
 
@@ -349,8 +368,8 @@ const deleteMovie = () => {
     }).then(() => {
       deletingMovie.value = true
       axios
-        .delete(`/api/Movies/${currentMovie.value.movieId}`  
-        // {params: { movieId: currentMovie.value.movieId }}
+        .delete(`/api/Movies/${currentMovie.value.movieId}`
+          // {params: { movieId: currentMovie.value.movieId }}
         )
         .then((res) => {
           deletingMovie.value = false
@@ -448,7 +467,7 @@ const deleteMovie = () => {
       <div style="flex-grow: 1" />
       <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" v-loading="paginationLoading"
         :page-sizes="[10, 20, 50, 100]" :background="true" layout="sizes, prev, pager, next" :total="itemTotal"
-        @current-change="handleCurrentChange" @size-change="handleSizeChange"/>
+        @current-change="handleCurrentChange" @size-change="handleSizeChange" />
     </div>
   </div>
   <el-dialog v-model="showImage" title="海报查看">
@@ -493,10 +512,12 @@ const deleteMovie = () => {
         </el-space>
       </el-form-item>
       <el-form-item label="上映日期" prop="releaseDate">
-        <el-date-picker v-model="currentMovie.releaseDate" type="date" @change="editStatus = true" :disabled-date="disableDateforStart"/>
+        <el-date-picker v-model="currentMovie.releaseDate" type="date" @change="editStatus = true"
+          :disabled-date="disableDateforStart" />
       </el-form-item>
       <el-form-item label="结束日期" prop="removalDate">
-        <el-date-picker v-model="currentMovie.removalDate" type="date" @change="editStatus = true" :disabled-date="disableDateforEnd"/>
+        <el-date-picker v-model="currentMovie.removalDate" type="date" @change="editStatus = true"
+          :disabled-date="disableDateforEnd" />
       </el-form-item>
       <el-form-item label="时长" prop="duration">
         <el-input v-model="currentMovie.duration" @change="editStatus = true">

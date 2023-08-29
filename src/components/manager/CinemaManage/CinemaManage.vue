@@ -9,25 +9,6 @@ import CinemaInfo from '@/components/manager/CinemaManage/CinemaInfo.vue'
 import UploadImage from '@/helpers/UploadImage.vue'
 // import CinemaManage from '@/components/manager/CinemaManage/CinemaManage.vue'
 
-const cinemas = ref<Cinema[]>([])
-const loading = ref(true)
-const pageSize = ref(0)
-const total = ref(0)
-const currentPage = ref(1)
-
-// let currentTags = computed({
-//   get(): string[] {
-//     if (currentMovie.value.tags) {
-//       return currentMovie.value.tags.split(',')
-//     } else {
-//       return []
-//     }
-//   },
-//   set(newValue: string[]) {
-//     currentMovie.value.tags = newValue.join(',')
-//     console.log('set', currentMovie.value.tags)
-//   }
-// })
 let currentTags = computed({
   get(): string[] {
     if (newCinema.value.feature) {
@@ -95,31 +76,62 @@ const tagShowInput = async () => {
 //     trigger: 'blur'
 //   }
 // ])
-const drawer = ref(false)
-const formStatus = ref(false)
 // const featureHint = ref(false)
 const newCinema = ref(new Cinema())
+const cinemas = ref<Cinema[]>([])
+
+const loading = ref(true)
+const pageSize = ref(10)
+const total = ref(10)
+const currentPage = ref(1)
+const paginationLoading = ref(false)
+
+const handleCurrentChange = () => {
+  updateTable()
+}
+const handleSizeChange = () => {
+  currentPage.value = 1
+  updateTable()
+}
 
 onMounted(() => {
-  // console.log("准备初始化数据");
-  // 前后端交互，初始化数据和相关参数
-  loading.value = true //加载等待动画
-  axios
-    .get('/api/Cinema')
-    .then(function (response) {
-      // 处理成功情况
-      // console.log("连接成功！");
-      cinemas.value = response.data.data
-      // console.log(cinemas.value)
+  updateTable()
+})
 
-      //分页相关设置
-      total.value = cinemas.value.length
-      pageSize.value = 10
-      // loading.value = false
+const updateTable = () => {
+  paginationLoading.value = true
+  axios
+    .get('/api/Cinema/length')
+    .then((res) => {
+      if (res.data && res.data.status && res.data.status === '10000') {
+        total.value = res.data.data
+      }
+      paginationLoading.value = false
+      loading.value = true
+      axios
+        .get(`/api/Cinema?page_size=${pageSize.value}&page_number=${currentPage.value}`)
+        .then((res) => {
+          if (res.data && res.data.status && res.data.status === '10000') {
+            cinemas.value = res.data.data
+          }
+          loading.value = false
+        })
+        .catch((err) => {
+          loading.value = false
+          console.log(err)
+          ElMessageBox.alert('数据加载失败！', '错误', {
+            // if you want to disable its autofocus
+            // autofocus: false,
+            confirmButtonText: 'OK',
+            callback: () => {
+              ElMessage.error('数据加载错误')
+            }
+          })
+        })
     })
-    .catch(function (error) {
-      // 处理错误情况
-      console.log(error)
+    .catch((err) => {
+      paginationLoading.value = false
+      console.log(err)
       ElMessageBox.alert('数据加载失败！', '错误', {
         // if you want to disable its autofocus
         // autofocus: false,
@@ -129,9 +141,40 @@ onMounted(() => {
         }
       })
     })
-  loading.value = false
-  console.log(cinemas.value)
-})
+}
+
+// onMounted(() => {
+//   // console.log("准备初始化数据");
+//   // 前后端交互，初始化数据和相关参数
+//   loading.value = true //加载等待动画
+//   axios
+//     .get('/api/Cinema')
+//     .then(function (response) {
+//       // 处理成功情况
+//       // console.log("连接成功！");
+//       cinemas.value = response.data.data
+//       // console.log(cinemas.value)
+
+//       //分页相关设置
+//       total.value = cinemas.value.length
+//       pageSize.value = 10
+//       // loading.value = false
+//     })
+//     .catch(function (error) {
+//       // 处理错误情况
+//       console.log(error)
+//       ElMessageBox.alert('数据加载失败！', '错误', {
+//         // if you want to disable its autofocus
+//         // autofocus: false,
+//         confirmButtonText: 'OK',
+//         callback: () => {
+//           ElMessage.error('数据加载错误')
+//         }
+//       })
+//     })
+//   loading.value = false
+//   console.log(cinemas.value)
+// })
 
 const cinemaDelete = (name: string, id: string) => {
   //删除对应ID的影院
@@ -181,6 +224,8 @@ const handleUpdateCinema = (cinema: Cinema) => {
   cinemas.value.splice(index, 1, cinema)
 }
 
+const drawer = ref(false)
+const formStatus = ref(false)
 const formRef = ref<FormInstance>()
 const formReset = () => {
   formStatus.value = false
@@ -314,8 +359,9 @@ const handleEditClose = () => {
     </el-table-column>
   </el-table>
   <!-- 分页栏 -->
-  <el-pagination background layout="prev, pager, next" v-model:total="total" v-model:page-size="pageSize"
-    v-model:current-page="currentPage" />
+  <el-pagination background layout="sizes, prev, pager, next" v-model:total="total" v-model:page-size="pageSize"
+    v-model:current-page="currentPage" :page-sizes="[10, 15, 20, 25, 30]" @current-change="handleCurrentChange"
+    @size-change="handleSizeChange" />
 
   <!-- 添加电影的弹框表单 -->
   <el-drawer v-model="drawer" title="添加影院" direction="rtl" :before-close="handleClose" size="50%">
