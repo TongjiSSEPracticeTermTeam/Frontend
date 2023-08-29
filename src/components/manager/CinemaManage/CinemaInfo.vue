@@ -89,7 +89,7 @@ onMounted(() => {
     .then((res) => {
       if (res.data.status == '10000') {
         // console.log(res.data.cinema);
-        cinema.value = res.data.cinema
+        cinema.value = res.data.data
         // console.log(obj.cinema);
       } else if (res.data.status == '4001') {
         ElMessage({
@@ -225,31 +225,6 @@ defineExpose({ cancelForm })
                 </el-button>
               </el-space>
             </el-form-item>
-            <!-- <el-form-item label="影院标签">
-              <el-input
-                v-model="cinema.feature"
-                maxlength="20"
-                show-word-limit
-                @change="formStatus = true"
-                placeholder="请输入影院标签"
-                @focus="featureHint = true"
-                @blur="featureHint = false"
-                type="textarea"
-                :autosize="{ minRows: 1, maxRows: 2 }"
-              />
-              <span
-                v-show="featureHint"
-                style="
-                  font: 5px 'Fira Sans', serif;
-                  margin: 2px 0 0 0;
-                  padding: 0;
-                  color: red;
-                  font-weight: bold;
-                "
-              >
-                标签之间请用半角逗号`,`隔开
-              </span>
-            </el-form-item> -->
             <!-- 电影院图片URL -->
             <el-form-item label="图片URL">
               <el-input v-model="cinema.cinemaImageUrl" @change="formStatus = true" placeholder="请输入电影海报URL">

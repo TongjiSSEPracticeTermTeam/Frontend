@@ -321,6 +321,9 @@ const handleEditClose = () => {
   <el-drawer v-model="drawer" title="添加影院" direction="rtl" :before-close="handleClose" size="50%">
     <!-- 表单 -->
     <el-form :model="newCinema" label-width="120px" class="newCinemaForm" ref="formRef" status-icon>
+      <el-form-item label="影院Id" prop="cinemaId">
+        <el-input v-model="newCinema.cinemaId" @change="formStatus = true" placeholder="系统自动生成" trigger="blur" disabled />
+      </el-form-item>
       <!-- 电影海报上传 -->
       <el-form-item label="影院图片">
         <el-space direction="vertical" alignment="normal" wrap>
@@ -333,10 +336,6 @@ const handleEditClose = () => {
           </el-image>
           <UploadImage prefix="cinema" @Success="(url) => (newCinema.cinemaImageUrl = url)" />
         </el-space>
-      </el-form-item>
-
-      <el-form-item label="影院Id" prop="cinemaId" :rules="{ required: true, message: '影院Id不能为空', trigger: 'blur' }">
-        <el-input v-model="newCinema.cinemaId" @change="formStatus = true" placeholder="请输入影院Id" trigger="blur" />
       </el-form-item>
 
       <el-form-item label="影院名称" prop="name" :rules="{ required: true, message: '影院名称不能为空', trigger: 'blur' }">

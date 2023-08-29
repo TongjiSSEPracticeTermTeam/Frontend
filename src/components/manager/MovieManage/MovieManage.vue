@@ -342,12 +342,16 @@ const addSaveMovie = () => {
 const deletingMovie = ref(false)
 const deleteMovie = () => {
   if (currentMovie.value && currentMovie.value.movieId) {
-    ElMessageBox.confirm(`确定要删除影片 ${currentMovie.value.name} 吗？`).then(() => {
+    ElMessageBox.confirm(`确定要删除影片 ${currentMovie.value.name} 吗？`, 'Warning', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
       deletingMovie.value = true
       axios
-        .delete('/api/Movies', {
-          params: { movieId: currentMovie.value.movieId }
-        })
+        .delete(`/api/Movies/${currentMovie.value.movieId}`  
+        // {params: { movieId: currentMovie.value.movieId }}
+        )
         .then((res) => {
           deletingMovie.value = false
           if (res.data && res.data.status && res.data.status === '10000') {
