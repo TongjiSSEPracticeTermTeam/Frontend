@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import HomePage from '@/components/HomePage.vue'
@@ -13,7 +13,7 @@ import ManagerView from '@/components/manager/ManagerView.vue'
 import AdminView from '@/components/admin/AdminView.vue'
 
 export default createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: [
     { path: '/', component: HomePage },
     { path: '/login', component: CustomerLogin },
