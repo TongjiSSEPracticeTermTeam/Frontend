@@ -8,7 +8,6 @@ import User from '@/models/User'
 import { useRoute, useRouter } from 'vue-router'
 import CustomerMenu from '@/components/CustomerMenu.vue'
 import ManagerMenu from '@/components/ManagerMenu.vue'
-import MoviePage from '@/components/movie/MoviePage.vue'
 
 const activeIndex = ref('1')
 
@@ -80,11 +79,7 @@ onMounted(async () => {
     </el-menu>
   </header>
   <main>
-    <div>
-      <!-- <MovieCarousel /> -->
-      <MoviePage></MoviePage>
-    </div>
-    <!-- <router-view /> -->
+    <router-view />
   </main>
 
 </template>
