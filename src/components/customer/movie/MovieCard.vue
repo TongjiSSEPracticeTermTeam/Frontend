@@ -1,14 +1,22 @@
 <template>
   <div class="movie-card">
-    <div class="movie-card-image">
-      <el-image :src="movie.postUrl" fit="scale-down" style="width: 100%; height: 100%; vertical-align: middle;"></el-image>
+    <div class="movie-card-image mx-auto">
+      <el-image
+        :src="movie.postUrl"
+        fit="scale-down"
+        style="width: 100%; height: 100%; vertical-align: middle"
+      ></el-image>
       <div class="movie-card-info">
         <h3 class="movie-card-title">{{ movie.name }}</h3>
         <p class="movie-card-duration">{{ movie.duration }}</p>
         <p class="movie-card-score">得分：{{ movie.score }}</p>
         <p class="movie-card-releaseDate">上映日期：{{ movie.releaseDate }}</p>
-        <el-tag v-for="(tag,index) in movie.tags?.split(',')" :key="index" class="movie-card-tag">{{ tag }}</el-tag>
-        <el-button type="primary" class="movie-card-button" @click="handleMovieClick(movie)">查看详情</el-button>
+        <el-tag v-for="(tag, index) in movie.tags?.split(',')" :key="index" class="movie-card-tag"
+          >{{ tag }}
+        </el-tag>
+        <el-button type="primary" class="movie-card-button" @click="handleMovieClick(movie)"
+          >查看详情
+        </el-button>
       </div>
     </div>
   </div>
@@ -23,8 +31,8 @@ export default defineComponent({
   props: {
     movie: {
       type: Object as () => Movie,
-      required: true,
-    },
+      required: true
+    }
   },
   setup(props) {
     const handleMovieClick = (movie: Movie) => {
@@ -32,9 +40,9 @@ export default defineComponent({
     }
 
     return {
-      handleMovieClick,
+      handleMovieClick
     }
-  },
+  }
 })
 </script>
 
@@ -48,7 +56,6 @@ export default defineComponent({
   position: relative;
   width: 200px;
   height: 280px;
-  margin-right: 24px;
 }
 
 .movie-card-info {
