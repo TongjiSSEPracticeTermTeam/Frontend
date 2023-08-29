@@ -6,7 +6,6 @@ export default createStore({
     return {
       currentUser: new User(),
       isLogged: false,
-      view: 'customer'
     }
   },
   mutations: {
