@@ -81,6 +81,7 @@ onMounted(async () => {
   <main>
     <router-view />
   </main>
+
 </template>
 
 <style scoped>
