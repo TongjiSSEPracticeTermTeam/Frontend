@@ -11,6 +11,9 @@ import ManagerView from '@/components/manager/ManagerView.vue'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import AdminView from '@/components/admin/AdminView.vue'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import MovieDetailPage from '@/components/customer/movie/MovieDetailPage.vue'
 
 export default createRouter({
   history: createWebHistory(),
@@ -18,6 +21,7 @@ export default createRouter({
     { path: '/', component: HomePage },
     { path: '/login', component: CustomerLogin },
     { path: '/manager', component: ManagerView },
-    { path: '/admin', component: AdminView }
+    { path: '/admin', component: AdminView },
+    { path: '/movie/:movieId', component: MovieDetailPage }
   ]
 })

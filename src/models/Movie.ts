@@ -9,21 +9,17 @@ export default class Movie {
   releaseDate: string | null
   removalDate: string | null
 
-  public constructor(
-    data:
-      | {
-          movieId: string
-          name: string
-          duration: string
-          instruction: string | null
-          score: number | null
-          postUrl: string | null
-          tags: string | null
-          releaseDate: string | null
-          removalDate: string | null
-        }
-      | undefined
-  ) {
+  public constructor(data?: {
+    movieId: string
+    name: string
+    duration: string
+    instruction: string | null
+    score: number | null
+    postUrl: string | null
+    tags: string | null
+    releaseDate: string | null
+    removalDate: string | null
+  }) {
     if (data) {
       this.movieId = data.movieId
       this.name = data.name

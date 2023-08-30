@@ -1,5 +1,20 @@
 <script setup lang="ts">
 import moment from 'moment'
+import { useRouter } from 'vue-router'
+import Movie from '@/models/Movie'
+
+defineProps({
+  movie: {
+    type: Movie,
+    required: true
+  }
+})
+
+const router = useRouter()
+
+const handleMovieClick = (movie: Movie) => {
+  router.push(`/movie/${movie.movieId}`)
+}
 </script>
 
 <template>
@@ -27,30 +42,6 @@ import moment from 'moment'
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-import Movie from '@/models/Movie'
-
-export default defineComponent({
-  name: 'MovieCard',
-  props: {
-    movie: {
-      type: Object as () => Movie,
-      required: true
-    }
-  },
-  setup(props) {
-    const handleMovieClick = (movie: Movie) => {
-      // TODO: 处理电影详情页跳转逻辑
-    }
-
-    return {
-      handleMovieClick
-    }
-  }
-})
-</script>
 
 <style scoped>
 .movie-card {

@@ -14,10 +14,12 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
     "axios": "^1.4.0",
+    "color-thief-ts": "^1.1.1",
     "element-plus": "^2.3.7",
     "font-pingfang-sc": "^1.0.5",
     "moment": "^2.29.4",
     "sass": "^1.63.6",
+    "tinygradient": "^1.1.5",
     "uuid": "^9.0.0",
     "vue": "^3.3.4",
     "vue-router": "^4.0.13",
