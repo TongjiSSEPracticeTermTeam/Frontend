@@ -49,7 +49,7 @@ const register = () => {
         type: 'success'
       })
 
-      let loginApiPath = '/api/Cutomer/login'
+      let loginApiPath = '/api/Customer/login'
       axios.post(loginApiPath, login).then((r) => {
         if (!(r.data && r.data.status && r.data.status === '10000')) {
           ElMessage({
@@ -66,7 +66,7 @@ const register = () => {
       })
     } else {
       ElMessage({
-        message: `登录失败`,
+        message: `注册失败`,
         type: 'warning'
       })
       return
