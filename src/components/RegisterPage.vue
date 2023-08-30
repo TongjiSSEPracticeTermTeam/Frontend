@@ -6,7 +6,6 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-
 const registerForm = ref({
   username: '',
   password: '',
@@ -14,9 +13,9 @@ const registerForm = ref({
   email: ''
 })
 
-const loginForm =ref ({
-    username:'',
-    password:''
+const loginForm = ref({
+  username: '',
+  password: ''
 })
 
 const register = () => {
@@ -29,19 +28,19 @@ const register = () => {
     return
   }
 
-  if (form.display_name.length===0){
+  if (form.display_name.length === 0) {
     ElMessage({
-        message:'昵称为空',
-        type:'warning'
+      message: '昵称为空',
+      type: 'warning'
     })
     return
   }
 
   let apiPath = '/api/Customer'
-  let login=loginForm.value
+  let login = loginForm.value
 
-  login.username=form.username
-  login.password=form.password
+  login.username = form.username
+  login.password = form.password
 
   axios.put(apiPath, form).then((r) => {
     if (r.data && r.data.status && r.data.status === '10000') {
@@ -50,31 +49,30 @@ const register = () => {
         type: 'success'
       })
 
-      let loginApiPath='/api/Cutomer/login'
-      axios.post(loginApiPath,login).then((r)=>{
-        if (!(r.data &&r.data.status && r.data.status==='10000')){
-            ElMessage({
-                message:`登录失败`,
-                type:'warning'
-            })
-            return
-        }else{
-            window.localStorage.setItem('token', `Bearer ${r.data.token}`)
-            router.push('/').then(()=>{
-                window.location.reload()
-            })  
+      let loginApiPath = '/api/Cutomer/login'
+      axios.post(loginApiPath, login).then((r) => {
+        if (!(r.data && r.data.status && r.data.status === '10000')) {
+          ElMessage({
+            message: `登录失败`,
+            type: 'warning'
+          })
+          return
+        } else {
+          window.localStorage.setItem('token', `Bearer ${r.data.token}`)
+          router.push('/').then(() => {
+            window.location.reload()
+          })
         }
       })
-    }else {
-        ElMessage({
-            message:`登录失败`,
-            type:'warning'
-        })
-        return
+    } else {
+      ElMessage({
+        message: `登录失败`,
+        type: 'warning'
+      })
+      return
     }
   })
 }
-
 </script>
 
 <template>
@@ -91,9 +89,9 @@ const register = () => {
             <el-form-item label="昵称">
               <el-input v-model="registerForm.display_name" />
             </el-form-item>
-            <el-el-form-item label="邮箱">
-              <el-input v-model="registerForm.email"/>
-            </el-el-form-item>
+            <el-form-item label="邮箱">
+              <el-input v-model="registerForm.email" />
+            </el-form-item>
             <el-form-item label="密码">
               <el-input show-password v-model="registerForm.password" />
             </el-form-item>
