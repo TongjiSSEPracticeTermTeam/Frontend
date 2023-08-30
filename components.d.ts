@@ -21,6 +21,7 @@ declare module 'vue' {
     ElDialog: typeof import('element-plus/es')['ElDialog']
     ElDivider: typeof import('element-plus/es')['ElDivider']
     ElDrawer: typeof import('element-plus/es')['ElDrawer']
+    ElElFormItem: typeof import('element-plus/es')['ElElFormItem']
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElIcon: typeof import('element-plus/es')['ElIcon']
@@ -45,9 +46,12 @@ declare module 'vue' {
     ManagerView: typeof import('./src/components/manager/ManagerView.vue')['default']
     MovieCard: typeof import('./src/components/customer/movie/MovieCard.vue')['default']
     MovieManage: typeof import('./src/components/manager/MovieManage/MovieManage.vue')['default']
+    RegisterPage: typeof import('./src/components/RegisterPage.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     StaffManage: typeof import('./src/components/manager/StaffManage/StaffManage.vue')['default']
+    Test: typeof import('./src/components/Test.vue')['default']
+    TestPage: typeof import('./src/components/TestPage.vue')['default']
     TopBar: typeof import('./src/components/manager/TopBar.vue')['default']
   }
   export interface ComponentCustomProperties {
