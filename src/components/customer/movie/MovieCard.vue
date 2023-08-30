@@ -1,3 +1,7 @@
+<script setup lang="ts">
+import moment from 'moment'
+</script>
+
 <template>
   <div class="movie-card">
     <div class="movie-card-image mx-auto">
@@ -5,14 +9,16 @@
         :src="movie.postUrl"
         fit="scale-down"
         style="width: 100%; height: 100%; vertical-align: middle"
-      ></el-image>
+      />
       <div class="movie-card-info">
         <h3 class="movie-card-title">{{ movie.name }}</h3>
-        <p class="movie-card-duration">{{ movie.duration }}</p>
+        <!--        <p class="movie-card-duration">{{ movie.duration }}</p>-->
         <p class="movie-card-score">得分：{{ movie.score }}</p>
-        <p class="movie-card-releaseDate">上映日期：{{ movie.releaseDate }}</p>
-        <el-tag v-for="(tag, index) in movie.tags?.split(',')" :key="index" class="movie-card-tag"
-          >{{ tag }}
+        <p class="movie-card-releaseDate">
+          上映日期：{{ moment(movie.releaseDate).format('MM-DD') }}
+        </p>
+        <el-tag v-for="(tag, index) in movie.tags?.split(',')" :key="index" class="movie-card-tag">
+          {{ tag }}
         </el-tag>
         <el-button type="primary" class="movie-card-button" @click="handleMovieClick(movie)"
           >查看详情

@@ -4,7 +4,7 @@ export default class Cinema {
   name: string
   managerId: string
   cinemaImageUrl: string
-  _feature: string
+  feature: string
 
   public constructor() {
     this.cinemaId = ''
@@ -12,14 +12,6 @@ export default class Cinema {
     this.name = ''
     this.managerId = ''
     this.cinemaImageUrl = ''
-    this._feature = ''
-  }
-
-  public get feature(): string[] {
-    return this._feature.split(',')
-  }
-
-  public set feature(value: string[]) {
-    this._feature = value.join(',')
+    this.feature = ''
   }
 }
