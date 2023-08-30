@@ -49,6 +49,7 @@ const updateTable = () => {
         .then((res) => {
           if (res.data && res.data.status && res.data.status === '10000') {
             staffs.value = res.data.data
+            console.log(staffs.value)
           }
           loading.value = false
         })
@@ -318,8 +319,7 @@ const dialogClose = function () {
       </template>
       <template #default>
         <el-row :gutter="10">
-          <el-col :span="4" v-for="staff in staffs.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-            :key="staff">
+          <el-col :span="4" v-for="staff in staffs" :key="staff">
             <el-card shadow="hover" style="padding: 0; margin-bottom: 20px; height: 280px">
               <el-image :src="staff.imageUrl" fit="cover" style="height: 160px; width: 100%; margin: 0; padding: 0" />
               <div class="staffInfo" style="

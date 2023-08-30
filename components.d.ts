@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ActorSetting: typeof import('./src/components/manager/MovieManage/actorSetting.vue')['default']
     AdminView: typeof import('./src/components/admin/AdminView.vue')['default']
     CinemaInfo: typeof import('./src/components/manager/CinemaManage/CinemaInfo.vue')['default']
     CinemaManage: typeof import('./src/components/manager/CinemaManage/CinemaManage.vue')['default']

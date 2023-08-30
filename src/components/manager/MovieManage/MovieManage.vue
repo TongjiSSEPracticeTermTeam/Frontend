@@ -260,6 +260,7 @@ const rules = ref<FormRules<typeof currentMovie>>(
             callback();
           }
         },
+        required: true,
         trigger: "blur",
       }
     ],
