@@ -27,7 +27,7 @@ const login = () => {
     })
     return
   }
-  let apiPath = '/api/customer/login'
+  let apiPath = '/api/Customer/login'
   if (!isCustomer.value) {
     if (isAdmin.value) apiPath = '/api/Administrator/login'
     else apiPath = '/api/Manager/login'
@@ -62,7 +62,11 @@ const login = () => {
   })
 }
 
-const register = () => {}
+const register = () => {
+  router.push('/register').then(()=>{
+    window.location.reload()
+  })
+}
 </script>
 
 <template>
