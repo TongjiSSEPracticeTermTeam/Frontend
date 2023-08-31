@@ -25,8 +25,8 @@ export default class Movie {
           tags: string | null
           releaseDate: string | null
           removalDate: string | null
-          director: eStaff | null
-          actors: eStaff[] | null
+          director: eStaff
+          actors: eStaff[]
         }
       | undefined
   ) {

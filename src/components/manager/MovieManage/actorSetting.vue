@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus'
 import eStaff from '@/models/Staff'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, onBeforeMount } from 'vue'
 import axios from 'axios'
 
 interface Props {
@@ -20,8 +20,28 @@ let dialogTitle = ref('')
 let status = ref(false)
 let loading = ref(false)
 
+// const transformer = (selecte: eStaff[] | eStaff | null): eStaff[] => {
+//     let ret: eStaff[] = []
+//     if(selecte instanceof Array)
+//         ret = selecte.slice(0)
+//     else if(selecte != null)
+//         ret = [selecte]
+//     else
+//         ret = []
+
+//     return ret
+// }
+
+// onBeforeMount(() => {
+//     console.log("难崩")
+//     console.log(props.selected)
+//     console.log(transformer(props.selected))
+//     props.selected = transformer(props.selected)
+//     console.log(props.selected)
+// })
 onMounted(() => {
-    selectedActors.value = props.selected.slice(0)
+    selectedActors.value = props.selected
+
     dialogTitle.value = props.title
 })
 
@@ -51,14 +71,16 @@ const actorSelect = (index: number) => {
 }
 const showDialog = () => {
     dialogVisible.value = true;
-    selectedActors.value = props.selected.slice(0);
+    //解包
+    selectedActors.value = props.selected
 
     if (actors.value.length == 0) {
         loading.value = true;
         axios
             .get(`/api/Staff/all`)
             .then((res) => {
-                actors.value = res.data;
+                // console.log("getData!")
+                actors.value = res.data.data;
                 avalActors.value = actors.value.slice(0);
 
                 selectedActors.value.map((actor) => {
@@ -119,18 +141,15 @@ const dialogClose = () => {
 
 <template>
     <el-button @click="showDialog" text>
-        <div v-if="selected.length > 0">
-            <span v-for="i in (selected.length <= 3 ? selected.length : 3)" :key="selected[i - 1].staffId">
-                {{ selected[i - 1].name }}
-                <span v-if="i != selected.length">，</span>
-            </span>
+        <div v-if="props.selected.length > 0">
+            <span  v-for="i in (props.selected.length <= 3 ? props.selected.length : 3)"
+            :key="props.selected[i - 1].staffId">
+            {{ selected[i - 1].name }}
+            <span v-if="i != selected.length">，</span>
+        </span>
         </div>
-        <div v-else>
-            <span>无</span>
-        </div>
-        <div v-if="selected.length > 3" style="display: inline;">
-            <span>...</span>
-        </div>
+        <span v-else>无</span>
+        <span v-if="selected.length > 3">...</span>
     </el-button>
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="dialogClose">
