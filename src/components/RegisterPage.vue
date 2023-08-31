@@ -9,12 +9,11 @@ const router = useRouter()
 const registerForm = ref({
   username: '',
   password: '',
-  display_name: '',
   email: ''
 })
 
 const loginForm = ref({
-  username: '',
+  email: '',
   password: ''
 })
 
@@ -28,9 +27,9 @@ const register = () => {
     return
   }
 
-  if (form.display_name.length === 0) {
+  if (form.email.length === 0) {
     ElMessage({
-      message: '昵称为空',
+      message: '邮箱为空',
       type: 'warning'
     })
     return
@@ -39,7 +38,7 @@ const register = () => {
   let apiPath = '/api/Customer'
   let login = loginForm.value
 
-  login.username = form.username
+  login.email = form.email
   login.password = form.password
 
   axios.put(apiPath, form).then((r) => {
@@ -56,6 +55,7 @@ const register = () => {
             message: `登录失败`,
             type: 'warning'
           })
+          console.log(r.data)
           return
         } else {
           window.localStorage.setItem('token', `Bearer ${r.data.token}`)
@@ -86,11 +86,8 @@ const register = () => {
             <el-form-item label="用户名">
               <el-input v-model="registerForm.username" />
             </el-form-item>
-            <el-form-item label="昵称">
-              <el-input v-model="registerForm.display_name" />
-            </el-form-item>
             <el-form-item label="邮箱">
-              <el-input v-model="registerForm.email" />
+              <el-input type="email" v-model="registerForm.email" />
             </el-form-item>
             <el-form-item label="密码">
               <el-input show-password v-model="registerForm.password" />

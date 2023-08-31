@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElInput, ElMessage } from 'element-plus'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
@@ -13,17 +13,31 @@ const switchCustomer = () => {
 
 const isAdmin = ref(false)
 
-const loginForm = ref({
-  username: '',
+const userloginForm = ref({
+  email: '',
   password: ''
 })
 
+const adminloginForm = ref({
+  username: '',
+  password:''
+})
+
 const login = () => {
-  let form = loginForm.value
-  if (form.username.length === 0 || form.password.length === 0) {
+  let userForm = userloginForm.value
+  let adminForm = adminloginForm.value
+  if (!isCustomer.value&&(adminForm.username.length === 0 || adminForm.password.length === 0)) {
     ElMessage({
       message: '用户名或密码为空',
       type: 'warning'
+    })
+    return
+  }
+
+  if (isCustomer.value&&(userForm.email.length===0||userForm.password.length===0)){
+    ElMessage({
+      message:'邮箱或密码为空',
+      type:'warning'
     })
     return
   }
@@ -32,34 +46,50 @@ const login = () => {
     if (isAdmin.value) apiPath = '/api/Administrator/login'
     else apiPath = '/api/Manager/login'
   }
-  axios.post(apiPath, form).then((r) => {
-    if (r.data && r.data.status && r.data.status === '10000') {
-      ElMessage({
-        message: `登录成功`,
-        type: 'success'
-      })
-      window.localStorage.setItem('token', `Bearer ${r.data.token}`)
-      if (!isCustomer.value) {
-        if (isAdmin.value)
-          router.push('/admin').then(() => {
-            window.location.reload()
-          })
-        else
-          router.push('/manager').then(() => {
-            window.location.reload()
-          })
-      } else {
-        router.push('/').then(() => {
+
+  if (isCustomer.value){
+    axios.post(apiPath,userForm).then((r)=>{
+      if (r.data && r.data.status && r.data.status==='10000'){
+        ElMessage({
+          message: `登录成功`,
+          type:'success'
+        })
+        window.localStorage.setItem('token',`Bearer ${r.data.token}`)
+        router.push('/').then(()=>{
           window.location.reload()
         })
+      }else{
+        ElMessage({
+          message:`登录失败`,
+          type:'warning'
+        })
       }
-    } else {
-      ElMessage({
-        message: `登录失败：${r.data.message}`,
-        type: 'warning'
-      })
-    }
-  })
+    })
+  }else{
+    axios.post(apiPath,adminForm).then((r)=>{
+      if (r.data && r.data.status && r.data.status === '10000') {
+        ElMessage({
+          message: `登录成功`,
+          type: 'success'
+        })
+        window.localStorage.setItem('token', `Bearer ${r.data.token}`)
+        if (isAdmin.value){
+          router.push('/admin').then(()=>{
+            window.location.reload()
+          })
+        }else{
+          router.push('/manager').then(()=>{
+            window.location.reload()
+          })
+        }
+      }else{
+        ElMessage({
+          message:`登录失败`,
+          type:'warning'
+        })
+      }
+    })
+  }
 }
 
 const register = () => {
@@ -76,7 +106,20 @@ const register = () => {
         <div class="center">
           <h1 class="text-left text-4xl">登录</h1>
           <h1 class="text-left text-3xl font-light">Login</h1>
-          <el-form :model="loginForm" label-width="80px" class="mt-10">
+          <el-form :model="userloginForm" label-width="80px" class="mt-10" v-if="isCustomer">
+            <el-form-item label="邮箱">
+              <el-input type="email" v-model="userloginForm.email"/>
+            </el-form-item>
+            <el-form-item label="密码">
+              <el-input show-password v-model="userloginForm.password"/>
+            </el-form-item>
+            <el-button class="w-auto" type="primary" @click="login">登录</el-button>
+              <el-button class="w-auto" @click="register">注册</el-button>
+              <el-button class="w-auto" link @click="switchCustomer">
+                管理员登录
+            </el-button>
+          </el-form>
+          <el-form :model="adminloginForm" label-width="80px" class="mt-10" v-if="!isCustomer">
             <el-form-item label="角色" v-if="!isCustomer">
               <el-radio-group v-model="isAdmin" class="ml-4">
                 <el-radio :label="false">影厅经理</el-radio>
@@ -84,18 +127,14 @@ const register = () => {
               </el-radio-group>
             </el-form-item>
             <el-form-item label="用户名">
-              <el-input v-model="loginForm.username" />
+              <el-input v-model="adminloginForm.username" />
             </el-form-item>
             <el-form-item label="密码">
-              <el-input show-password v-model="loginForm.password" />
+              <el-input show-password v-model="adminloginForm.password" />
             </el-form-item>
             <el-form-item style="min-width: 100%">
               <el-button class="w-auto" type="primary" @click="login">登录</el-button>
-              <el-button class="w-auto" @click="register">注册</el-button>
-              <el-button class="w-auto" v-if="isCustomer" link @click="switchCustomer">
-                管理员登录
-              </el-button>
-              <el-button class="w-auto" v-else link @click="switchCustomer">客户登录</el-button>
+              <el-button class="w-auto" v-if="!isCustomer" link @click="switchCustomer">客户登录</el-button>
             </el-form-item>
           </el-form>
         </div>
