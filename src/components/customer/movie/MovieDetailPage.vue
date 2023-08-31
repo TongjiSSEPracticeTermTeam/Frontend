@@ -48,9 +48,10 @@ const posterLoaded = () => {
   <div class="content py-10">
     <el-card class="mx-10">
       <div class="bg-white pd-4 movie-poster">
-        <el-image
+        <img
           id="poster"
           src="https://cinemadb-1305284863.cos.accelerate.myqcloud.com/userdata/poster/72ff9a98a2fc4a6086d3b6d8a3005866.jpg"
+          alt=""
           @load="posterLoaded"
         />
       </div>
