@@ -6,10 +6,9 @@
     "composite": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "types": ["element-plus/global"]
   }
 }

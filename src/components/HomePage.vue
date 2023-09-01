@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { Convert, BoxOfficeData } from '@/models/QuickType/BoxOfficeData'
+import { type BoxOfficeData } from '@/models/QuickType/BoxOfficeData'
 import Movie from '@/models/Movie'
 import axios from 'axios'
 import MovieCard from '@/components/customer/movie/MovieCard.vue'
@@ -8,10 +8,6 @@ import { ElMessage } from 'element-plus'
 
 const hotMovies = ref<Movie[]>([])
 const comingSoonMovies = ref<Movie[]>([])
-
-const handleMovieClick = (movie: Movie) => {
-  // TODO: 处理电影详情页跳转逻辑
-}
 
 const loadHotMovies = () => {
   axios.get(`/api/Movies?page_size=6&page_number=1`).then((res) => {
