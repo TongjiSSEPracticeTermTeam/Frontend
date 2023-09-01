@@ -292,7 +292,7 @@ const dialogClose = function () {
   <!-- 顶栏 -->
   <el-row align="middle" justify="space-between">
     <el-col :span="20">
-      <TopBar />
+      <TopBar currentItem="1"/>
     </el-col>
     <el-col :span="2" :offset="2">
       <el-button size="large" type="success" @click="addForm()">添加</el-button>

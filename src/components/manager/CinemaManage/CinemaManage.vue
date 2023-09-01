@@ -333,7 +333,7 @@ const handleEditClose = () => {
 <template>
   <h1 class="text-2xl font-bold">影院管理</h1>
   <el-divider />
-  <topBar />
+  <topBar currentItem="2"/>
   <el-table v-loading="loading" :data="cinemas" style="width: 100%"
     :header-cell-style="{ backgroundColor: 'purple', color: 'white' }">
     <el-table-column prop="cinemaId" label="影院id" align="left" min-width="10%"></el-table-column>

@@ -285,28 +285,28 @@ const disableDateforEnd = (time: any) => {
 
 const updateDirector = (newDirector: eStaff[]) => {
   editStatus.value = true
-  if(newDirector.length > 0)
+  if (newDirector.length > 0)
     currentMovie.value.director = newDirector[0]
   else
     currentMovie.value.director = null
 }
 const updateActors = (newActors: eStaff[]) => {
   editStatus.value = true
-  if(newActors.length > 0)
+  if (newActors.length > 0)
     currentMovie.value.actors = newActors.slice(0)
   else
     currentMovie.value.actors = null
 }
 const transformer = (selecte: eStaff[] | eStaff | null): eStaff[] => {
-    let ret: eStaff[] = []
-    if(selecte instanceof Array)
-        ret = selecte.slice(0)
-    else if(selecte != null)
-        ret = [selecte]
-    else
-        ret = []
+  let ret: eStaff[] = []
+  if (selecte instanceof Array)
+    ret = selecte.slice(0)
+  else if (selecte != null)
+    ret = [selecte]
+  else
+    ret = []
 
-    return ret
+  return ret
 }
 
 const saveDetail = async () => {
@@ -431,8 +431,8 @@ const deleteMovie = () => {
     <h1 class="text-2xl font-bold">电影管理</h1>
     <el-divider />
     <el-space>
-      <span>操作：</span>
       <el-button type="primary" @click="addMovie">添加电影</el-button>
+      <topBar currentItem="0" />
     </el-space>
     <div class="table-container my-5">
       <el-table :data="movies" style="width: 100%" :stripe="true" v-loading="moviesLoading"
@@ -553,10 +553,12 @@ const deleteMovie = () => {
       </el-form-item>
 
       <el-form-item label="导演:">
-        <actorSelector :selected="transformer(currentMovie.director)" :mode="true" title="设置导演" @update:actor="updateDirector"/>
+        <actorSelector :selected="transformer(currentMovie.director)" :mode="true" title="设置导演"
+          @update:actor="updateDirector" />
       </el-form-item>
       <el-form-item label="演员:">
-        <actorSelector :selected="transformer(currentMovie.actors)" :mode="false" title="设置演员" @update:actor="updateActors"/>
+        <actorSelector :selected="transformer(currentMovie.actors)" :mode="false" title="设置演员"
+          @update:actor="updateActors" />
       </el-form-item>
 
       <el-form-item label="时长" prop="duration">
