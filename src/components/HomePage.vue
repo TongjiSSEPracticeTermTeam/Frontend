@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { Convert, BoxOfficeData } from '@/models/QuickType/BoxOfficeData'
+import { type BoxOfficeData } from '@/models/QuickType/BoxOfficeData'
 import Movie from '@/models/Movie'
 import axios from 'axios'
 import MovieCard from '@/components/customer/movie/MovieCard.vue'
 import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
 
 const hotMovies = ref<Movie[]>([])
 const comingSoonMovies = ref<Movie[]>([])

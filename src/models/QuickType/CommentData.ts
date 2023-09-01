@@ -1,51 +1,53 @@
 // To parse this data:
 //
-//   import { Convert } from "./file";
+//   import { Convert, CommentData } from "./file";
 //
-//   const sessionDetail = Convert.toSessionDetail(json);
+//   const commentData = Convert.toCommentData(json);
 //
 // These functions will throw an error if the JSON doesn't
 // match the expected interface, even if the JSON is valid.
 
-export interface SessionDetail {
+export interface CommentData {
+  hotComments: Comment[]
+  newComments: Comment[]
+}
+
+export interface Comment {
+  commentId: string
+  content: string
+  score: number
+  likeCount: number
+  dislikeCount: number
+  publishDate: Date
+  display: boolean
   movieId: string
-  cinemaId: string
-  hallId: string
-  startTime: Date
-  attendence: number
-  price: number
-  language: string
-  dimesion: string
-  hallLocatedAt: Hall
+  customerId: string
+  sender: User
 }
 
-export interface Hall {
-  id: string
-  cinemaId: string
-  rowCount: number
-  columnCount: number
-  hallType: string
-  cinemaBelongTo: Cinema
-}
-
-export interface Cinema {
-  cinemaId: string
-  location: string
+export interface User {
+  customerId: string
   name: string
-  managerId: string
-  cinemaImageUrl: string
-  feature: string
+  password: string
+  email: string
+  avatarUrl: string
+  vip: Vip
+}
+
+export interface Vip {
+  customerId: string
+  endDate: Date
 }
 
 // Converts JSON strings to/from your types
 // and asserts the results of JSON.parse at runtime
 export class Convert {
-  public static toSessionDetail(json: string): SessionDetail[] {
-    return cast(JSON.parse(json), a(r('SessionDetail')))
+  public static toCommentData(json: string): CommentData {
+    return cast(JSON.parse(json), r('CommentData'))
   }
 
-  public static sessionDetailToJson(value: SessionDetail[]): string {
-    return JSON.stringify(uncast(value, a(r('SessionDetail'))), null, 2)
+  public static commentDataToJson(value: CommentData): string {
+    return JSON.stringify(uncast(value, r('CommentData')), null, 2)
   }
 }
 
@@ -218,39 +220,43 @@ function r(name: string) {
 }
 
 const typeMap: any = {
-  SessionDetail: o(
+  CommentData: o(
     [
+      { json: 'hotComments', js: 'hotComments', typ: a(r('Comment')) },
+      { json: 'newComments', js: 'newComments', typ: a(r('Comment')) }
+    ],
+    false
+  ),
+  Comment: o(
+    [
+      { json: 'commentId', js: 'commentId', typ: '' },
+      { json: 'content', js: 'content', typ: '' },
+      { json: 'score', js: 'score', typ: 0 },
+      { json: 'likeCount', js: 'likeCount', typ: 0 },
+      { json: 'dislikeCount', js: 'dislikeCount', typ: 0 },
+      { json: 'publishDate', js: 'publishDate', typ: Date },
+      { json: 'display', js: 'display', typ: true },
       { json: 'movieId', js: 'movieId', typ: '' },
-      { json: 'cinemaId', js: 'cinemaId', typ: '' },
-      { json: 'hallId', js: 'hallId', typ: '' },
-      { json: 'startTime', js: 'startTime', typ: Date },
-      { json: 'attendence', js: 'attendence', typ: 0 },
-      { json: 'price', js: 'price', typ: 0 },
-      { json: 'language', js: 'language', typ: '' },
-      { json: 'dimesion', js: 'dimesion', typ: '' },
-      { json: 'hall', js: 'hall', typ: r('Hall') }
+      { json: 'customerId', js: 'customerId', typ: '' },
+      { json: 'sender', js: 'sender', typ: r('Sender') }
     ],
     false
   ),
-  Hall: o(
+  Sender: o(
     [
-      { json: 'id', js: 'id', typ: '' },
-      { json: 'cinemaId', js: 'cinemaId', typ: '' },
-      { json: 'rowCount', js: 'rowCount', typ: 0 },
-      { json: 'columnCount', js: 'columnCount', typ: 0 },
-      { json: 'hallType', js: 'hallType', typ: '' },
-      { json: 'cinema', js: 'cinema', typ: r('Cinema') }
-    ],
-    false
-  ),
-  Cinema: o(
-    [
-      { json: 'cinemaId', js: 'cinemaId', typ: '' },
-      { json: 'location', js: 'location', typ: '' },
+      { json: 'customerId', js: 'customerId', typ: '' },
       { json: 'name', js: 'name', typ: '' },
-      { json: 'managerId', js: 'managerId', typ: '' },
-      { json: 'cinemaImageUrl', js: 'cinemaImageUrl', typ: '' },
-      { json: 'feature', js: 'feature', typ: '' }
+      { json: 'password', js: 'password', typ: '' },
+      { json: 'email', js: 'email', typ: '' },
+      { json: 'avatarUrl', js: 'avatarUrl', typ: '' },
+      { json: 'vip', js: 'vip', typ: r('Vip') }
+    ],
+    false
+  ),
+  Vip: o(
+    [
+      { json: 'customerId', js: 'customerId', typ: '' },
+      { json: 'endDate', js: 'endDate', typ: Date }
     ],
     false
   )
