@@ -6,13 +6,13 @@
         <div class="line"></div>
         <el-menu ref="menu" :default-active="activeIndex1" class="el-menu-demo" mode="horizontal" @select="handleSelect" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" :ellipsis="false">
             
-            <el-menu-item index="0" class="disabled-el-menu-item">{{ cinemaName }}</el-menu-item>
+            <el-menu-item index="0">{{ cinemaName }}</el-menu-item>
             <div class="flex-grow" />
             <el-menu-item index="1">排片管理</el-menu-item>
             <el-menu-item index="2">影厅管理</el-menu-item>
             <el-menu-item index="3">登出</el-menu-item>
         </el-menu>
-        <div v-if="curIndex == 2" >
+        <div >
             <div>
                 <el-table :data="filterTableData"  :height="tableHeight" style="width: 100%">
                     <el-table-column label="影厅编号" prop="hallID" sortable :sort-method="mySort">
@@ -75,9 +75,6 @@
                 </el-table>
             </div>
         </div>
-        <template v-else>
-            ddd
-        </template>
     </div>
     
 
@@ -131,13 +128,24 @@ export default {
         logout() {
             alert("我退出了");
         },
-        handleSelect(key: any, keyPath: any) {
-            if (key == 3) {
-                this.logout();
-                return;
-            }
+        handleSelect(key: string) {
             this.curIndex = key;
             this.isLeft = !this.isLeft;
+
+            switch (key) {
+                case '0':
+                    this.$router.push('/');
+                    break;
+                case '1':
+                    this.$router.push('/movieInfo');
+                    break;
+                case '2':
+                    this.$router.push('/CinemaInfo');
+                    break;
+                case '3':
+                    this.logout();
+                    return;
+            }
         },
         handleDelete(index: any, data: any) {
             console.log(data);
