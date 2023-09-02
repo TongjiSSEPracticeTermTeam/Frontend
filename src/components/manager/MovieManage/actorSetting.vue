@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus'
 import eStaff from '@/models/Staff'
-import { onMounted, ref, onBeforeMount } from 'vue'
+import { onMounted, ref } from 'vue'
 import axios from 'axios'
 
 interface Props {

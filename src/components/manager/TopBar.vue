@@ -2,6 +2,7 @@
 import axios from 'axios'
 
 export default {
+  emits: ['success','fail'],
   data: () => {
     return {
       input: ''
@@ -14,10 +15,10 @@ export default {
     }
   },
   methods: {
-    trySearch() {
+    trySearch():void {
       //空输入
       if (this.input === '') {
-        this.$emit('fail', '')
+        this.$emit('fail')
         return
       }
       const numericPattern = /^\d+$/;
@@ -29,7 +30,7 @@ export default {
             .then(res => {
               if (res.data.status === "4001") {
                 console.log('查询电影失败')
-                this.$emit('fail', '')
+                this.$emit('fail')
                 return
               }
               else {
@@ -42,7 +43,7 @@ export default {
             .catch(err =>{
               console.log('执行错误')
               console.log(err)
-              this.$emit('fail', '')
+              this.$emit('fail')
             })
         }
         else if (this.currentItem === "1") {
@@ -51,7 +52,7 @@ export default {
             .then(res => {
               if (res.data.status === "4001") {
                 console.log('查询影人失败')
-                this.$emit('fail', '')
+                this.$emit('fail')
                 return
               }
               else {
@@ -64,7 +65,7 @@ export default {
             .catch(err =>{
               console.log('执行错误')
               console.log(err)
-              this.$emit('fail', '')
+              this.$emit('fail')
             })
         }
         else {
@@ -73,7 +74,7 @@ export default {
             .then(res => {
               if (res.data.status === "4001") {
                 console.log('查询影院失败')
-                this.$emit('fail', '')
+                this.$emit('fail')
                 return
               }
               else {
@@ -86,7 +87,7 @@ export default {
             .catch(err =>{
               console.log('执行错误')
               console.log(err)
-              this.$emit('fail', '')
+              this.$emit('fail')
             })
         }
       }
@@ -95,7 +96,7 @@ export default {
         const numericPattern_2 = /^\d{6}$/;
         // id格式错误
         if (!numericPattern_2.test(this.input)) {
-          this.$emit('fail', '')
+          this.$emit('fail')
           console.log('id格式错误')
           return
         }
@@ -107,20 +108,20 @@ export default {
               .then(res => {
                 if(res.data.status === "4001") {
                   console.log('查询电影失败')
-                  this.$emit('fail', '')
+                  this.$emit('fail')
                   return
                 }
                 else {
                   console.log('查询电影成功')
                   console.log(res.data)
-                  this.$emit('success', res.data.data)
+                  this.$emit('success', [res.data.data])
                   return
                 }
               })
               .catch(err => {
                 console.log('查询电影失败')
                 console.log(err)
-                this.$emit('fail', '')
+                this.$emit('fail')
               })
           }
           else if (this.currentItem === "1") {
@@ -129,20 +130,20 @@ export default {
               .then(res => {
                 if(res.data.status === "4001") {
                   console.log('查询影人失败')
-                  this.$emit('fail', '')
+                  this.$emit('fail')
                   return
                 }
                 else {
                   console.log('查询影人成功')
                   console.log(res.data)
-                  this.$emit('success', res.data.data)
+                  this.$emit('success', [res.data.data])
                   return
                 }
               })
               .catch(err => {
                 console.log('查询影人失败')
                 console.log(err)
-                this.$emit('fail', '')
+                this.$emit('fail')
               })
           }
           else {
@@ -151,20 +152,20 @@ export default {
               .then(res => {
                 if(res.data.status === "4001") {
                   console.log('查询影院失败')
-                  this.$emit('fail', '')
+                  this.$emit('fail')
                   return
                 }
                 else {
                   console.log('查询影院成功')
                   console.log(res.data)
-                  this.$emit('success', res.data.data)
+                  this.$emit('success', [res.data.data])
                   return
                 }
               })
               .catch(err => {
                 console.log('查询影院失败')
                 console.log(err)
-                this.$emit('fail', '')
+                this.$emit('fail')
               })
           }
 
@@ -204,6 +205,6 @@ export default {
 
   height: 5vh;
   margin: 20px 0;
-  border-bottom: 2px solid;
+  /* border-bottom: 2px solid; */
 }
 </style>

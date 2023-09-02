@@ -284,6 +284,25 @@ const dialogClose = function () {
     formReset()
   })
 }
+
+const topbarHandleSuccess = (data: Staff[]) => {
+  // 搜索结果不分页
+  total.value = data.length
+  pageSize.value = data.length
+  currentPage.value = 1
+  staffs.value = data
+  // console.log(data)
+  // console.log(movies.value)
+}
+const topbarHandleFail = () => {
+  ElMessage({
+    message: `查询失败或结果不存在`,
+    type: 'warning'
+  })
+  pageSize.value = 12
+  currentPage.value = 1
+  updateTable()
+}
 </script>
 
 <template>
@@ -292,7 +311,7 @@ const dialogClose = function () {
   <!-- 顶栏 -->
   <el-row align="middle" justify="space-between">
     <el-col :span="20">
-      <TopBar currentItem="1"/>
+      <TopBar currentItem="1" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
     </el-col>
     <el-col :span="2" :offset="2">
       <el-button size="large" type="success" @click="addForm()">添加</el-button>

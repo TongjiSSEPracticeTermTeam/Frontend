@@ -328,12 +328,31 @@ const editRef = ref<typeof CinemaInfo>()
 const handleEditClose = () => {
   editRef.value?.cancelForm()
 }
+
+const topbarHandleSuccess = (data: Cinema[]) => {
+  // 搜索结果不分页
+  total.value = data.length
+  pageSize.value = data.length
+  currentPage.value = 1
+  cinemas.value = data
+  // console.log(data)
+  // console.log(movies.value)
+}
+const topbarHandleFail = () => {
+  ElMessage({
+    message: `查询失败或结果不存在`,
+    type: 'warning'
+  })
+  pageSize.value = 10
+  currentPage.value = 1
+  updateTable()
+}
 </script>
 
 <template>
   <h1 class="text-2xl font-bold">影院管理</h1>
   <el-divider />
-  <topBar currentItem="2"/>
+  <topBar currentItem="2" @success="topbarHandleSuccess" @fail="topbarHandleFail"/>
   <el-table v-loading="loading" :data="cinemas" style="width: 100%"
     :header-cell-style="{ backgroundColor: 'purple', color: 'white' }">
     <el-table-column prop="cinemaId" label="影院id" align="left" min-width="10%"></el-table-column>

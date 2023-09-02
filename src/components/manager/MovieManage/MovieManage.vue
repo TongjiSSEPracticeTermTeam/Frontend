@@ -424,6 +424,25 @@ const deleteMovie = () => {
     })
   }
 }
+
+const topbarHandleSuccess = (data: Movie[]) => {
+  // 搜索结果不分页
+  itemTotal.value = data.length
+  pageSize.value = data.length
+  currentPage.value = 1
+  movies.value = data
+  // console.log(data)
+  // console.log(movies.value)
+}
+const topbarHandleFail = () => {
+  ElMessage({
+    message: `查询失败或结果不存在`,
+    type: 'warning'
+  })
+  pageSize.value = 10
+  currentPage.value = 1
+  updateTable()
+}
 </script>
 
 <template>
@@ -432,7 +451,7 @@ const deleteMovie = () => {
     <el-divider />
     <el-space>
       <el-button type="primary" @click="addMovie">添加电影</el-button>
-      <topBar currentItem="0" />
+      <topBar currentItem="0" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
     </el-space>
     <div class="table-container my-5">
       <el-table :data="movies" style="width: 100%" :stripe="true" v-loading="moviesLoading"
