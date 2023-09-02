@@ -9,13 +9,27 @@ import { ElMessage } from 'element-plus'
 const hotMovies = ref<Movie[]>([])
 const comingSoonMovies = ref<Movie[]>([])
 
-const loadHotMovies = () => {
-  axios.get(`/api/Movies?page_size=6&page_number=1`).then((res) => {
-    if (res.data && res.data.status && res.data.status === '10000') {
-      hotMovies.value = res.data.data
+const loadHotMovies = async () => {
+  let movieNums = '';
+
+  try {
+    const response = await axios.get(`/api/Movies/length`);
+    if (response.data && response.data.status && response.data.status === '10000') {
+      movieNums = response.data.data;
+      console.log(movieNums);
     }
-  })
+
+    // 在这里执行第二个请求，确保 movieNums 已经被正确赋值
+    const secondResponse = await axios.get(`/api/Movies/topnmovies?num=${movieNums}`);
+    if (secondResponse.data && secondResponse.data.status && secondResponse.data.status === '10000') {
+      hotMovies.value = secondResponse.data.data;
+    }
+  } catch (error) {
+    // 处理异常情况
+    console.error(error);
+  }
 }
+
 
 const loadComingSoonMovies = async () => {
   comingSoonMovies.value = new Array(7).fill(
@@ -94,7 +108,7 @@ const loadBoxOffice = () => {
                   autoplay
                 >
                   <el-carousel-item
-                    v-for="movie in hotMovies"
+                    v-for="movie in hotMovies.slice(0,5)"
                     :key="movie.movieId"
                     style="display: flex; justify-content: center"
                   >
