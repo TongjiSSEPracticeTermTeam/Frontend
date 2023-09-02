@@ -37,7 +37,18 @@ const settingItems: {
       () => import('@/components/manager/CinemaManage/CinemaManage.vue')
     ),
     needCard: true
-  }
+    },
+    {
+    name: '评论管理',
+    icon: defineAsyncComponent(() =>
+      import('@element-plus/icons-vue').then((module) => module.IceDrink)
+    ),
+    component: defineAsyncComponent(
+      () => import('@/components/manager/MovieManage/CommentManage.vue')
+    ),
+    needCard: true
+    },
+
 ]
 
 let currentItem = ref(0)

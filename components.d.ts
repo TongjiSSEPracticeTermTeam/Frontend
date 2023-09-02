@@ -7,14 +7,18 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    '副本': typeof import('./src/components/manager/MovieManage/CommentManage - 副本.vue')['default']
     ActorSetting: typeof import('./src/components/manager/MovieManage/actorSetting.vue')['default']
     AdminView: typeof import('./src/components/admin/AdminView.vue')['default']
     CinemaInfo: typeof import('./src/components/manager/CinemaManage/CinemaInfo.vue')['default']
     CinemaManage: typeof import('./src/components/manager/CinemaManage/CinemaManage.vue')['default']
+    Comment: typeof import('./src/components/manager/MovieManage/Comment.vue')['default']
     CommentCard: typeof import('./src/components/customer/comment/CommentCard.vue')['default']
+    CommentManage: typeof import('./src/components/manager/MovieManage/CommentManage.vue')['default']
     CustomerMenu: typeof import('./src/components/CustomerMenu.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
+    ElButtonlink: typeof import('element-plus/es')['ElButtonlink']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
     ElCarouselItem: typeof import('element-plus/es')['ElCarouselItem']
@@ -35,6 +39,7 @@ declare module 'vue' {
     ElPagination: typeof import('element-plus/es')['ElPagination']
     ElRadio: typeof import('element-plus/es')['ElRadio']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
+    ElRate: typeof import('element-plus/es')['ElRate']
     ElRow: typeof import('element-plus/es')['ElRow']
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSkeleton: typeof import('element-plus/es')['ElSkeleton']
@@ -58,6 +63,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     StaffManage: typeof import('./src/components/manager/StaffManage/StaffManage.vue')['default']
+    Test: typeof import('./src/components/manager/MovieManage/Test.vue')['default']
     TopBar: typeof import('./src/components/manager/TopBar.vue')['default']
   }
   export interface ComponentCustomProperties {

@@ -4,11 +4,12 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 import type { Ref } from 'vue'
 import Movie from '@/models/Movie'
 import axios from 'axios'
-import { ElInput, ElMessage, ElMessageBox } from 'element-plus'
+//import { ElInput, ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { copyTextToClipboard } from '@/helpers/clipboard'
 import UploadImage from '@/helpers/UploadImage.vue'
 import type { eStaff } from '@/models/Staff'
+import Comment from '@/components/manager/MovieManage/Comment.vue'
 // import { Message } from '@element-plus/icons-vue/dist/types'
 
 let movies: Ref<Movie[]> = ref([])
@@ -129,46 +130,6 @@ const copyPosterUrl = () => {
   })
 }
 
-// const uploadingPoster = ref(false)
-//
-// const uploadPoster = () => {
-//   uploadingPoster.value = true
-//   document.getElementById('upload-poster').click()
-// }
-//
-// const uploaderHandleChange = (event) => {
-//   const files = (event.target as HTMLInputElement).files
-//   if (!files || files.length !== 1) {
-//     return
-//   }
-//
-//   uploadingPoster.value = true
-//
-//   const file = files[0]
-//   const formData = new FormData()
-//   formData.append('file', file)
-//
-//   axios
-//     .put('/api/Movies/poster', formData)
-//     .then((res) => {
-//       uploadingPoster.value = false
-//       if (res.data && res.data.status && res.data.status === '10000') {
-//         ElMessage({
-//           message: '上传成功',
-//           type: 'success'
-//         })
-//         currentMovie.value.postUrl = res.data.data
-//       } else {
-//         ElMessage({
-//           message: `上传失败：${res.data.message}`,
-//           type: 'warning'
-//         })
-//       }
-//     })
-//     .catch(() => {
-//       uploadingPoster.value = false
-//     })
-// }
 
 let currentTags = computed({
   get(): string[] {
@@ -431,8 +392,6 @@ const topbarHandleSuccess = (data: Movie[]) => {
   pageSize.value = data.length
   currentPage.value = 1
   movies.value = data
-  // console.log(data)
-  // console.log(movies.value)
 }
 const topbarHandleFail = () => {
   ElMessage({
@@ -443,12 +402,23 @@ const topbarHandleFail = () => {
   currentPage.value = 1
   updateTable()
 }
+
+
+const searchInfo = ref('')
+const dialogVisible = ref(false)
+const handleSearch = (movieId: string) => {
+    searchInfo.value = movieId
+    dialogVisible.value = true
+}
 </script>
 
 <template>
   <div>
     <h1 class="text-2xl font-bold">电影管理</h1>
     <el-divider />
+    <el-dialog v-model="dialogVisible" title="评论管理">
+        <Comment :initialSearchInfo="searchInfo" />
+    </el-dialog>
     <el-space>
       <el-button type="primary" @click="addMovie">添加电影</el-button>
       <topBar currentItem="0" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
@@ -456,10 +426,22 @@ const topbarHandleFail = () => {
     <div class="table-container my-5">
       <el-table :data="movies" style="width: 100%" :stripe="true" v-loading="moviesLoading"
         @cell-mouse-enter="changeCurrentIndex">
-        <el-table-column prop="movieId" label="电影Id" width="80" />
+
+        <el-table-column prop="movieId" label="电影Id" width="80" >
+          <template #default="{ $index }">
+          {{ movies[$index]['movieId'] }}
+          <el-button link type="primary" size="small" @click="() => {
+              Object.assign(currentMovie, movies[$index])
+              handleSearch(movies[$index]['movieId'])
+            }">查看评论
+            </el-button>
+          </template>
+        </el-table-column>
+
+
         <el-table-column prop="name" label="电影名称" width="150">
           <template #default="{ $index }">
-            <strong>{{ movies[$index]['name'] }}</strong>
+            <strong>{{ movies[$index]['name'] }}ss</strong>
           </template>
         </el-table-column>
         <el-table-column prop="duration" label="时长" width="80" />
@@ -468,6 +450,7 @@ const topbarHandleFail = () => {
             {{ truncateString(movies[$index]['instruction'] as string, 150) }}
           </template>
         </el-table-column>
+
         <el-table-column prop="postUrl" label="海报链接" width="200">
           <template #default="{ $index }">
             <el-space>
@@ -481,6 +464,7 @@ const topbarHandleFail = () => {
             </el-space>
           </template>
         </el-table-column>
+
         <el-table-column prop="tags" label="标签" width="200">
           <template #default="{ $index }">
             <el-space wrap>
@@ -494,20 +478,21 @@ const topbarHandleFail = () => {
         <el-table-column prop="removalDate" label="到期日期" width="200" />
         <el-table-column fixed="right" prop="operation" label="操作" width="130">
           <template #default="{ $index }">
+
             <el-button link type="primary" size="small" @click="() => {
               detailEdit = false
               detailView = true
-            }
-              ">查看
+            }">查看
             </el-button>
+
             <el-button link type="primary" size="small" @click="() => {
               Object.assign(currentMovie, movies[$index])
               detailEdit = true
               detailView = true
               addingMovie = false
-            }
-              ">编辑
+            }">编辑
             </el-button>
+
             <el-button link type="danger" size="small" v-loading="deletingMovie" @click="deleteMovie">删除
             </el-button>
           </template>
