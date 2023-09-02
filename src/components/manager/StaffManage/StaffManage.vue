@@ -49,6 +49,7 @@ const updateTable = () => {
         .then((res) => {
           if (res.data && res.data.status && res.data.status === '10000') {
             staffs.value = res.data.data
+            console.log(staffs.value)
           }
           loading.value = false
         })
@@ -283,6 +284,25 @@ const dialogClose = function () {
     formReset()
   })
 }
+
+const topbarHandleSuccess = (data: Staff[]) => {
+  // 搜索结果不分页
+  total.value = data.length
+  pageSize.value = data.length
+  currentPage.value = 1
+  staffs.value = data
+  // console.log(data)
+  // console.log(movies.value)
+}
+const topbarHandleFail = () => {
+  ElMessage({
+    message: `查询失败或结果不存在`,
+    type: 'warning'
+  })
+  pageSize.value = 12
+  currentPage.value = 1
+  updateTable()
+}
 </script>
 
 <template>
@@ -291,7 +311,7 @@ const dialogClose = function () {
   <!-- 顶栏 -->
   <el-row align="middle" justify="space-between">
     <el-col :span="20">
-      <TopBar />
+      <TopBar currentItem="1" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
     </el-col>
     <el-col :span="2" :offset="2">
       <el-button size="large" type="success" @click="addForm()">添加</el-button>
@@ -318,8 +338,7 @@ const dialogClose = function () {
       </template>
       <template #default>
         <el-row :gutter="10">
-          <el-col :span="4" v-for="staff in staffs.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-            :key="staff">
+          <el-col :span="4" v-for="staff in staffs" :key="staff">
             <el-card shadow="hover" style="padding: 0; margin-bottom: 20px; height: 280px">
               <el-image :src="staff.imageUrl" fit="cover" style="height: 160px; width: 100%; margin: 0; padding: 0" />
               <div class="staffInfo" style="
