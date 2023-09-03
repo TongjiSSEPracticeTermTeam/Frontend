@@ -20,6 +20,7 @@ import CustomerRegister from '@/components/RegisterPage.vue'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import ChooseSeatPage from '@/components/customer/ticket/ChooseSeatPage.vue'
+import TicketSuccessPage from "@/components/customer/ticket/TicketSuccessPage.vue";
 
 export default createRouter({
   history: createWebHistory(),
@@ -30,6 +31,7 @@ export default createRouter({
     { path: '/admin', component: AdminView },
     { path: '/movie/:movieId', component: MovieDetailPage },
     { path: '/register', component: CustomerRegister },
-    { path: '/buy/:movieId/:cinemaId/:hallId/:startTime', component: ChooseSeatPage }
+    { path: '/buy/:movieId/:cinemaId/:hallId/:startTime', component: ChooseSeatPage },
+    { path: '/ticket/success', component: TicketSuccessPage },
   ]
 })

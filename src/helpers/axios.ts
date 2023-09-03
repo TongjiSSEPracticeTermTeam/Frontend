@@ -31,6 +31,7 @@ axios.interceptors.response.use(
     return response
   },
   function (error: AxiosError) {
+    console.log("ERROR", error.message)
     // 对请求错误做些什么
     if (error.response && error.response.status && error.response.status == 401) {
       ElMessage({

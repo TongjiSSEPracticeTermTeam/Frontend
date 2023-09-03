@@ -75,6 +75,7 @@ declare module 'vue' {
     SeatComponent: typeof import('./src/components/customer/ticket/SeatComponent.vue')['default']
     SeatNumberComponent: typeof import('./src/components/customer/ticket/SeatNumberComponent.vue')['default']
     StaffManage: typeof import('./src/components/manager/StaffManage/StaffManage.vue')['default']
+    TicketSuccessPage: typeof import('./src/components/customer/ticket/TicketSuccessPage.vue')['default']
     TopBar: typeof import('./src/components/manager/TopBar.vue')['default']
   }
   export interface ComponentCustomProperties {
