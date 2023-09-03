@@ -9,7 +9,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { copyTextToClipboard } from '@/helpers/clipboard'
 import UploadImage from '@/helpers/UploadImage.vue'
 import type { eStaff } from '@/models/Staff'
-import Comment from '@/components/manager/MovieManage/Comment.vue'
+import Comment from '@/components/admin/MovieManage/Comment.vue'
 // import { Message } from '@element-plus/icons-vue/dist/types'
 
 let movies: Ref<Movie[]> = ref([])
@@ -441,7 +441,7 @@ const handleSearch = (movieId: string) => {
 
         <el-table-column prop="name" label="电影名称" width="150">
           <template #default="{ $index }">
-            <strong>{{ movies[$index]['name'] }}ss</strong>
+            <strong>{{ movies[$index]['name'] }}</strong>
           </template>
         </el-table-column>
         <el-table-column prop="duration" label="时长" width="80" />

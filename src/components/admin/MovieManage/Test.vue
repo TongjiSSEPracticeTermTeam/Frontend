@@ -10,7 +10,7 @@
   
 <script>
 import { ref } from 'vue'
-import CommentManage from '@/components/manager/MovieManage/CommentManage.vue'
+import CommentManage from '@/components/admin/MovieManage/CommentManage.vue'
 
 export default {
     components: {

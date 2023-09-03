@@ -4,10 +4,9 @@ import { onMounted, computed, ref, nextTick } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox, ElInput } from 'element-plus'
 import type { FormInstance } from 'element-plus'
-import TopBar from '@/components/manager/TopBar.vue'
-import CinemaInfo from '@/components/manager/CinemaManage/CinemaInfo.vue'
+import TopBar from '@/components/admin/TopBar.vue'
+import CinemaInfo from '@/components/admin/CinemaManage/CinemaInfo.vue'
 import UploadImage from '@/helpers/UploadImage.vue'
-// import CinemaManage from '@/components/manager/CinemaManage/CinemaManage.vue'
 
 let currentTags = computed({
   get(): string[] {
