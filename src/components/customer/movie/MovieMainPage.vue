@@ -1,21 +1,59 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import {onMounted, ref,computed} from "vue";
 import tagSelect from "@/components/customer/movie/AttributeSelect.vue"
+import type Movie from "@/models/Movie";
+import axios from "axios";
+import MovieCard from "@/components/customer/movie/MovieCard.vue";
+
 const tags=ref<string[]>([])
-tags.value=['爱情','剧情','动漫','历史','基情','悬疑']
 const years=ref<string[]>([])
 years.value=['2023','2022','2021','2020','2019']
 const selectedTags=ref([])
 const selectedYears=ref([])
 
+const movies=ref<Movie[]>([])
+const currentPage=ref(1)
+const pageSize=6 //一页展示的电影数量
+
+const start = computed(() => (currentPage.value - 1) * pageSize);
+const paginatedMovies = computed(() => movies.value.slice(start.value, start.value + pageSize));
+const totalMovies = computed(() => movies.value.length);
+
 const tagSelected=(t)=>{
   selectedTags.value=t
   console.log(selectedTags.value)
+  updateMovies()
 }
 
 const yearSelected=(t)=>{
   selectedYears.value=t
 }
+const getAllTags=()=>{
+  axios.get('/api/Movies/tags/getAllTags').then((r)=>{
+    if (r.data&&r.data.status==='10000'){
+      tags.value=r.data.data
+    }
+  })
+}
+
+const updateMovies=()=>{
+  let params=new URLSearchParams()
+  selectedTags.value.forEach((v)=>{
+    params.append('tags',v)
+  })
+  axios.get('/api/Movies/tags',{
+    params: params
+  }).then((r)=>{
+    if(r.data&&r.data.status==='10000'){
+      movies.value=r.data.data
+    }
+  })
+}
+
+onMounted(()=>{
+  getAllTags()
+  updateMovies()
+})
 </script>
 
 <template>
@@ -33,6 +71,36 @@ const yearSelected=(t)=>{
           </el-col>
           <el-col :span="3"/>
         </el-row>
+      </div>
+      <div class="m-5">
+        <el-row>
+          <el-col :span="3"/>
+          <el-col :span="18">
+            <el-card class="translucent-card">
+              <el-space wrap>
+                <div v-for="(movie, index) in paginatedMovies" :key="index">
+                  <div class="my-3">
+                    <MovieCard :movie="movie" />
+                    <div class="mt-3 text-center">{{ movie.name }}</div>
+                  </div>
+                </div>
+              </el-space>
+              <el-col style="display:flex;justify-content:center;">
+                <el-pagination
+                    layout="prev,pager,next"
+                    :total="movies.length"
+                    :page-size="pageSize"
+                    v-model="currentPage"
+                    background
+                />
+              </el-col>
+            </el-card>
+          </el-col>
+
+          <el-col :span="3"/>
+        </el-row>
+
+
       </div>
     </div>
   </div>

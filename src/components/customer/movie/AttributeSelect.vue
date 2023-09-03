@@ -13,16 +13,13 @@ const props=defineProps({
   }
 })
 
-let selectedTags=[]
+let selectedTags :string[]= []
 
 function tagOnClicked(status:boolean,content:string) {
   if (status){
     selectedTags.push(content)
   }else{
     selectedTags=selectedTags.filter(item=>item!=content)
-  }
-  if(selectedTags.length===0){
-    selectedTags=props.tags
   }
   emit("selected",selectedTags)
 }
