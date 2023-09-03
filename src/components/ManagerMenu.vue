@@ -1,0 +1,45 @@
+<script setup lang="ts">
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+
+const store = useStore()
+const router = useRouter()
+
+const handle_select = (path: string) => {
+  switch (path) {
+    case '0':
+      if (store.state.currentUser.type === 'Manager') router.push('/manager')
+      else router.push('/admin')
+      break
+    case '2':
+      router.push('/')
+      break
+    case '3-1':
+      window.localStorage.removeItem('token')
+      store.commit('logout')
+      router.push('/')
+      window.location.reload()
+      break
+  }
+}
+
+defineExpose({ handle_select })
+</script>
+
+<template>
+  <el-menu-item index="0">
+    <router-link to="/">
+      <span style="font-weight: 600; font-size: 1.5em; color: red">同济院线</span>
+      <span style="font-size: 1.4em">&nbsp;&nbsp;后台管理</span>
+    </router-link>
+  </el-menu-item>
+  <el-menu-item index="2"><span style="font-size: 1.3em">返回前台</span></el-menu-item>
+  <el-sub-menu v-if="store.state.isLogged" index="3">
+    <template #title>
+      <span style="font-size: 1.3em">欢迎，{{ store.state.currentUser.displayName }}</span>
+    </template>
+    <el-menu-item index="3-1">登出</el-menu-item>
+  </el-sub-menu>
+</template>
+
+<style scoped></style>
