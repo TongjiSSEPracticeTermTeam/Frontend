@@ -439,13 +439,13 @@ const handleSearch = (movieId: string) => {
         </el-table-column>
 
 
-        <el-table-column prop="name" label="电影名称" width="150">
+        <el-table-column prop="name" label="电影名称" width="200">
           <template #default="{ $index }">
-            <strong>{{ movies[$index]['name'] }}ss</strong>
+            <strong>{{ movies[$index]['name'] }}</strong>
           </template>
         </el-table-column>
-        <el-table-column prop="duration" label="时长" width="80" />
-        <el-table-column prop="instruction" label="简介" width="200">
+        <el-table-column prop="duration" label="时长" width="130" />
+        <el-table-column prop="instruction" label="简介" width="300">
           <template #default="{ $index }">
             {{ truncateString(movies[$index]['instruction'] as string, 150) }}
           </template>

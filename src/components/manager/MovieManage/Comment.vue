@@ -29,7 +29,7 @@
 
       <el-table-column prop="publishDate" label="发表时间"></el-table-column>
       
-      <el-table-column label="评论内容" width="400px">
+      <el-table-column label="评论内容" >
         <template v-slot="{ row }">
           <div class="comment-content" :class="{ 'comment-content-expanded': row.isOpen }" @click="toggleContent(row)">
             {{ getContent(row) }}
