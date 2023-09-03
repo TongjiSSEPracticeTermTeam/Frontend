@@ -1,6 +1,6 @@
 // To parse this data:
 //
-//   import { Convert } from "./file";
+//   import { Convert, SessionDetail } from "./file";
 //
 //   const sessionDetail = Convert.toSessionDetail(json);
 //
@@ -8,44 +8,57 @@
 // match the expected interface, even if the JSON is valid.
 
 export interface SessionDetail {
-  movieId: string
-  cinemaId: string
-  hallId: string
-  startTime: Date
-  attendence: number
-  price: number
-  language: string
-  dimesion: string
-  hallLocatedAt: Hall
+  movieId: string;
+  cinemaId: string;
+  hallId: string;
+  startTime: Date;
+  attendence: number;
+  price: number;
+  language: string;
+  dimesion: string;
+  hallLocatedAt: HallLocatedAt;
 }
 
-export interface Hall {
-  id: string
-  cinemaId: string
-  rowCount: number
-  columnCount: number
-  hallType: string
-  cinemaBelongTo: Cinema
+export interface HallLocatedAt {
+  id: string;
+  cinemaId: string;
+  hallType: string;
+  seat: Seat;
+  cinemaBelongTo: CinemaBelongTo;
 }
 
-export interface Cinema {
-  cinemaId: string
-  location: string
-  name: string
-  managerId: string
-  cinemaImageUrl: string
-  feature: string
+export interface CinemaBelongTo {
+  cinemaId: string;
+  location: string;
+  name: string;
+  managerId: string;
+  cinemaImageUrl: string;
+  feature: string;
+  manager: Manager;
+}
+
+export interface Manager {
+  id: string;
+  name: string;
+  password: string;
+  email: string;
+  avatarUrl: string;
+}
+
+export interface Seat {
+  rows: number
+  cols: number[]
 }
 
 // Converts JSON strings to/from your types
 // and asserts the results of JSON.parse at runtime
 export class Convert {
-  public static toSessionDetail(json: string): SessionDetail[] {
-    return cast(JSON.parse(json), a(r('SessionDetail')))
+  public static toSessionDetail(json: string): SessionDetail {
+    return cast(JSON.parse(json), r('SessionDetail'))
   }
 
-  public static sessionDetailToJson(value: SessionDetail[]): string {
-    return JSON.stringify(uncast(value, a(r('SessionDetail'))), null, 2)
+  public static sessionDetailToJson(value: SessionDetail): string {
+    return JSON.stringify(uncast(value, r('SessionDetail')), null, 2)
   }
 }
 
@@ -182,7 +195,7 @@ function transform(val: any, typ: any, getProps: any, key: any = '', parent: any
   }
   // Numbers can be parsed by Date but shouldn't be.
   if (typ === Date && typeof val !== 'number') return transformDate(val)
-  return transformPrimitive(typ, val)
+  return transformPrimitive(typ, val);
 }
 
 function cast<T>(val: any, typ: any): T {
@@ -228,29 +241,46 @@ const typeMap: any = {
       { json: 'price', js: 'price', typ: 0 },
       { json: 'language', js: 'language', typ: '' },
       { json: 'dimesion', js: 'dimesion', typ: '' },
-      { json: 'hall', js: 'hall', typ: r('Hall') }
+      { json: 'hallLocatedAt', js: 'hallLocatedAt', typ: r('HallLocatedAt') }
     ],
     false
   ),
-  Hall: o(
+  HallLocatedAt: o(
     [
       { json: 'id', js: 'id', typ: '' },
       { json: 'cinemaId', js: 'cinemaId', typ: '' },
-      { json: 'rowCount', js: 'rowCount', typ: 0 },
-      { json: 'columnCount', js: 'columnCount', typ: 0 },
       { json: 'hallType', js: 'hallType', typ: '' },
-      { json: 'cinema', js: 'cinema', typ: r('Cinema') }
+      { json: 'seat', js: 'seat', typ: r('Seat') },
+      { json: 'cinemaBelongTo', js: 'cinemaBelongTo', typ: r('CinemaBelongTo') }
     ],
     false
   ),
-  Cinema: o(
+  CinemaBelongTo: o(
     [
       { json: 'cinemaId', js: 'cinemaId', typ: '' },
       { json: 'location', js: 'location', typ: '' },
       { json: 'name', js: 'name', typ: '' },
       { json: 'managerId', js: 'managerId', typ: '' },
       { json: 'cinemaImageUrl', js: 'cinemaImageUrl', typ: '' },
-      { json: 'feature', js: 'feature', typ: '' }
+      { json: 'feature', js: 'feature', typ: '' },
+      { json: 'manager', js: 'manager', typ: r('Manager') }
+    ],
+    false
+  ),
+  Manager: o(
+    [
+      { json: 'id', js: 'id', typ: '' },
+      { json: 'name', js: 'name', typ: '' },
+      { json: 'password', js: 'password', typ: '' },
+      { json: 'email', js: 'email', typ: '' },
+      { json: 'avatarUrl', js: 'avatarUrl', typ: '' }
+    ],
+    false
+  ),
+  Seat: o(
+    [
+      { json: 'rows', js: 'rows', typ: 0 },
+      { json: 'cols', js: 'cols', typ: a(0) }
     ],
     false
   )
