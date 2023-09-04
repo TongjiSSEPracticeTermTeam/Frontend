@@ -14,7 +14,7 @@ const settingItems: {
       import('@element-plus/icons-vue').then((module) => module.Film)
     ),
     component: defineAsyncComponent(
-      () => import('@/components/manager/MovieManage/MovieManage.vue')
+      () => import('@/components/admin/MovieManage/MovieManage.vue')
     ),
     needCard: true
   },
@@ -24,7 +24,7 @@ const settingItems: {
       import('@element-plus/icons-vue').then((module) => module.UserFilled)
     ),
     component: defineAsyncComponent(
-      () => import('@/components/manager/StaffManage/StaffManage.vue')
+      () => import('@/components/admin/StaffManage/StaffManage.vue')
     ),
     needCard: true
   },
@@ -34,7 +34,7 @@ const settingItems: {
       import('@element-plus/icons-vue').then((module) => module.HomeFilled)
     ),
     component: defineAsyncComponent(
-      () => import('@/components/manager/CinemaManage/CinemaManage.vue')
+      () => import('@/components/admin/CinemaManage/CinemaManage.vue')
     ),
     needCard: true
   }

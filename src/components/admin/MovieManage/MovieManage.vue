@@ -1,12 +1,15 @@
 <script setup lang="ts">
+import actorSelector from './actorSetting.vue'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import type { Ref } from 'vue'
 import Movie from '@/models/Movie'
 import axios from 'axios'
-import { ElInput, ElMessage, ElMessageBox } from 'element-plus'
+//import { ElInput, ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
 import { copyTextToClipboard } from '@/helpers/clipboard'
 import UploadImage from '@/helpers/UploadImage.vue'
+import type { eStaff } from '@/models/Staff'
+import Comment from '@/components/admin/MovieManage/Comment.vue'
 // import { Message } from '@element-plus/icons-vue/dist/types'
 
 let movies: Ref<Movie[]> = ref([])
@@ -25,7 +28,7 @@ const handleSizeChange = () => {
   updateTable()
 }
 
-let currentMovie: Ref<Movie> = ref(new Movie())
+let currentMovie: Ref<Movie> = ref(new Movie(undefined))
 
 onMounted(() => {
   updateTable()
@@ -85,7 +88,7 @@ const truncateString = (str: string, maxLength: number = 30): string => {
 
 const changeCurrentIndex = (row: Movie) => {
   Object.assign(currentMovie.value, row)
-  // currentMovie.value = row.
+  // console.log(currentMovie.value)
 }
 
 let detailView = ref(false)
@@ -127,46 +130,6 @@ const copyPosterUrl = () => {
   })
 }
 
-// const uploadingPoster = ref(false)
-//
-// const uploadPoster = () => {
-//   uploadingPoster.value = true
-//   document.getElementById('upload-poster').click()
-// }
-//
-// const uploaderHandleChange = (event) => {
-//   const files = (event.target as HTMLInputElement).files
-//   if (!files || files.length !== 1) {
-//     return
-//   }
-//
-//   uploadingPoster.value = true
-//
-//   const file = files[0]
-//   const formData = new FormData()
-//   formData.append('file', file)
-//
-//   axios
-//     .put('/api/Movies/poster', formData)
-//     .then((res) => {
-//       uploadingPoster.value = false
-//       if (res.data && res.data.status && res.data.status === '10000') {
-//         ElMessage({
-//           message: '上传成功',
-//           type: 'success'
-//         })
-//         currentMovie.value.postUrl = res.data.data
-//       } else {
-//         ElMessage({
-//           message: `上传失败：${res.data.message}`,
-//           type: 'warning'
-//         })
-//       }
-//     })
-//     .catch(() => {
-//       uploadingPoster.value = false
-//     })
-// }
 
 let currentTags = computed({
   get(): string[] {
@@ -260,6 +223,7 @@ const rules = ref<FormRules<typeof currentMovie>>(
             callback();
           }
         },
+        required: true,
         trigger: "blur",
       }
     ],
@@ -280,6 +244,32 @@ const disableDateforEnd = (time: any) => {
   }
 }
 
+const updateDirector = (newDirector: eStaff[]) => {
+  editStatus.value = true
+  if (newDirector.length > 0)
+    currentMovie.value.director = newDirector[0]
+  else
+    currentMovie.value.director = null
+}
+const updateActors = (newActors: eStaff[]) => {
+  editStatus.value = true
+  if (newActors.length > 0)
+    currentMovie.value.actors = newActors.slice(0)
+  else
+    currentMovie.value.actors = null
+}
+const transformer = (selecte: eStaff[] | eStaff | null): eStaff[] => {
+  let ret: eStaff[] = []
+  if (selecte instanceof Array)
+    ret = selecte.slice(0)
+  else if (selecte != null)
+    ret = [selecte]
+  else
+    ret = []
+
+  return ret
+}
+
 const saveDetail = async () => {
   if (!formRef.value || (!editStatus.value)) {
     console.log('表单无改动内容')
@@ -293,6 +283,8 @@ const saveDetail = async () => {
         return
       }
       savingDetail.value = true
+      console.log(currentMovie.value)
+
       axios
         .post('/api/Movies', currentMovie.value)
         .then((res) => {
@@ -326,7 +318,7 @@ const saveDetail = async () => {
 const addingMovie = ref(false)
 
 const addMovie = () => {
-  currentMovie.value = new Movie()
+  currentMovie.value = new Movie(undefined)
   currentMovie.value.movieId = '自动生成'
   detailView.value = true
   detailEdit.value = true
@@ -335,6 +327,7 @@ const addMovie = () => {
 
 const addSaveMovie = () => {
   savingDetail.value = true
+
   axios
     .put('/api/Movies', currentMovie.value)
     .then((res) => {
@@ -392,20 +385,60 @@ const deleteMovie = () => {
     })
   }
 }
+
+const topbarHandleSuccess = (data: Movie[]) => {
+  // 搜索结果不分页
+  itemTotal.value = data.length
+  pageSize.value = data.length
+  currentPage.value = 1
+  movies.value = data
+}
+const topbarHandleFail = () => {
+  ElMessage({
+    message: `查询失败或结果不存在`,
+    type: 'warning'
+  })
+  pageSize.value = 10
+  currentPage.value = 1
+  updateTable()
+}
+
+
+const searchInfo = ref('')
+const dialogVisible = ref(false)
+const handleSearch = (movieId: string) => {
+    searchInfo.value = movieId
+    dialogVisible.value = true
+}
 </script>
 
 <template>
   <div>
     <h1 class="text-2xl font-bold">电影管理</h1>
     <el-divider />
+    <el-dialog v-model="dialogVisible" title="评论管理">
+        <Comment :initialSearchInfo="searchInfo" />
+    </el-dialog>
     <el-space>
-      <span>操作：</span>
       <el-button type="primary" @click="addMovie">添加电影</el-button>
+      <topBar currentItem="0" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
     </el-space>
     <div class="table-container my-5">
       <el-table :data="movies" style="width: 100%" :stripe="true" v-loading="moviesLoading"
         @cell-mouse-enter="changeCurrentIndex">
-        <el-table-column prop="movieId" label="电影Id" width="80" />
+
+        <el-table-column prop="movieId" label="电影Id" width="80" >
+          <template #default="{ $index }">
+          {{ movies[$index]['movieId'] }}
+          <el-button link type="primary" size="small" @click="() => {
+              Object.assign(currentMovie, movies[$index])
+              handleSearch(movies[$index]['movieId'])
+            }">查看评论
+            </el-button>
+          </template>
+        </el-table-column>
+
+
         <el-table-column prop="name" label="电影名称" width="150">
           <template #default="{ $index }">
             <strong>{{ movies[$index]['name'] }}</strong>
@@ -417,6 +450,7 @@ const deleteMovie = () => {
             {{ truncateString(movies[$index]['instruction'] as string, 150) }}
           </template>
         </el-table-column>
+
         <el-table-column prop="postUrl" label="海报链接" width="200">
           <template #default="{ $index }">
             <el-space>
@@ -430,6 +464,7 @@ const deleteMovie = () => {
             </el-space>
           </template>
         </el-table-column>
+
         <el-table-column prop="tags" label="标签" width="200">
           <template #default="{ $index }">
             <el-space wrap>
@@ -443,20 +478,21 @@ const deleteMovie = () => {
         <el-table-column prop="removalDate" label="到期日期" width="200" />
         <el-table-column fixed="right" prop="operation" label="操作" width="130">
           <template #default="{ $index }">
+
             <el-button link type="primary" size="small" @click="() => {
               detailEdit = false
               detailView = true
-            }
-              ">查看
+            }">查看
             </el-button>
+
             <el-button link type="primary" size="small" @click="() => {
               Object.assign(currentMovie, movies[$index])
               detailEdit = true
               detailView = true
               addingMovie = false
-            }
-              ">编辑
+            }">编辑
             </el-button>
+
             <el-button link type="danger" size="small" v-loading="deletingMovie" @click="deleteMovie">删除
             </el-button>
           </template>
@@ -519,6 +555,16 @@ const deleteMovie = () => {
         <el-date-picker v-model="currentMovie.removalDate" type="date" @change="editStatus = true"
           :disabled-date="disableDateforEnd" />
       </el-form-item>
+
+      <el-form-item label="导演:">
+        <actorSelector :selected="transformer(currentMovie.director)" :mode="true" title="设置导演"
+          @update:actor="updateDirector" />
+      </el-form-item>
+      <el-form-item label="演员:">
+        <actorSelector :selected="transformer(currentMovie.actors)" :mode="false" title="设置演员"
+          @update:actor="updateActors" />
+      </el-form-item>
+
       <el-form-item label="时长" prop="duration">
         <el-input v-model="currentMovie.duration" @change="editStatus = true">
           <template #append>分钟</template>
