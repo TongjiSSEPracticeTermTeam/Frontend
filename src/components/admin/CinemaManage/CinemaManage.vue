@@ -247,6 +247,11 @@ const handleClose = () => {
   })
 }
 
+const handleUploadSuccess = (Url: string) => {
+  newCinema.value.cinemaImageUrl = Url
+  formStatus.value = true
+}
+
 const confirmForm = async function () {
   //表单确认函数
   if (!formRef.value) {
@@ -351,7 +356,7 @@ const topbarHandleFail = () => {
 <template>
   <h1 class="text-2xl font-bold">影院管理</h1>
   <el-divider />
-  <topBar currentItem="2" @success="topbarHandleSuccess" @fail="topbarHandleFail"/>
+  <topBar currentItem="2" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
   <el-table v-loading="loading" :data="cinemas" style="width: 100%"
     :header-cell-style="{ backgroundColor: 'purple', color: 'white' }">
     <el-table-column prop="cinemaId" label="影院id" align="left" min-width="10%"></el-table-column>
@@ -399,7 +404,7 @@ const topbarHandleFail = () => {
           style="object-fit: contain; margin: 5px 0" /> -->
           <el-image :src="newCinema.cinemaImageUrl" :fit="'contain'" style="height: 300px; width: 300px">
           </el-image>
-          <UploadImage prefix="cinema" @Success="(url) => (newCinema.cinemaImageUrl = url)" />
+          <UploadImage prefix="cinema" @Success="handleUploadSuccess" />
         </el-space>
       </el-form-item>
 
@@ -424,30 +429,6 @@ const topbarHandleFail = () => {
           </el-button>
         </el-space>
       </el-form-item>
-
-      <!-- <el-form-item label="影院标签">
-        <el-input
-          v-model="newCinema.feature"
-          @change="formStatus = true"
-          placeholder="请输入影院标签"
-          @focus="featureHint = true"
-          @blur="featureHint = false"
-          type="textarea"
-          :autosize="{ minRows: 1, maxRows: 3 }"
-        />
-        <span
-          v-show="featureHint"
-          style="
-            font: 5px 'Fira Sans', serif;
-            margin: 2px 0 0 0;
-            padding: 0;
-            color: red;
-            font-weight: bold;
-          "
-        >
-          标签之间请用半角逗号`,`隔开
-        </span>
-      </el-form-item> -->
 
       <el-form-item label="管理员名称" prop="managerName" :rules="{ required: true, message: '管理员名称不能为空', trigger: 'blur' }">
         <el-input v-model="newCinema.managerName" @change="formStatus = true" placeholder="请输入管理员名称" />

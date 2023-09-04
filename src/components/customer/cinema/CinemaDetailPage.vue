@@ -4,7 +4,7 @@ import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import Cinema from '@/models/Cinema'
 import type { SessionDetail } from '@/models/QuickType/SessionDetail'
-import MovieSessionsCard from '@/components/customer/movie/MovieSessionsCard.vue'
+import CinemaSessionCard from './CinemaSessionCard.vue';
 import { ElCard, ElMessage, ElLoading, } from 'element-plus'
 
 const cinema = ref(new Cinema())
@@ -104,7 +104,7 @@ onMounted(() => {
                     <!-- <el-button link>全部</el-button> -->
                     <!--这个是假按钮-->
                 </div>
-                <MovieSessionsCard v-model:active-session-date="activeSessionDate" :sessions="sessions" />
+                <CinemaSessionCard v-model:active-session-date="activeSessionDate" :sessions="sessions" :is-movie="false"/>
             </el-card>
         </div>
     </div>
