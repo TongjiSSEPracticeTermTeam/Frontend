@@ -5,15 +5,6 @@ import type { routerKey } from 'vue-router';
 
 <template>
     <div class="content">
-        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect"
-                background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" :ellipsis="false" style="height: 7vh;">
-
-            <el-menu-item index="0">{{ cinemaName }}</el-menu-item>
-            <div class="flex-grow disabled-el-menu-item"></div>
-            <el-menu-item index="1">排片管理</el-menu-item>
-            <el-menu-item index="2">影厅管理</el-menu-item>
-            <el-menu-item index="3">登出</el-menu-item>
-        </el-menu>
     </div>
 </template>
 
@@ -22,7 +13,6 @@ export default {
     data: () => {
         return {
             activeIndex: '0',
-            cinemaName: '我的影院名',
             curIndex: '0',
             debounceTimeout: null,
             hallClass: ['bg-purple'],
@@ -37,20 +27,20 @@ export default {
             this.curIndex = key;
             this.isLeft = !this.isLeft;
             
-            switch (key) {
-                case '0':
-                    this.$router.push('/');
-                    break;
-                case '1':
-                    this.$router.push('/movieInfo');
-                    break;
-                case '2':
-                    this.$router.push('/CinemaInfo');
-                    break;
-                case '3':
-                    this.logout();
-                    return;
-            }
+            // switch (key) {
+            //     case '0':
+            //         this.$router.push('/');
+            //         break;
+            //     case '1':
+            //         this.$router.push('/movieInfo');
+            //         break;
+            //     case '2':
+            //         this.$router.push('/CinemaInfo');
+            //         break;
+            //     case '3':
+            //         this.logout();
+            //         return;
+            // }
         },
     },
     mounted() {

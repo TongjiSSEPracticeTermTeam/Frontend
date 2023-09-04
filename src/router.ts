@@ -7,7 +7,7 @@ import HomePage from '@/components/HomePage.vue'
 import CustomerLogin from '@/components/LoginPage.vue'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import ManagerView from '@/components/manager/ManagerView.vue'
+import ManagerView from '@/components/cinema/CinemaHallView.vue'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import AdminView from '@/components/admin/AdminView.vue'
