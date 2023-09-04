@@ -19,7 +19,7 @@
   </div>
 
   <div>
-    <el-table :data="pagedComments" style="width: 100%">
+    <el-table :data="pagedComments" style="width: 100%" >
       <el-table-column prop="commentId" label="评论Id"></el-table-column>
       <el-table-column prop="customerId" label="用户Id"></el-table-column>
 
