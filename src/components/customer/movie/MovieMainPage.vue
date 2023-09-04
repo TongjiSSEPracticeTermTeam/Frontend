@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, ref,computed} from "vue";
+import {onMounted, ref, computed, watch} from "vue";
 import tagSelect from "@/components/customer/movie/AttributeSelect.vue"
 import type Movie from "@/models/Movie";
 import axios from "axios";
@@ -13,10 +13,10 @@ const selectedYears=ref([])
 
 const movies=ref<Movie[]>([])
 const currentPage=ref(1)
-const pageSize=6 //一页展示的电影数量
+const pageSize=ref(6) //一页展示的电影数量
 
-const start = computed(() => (currentPage.value - 1) * pageSize);
-const paginatedMovies = computed(() => movies.value.slice(start.value, start.value + pageSize));
+const start = computed(() => (currentPage.value - 1) * pageSize.value);
+const paginatedMovies = computed(() => movies.value.slice(start.value, start.value + pageSize.value));
 const totalMovies = computed(() => movies.value.length);
 
 const tagSelected=(t)=>{
@@ -24,6 +24,10 @@ const tagSelected=(t)=>{
   console.log(selectedTags.value)
   updateMovies()
 }
+
+watch(paginatedMovies,(newMovies)=>{
+  console.log(`new page movies:${newMovies}`)
+})
 
 const yearSelected=(t)=>{
   selectedYears.value=t
@@ -89,8 +93,8 @@ onMounted(()=>{
                 <el-pagination
                     layout="prev,pager,next"
                     :total="movies.length"
-                    :page-size="pageSize"
-                    v-model="currentPage"
+                    v-model:page-size="pageSize"
+                    v-model:current-page="currentPage"
                     background
                 />
               </el-col>
