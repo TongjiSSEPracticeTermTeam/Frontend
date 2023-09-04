@@ -13,8 +13,9 @@ const handle_select = (path: string) => {
     case '2':
       router.push('/movie')
       break
-    case '3':
-      router.push('/')
+    case '3'://进入影院界面
+      console.log('3')
+      router.push('/cinema')
       break
     case '4':
       router.push('/')
@@ -33,7 +34,6 @@ const handle_select = (path: string) => {
       break
   }
 }
-
 defineExpose({ handle_select })
 </script>
 
