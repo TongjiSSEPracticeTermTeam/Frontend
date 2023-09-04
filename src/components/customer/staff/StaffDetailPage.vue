@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElCard, ElMessage, } from 'element-plus'
 import { StaffDetail } from '@/models/Staff'
 
 const route = useRoute()
+const router = useRouter()
 const staff = ref(new StaffDetail())
 
 onMounted(() => {
@@ -20,51 +21,86 @@ onMounted(() => {
         })
 })
 
+const handleMovieDetail = (movieId: string) => {
+    router.push(`/movie/${movieId}`);
+}
+
 </script>
 
 <template>
-    <div class="layout">
-        <el-row>
+    <div class="content">
+        <div class="mx-10 pt-2">
             <el-card style="margin: 10px auto" shadow="hover">
-                <el-row align="middle">
-                    <el-col :span="10">
-                        <el-image style="width: 300px; height: 400px" :src="staff.imageUrl" fit="cover" />
-                    </el-col>
-                    <el-col :span="14">
-                        <h1>影人名称：{{ staff.name }}</h1>
-                        <h1>影人性别：{{ staff.gender == '1' ? '男' : '女' }}</h1>
-                        <h1>影人介绍：</h1>
-                        <el-text size="large">
-                            {{ staff.introduction }}
-                        </el-text>
-                    </el-col>
-                </el-row>
+                <div class="flex items-center">
+                    <h2 class="text-red-500 text-2xl font-bold">演员信息</h2>
+                </div>
+                <div class="my-5 pt-1">
+                    <div class="flex flex-row">
+                        <div class="grid place-item-center basis-1/3 mx-10">
+                            <el-space alignment="center" :fill="true">
+                                <el-image style="width: 300px; height: 400px;" :src="staff.imageUrl" fit="contain" />
+                            </el-space>
+                        </div>
+                        <el-space direction="vertical" alignment="start" size="large" :fill="true">
+                            <div>
+                                <h2 class="text-lg font-extrabold">影人名称：</h2>
+                                <span class="text-gray-400">{{ staff.name }}</span>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-extrabold">影人性别：</h2>
+                                <span class="text-gray-400">{{ staff.gender == '1' ? '女' : '男' }}</span>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-extrabold">影人介绍：</h2>
+                                <span class="text-gray-400">{{ staff.introduction }}</span>
+                            </div>
+                        </el-space>
+                    </div>
+                </div>
             </el-card>
-        </el-row>
-        <el-row>
-            <h1 style="font-size: 25px; color: red; font-weight: bold;">导演电影</h1>
-            <div class="direcMovie" v-if="staff.directMovies?.length > 0">
-                <el-card v-for="movie, index in staff.directMovies" :key="index">
-                    <el-image style="width: 100px; height: 150px" :src="movie.postUrl" fit="cover" />
-                    <el-text>{{ movie.name }}</el-text>
-                </el-card>
-            </div>
-            <div v-else>
-                <span>无</span>
-            </div>
-        </el-row>
-        <el-row>
-            <h1 style="font-size: 25px; color: red; font-weight: bold;">参演电影</h1>
-            <div class="direcMovie" v-if="staff.starMovies?.length > 0">
-                <el-card v-for="movie, index in staff.starMovies" :key="index" style="width: 300px;">
-                    <el-image style="width: 80%; height: 300px" :src="movie.postUrl" fit="cover" />
-                    <div>{{ movie.name }}</div>
-                </el-card>
-            </div>
-            <div v-else>
-                <span>无</span>
-            </div>
-        </el-row>
+        </div>
+        <div class="my-5">
+            <el-card class="max-w-fit mx-10 px-5">
+                <div class="flex items-center">
+                    <h2 class="text-red-500 text-2xl font-bold">导演电影</h2>
+                </div>
+                <div class="my-5 pt-1 overflow-x-auto overflow-y-hidden" v-if="staff.directMovies?.length">
+                    <el-space size="large" wrap>
+                        <div v-for="movie in staff.directMovies" :key="movie.movieId"
+                            @click="handleMovieDetail(movie.movieId)" class="cursor-pointer">
+                            <el-image :src="movie.postUrl" fit="cover" style="height: 300px; width: 200px" />
+                            <div class="text-center">
+                                <h3>{{ movie.name }}</h3>
+                            </div>
+                        </div>
+                    </el-space>
+                </div>
+                <div v-else>
+                    <h2>无</h2>
+                </div>
+            </el-card>
+        </div>
+        <div class="my-5">
+            <el-card class="max-w-fit mx-10 px-5">
+                <div class="flex items-center">
+                    <h2 class="text-red-500 text-2xl font-bold">参演电影</h2>
+                </div>
+                <div class="my-5 pt-1 overflow-x-auto overflow-y-hidden" v-if="staff.starMovies?.length">
+                    <el-space size="large" wrap>
+                        <div v-for="movie in staff.starMovies" :key="movie.movieId"
+                            @click="handleMovieDetail(movie.movieId)" class="cursor-pointer">
+                            <el-image :src="movie.postUrl" fit="cover" style="height: 300px; width: 200px" />
+                            <div class="text-center break-words">
+                                <h3>{{ movie.name }}</h3>
+                            </div>
+                        </div>
+                    </el-space>
+                </div>
+                <div v-else>
+                    <h2>无</h2>
+                </div>
+            </el-card>
+        </div>
     </div>
 </template>
     
