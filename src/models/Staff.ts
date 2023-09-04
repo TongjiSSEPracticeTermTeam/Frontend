@@ -13,3 +13,13 @@ export default class Staff {
     this.imageUrl = ''
   }
 }
+
+export class eStaff {
+  staffId: string = ''
+  name: string = ''
+
+  public constructor() {
+    this.staffId = ''
+    this.name = ''
+  }
+}
