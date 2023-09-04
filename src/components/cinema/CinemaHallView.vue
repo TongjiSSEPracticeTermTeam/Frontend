@@ -34,7 +34,7 @@ const settingItems: {
                 import('@element-plus/icons-vue').then((module) => module.HomeFilled)
             ),
             component: defineAsyncComponent(
-                () => import('@/components/cinema/CinemaInfo/CinemaInfo.vue')
+                () => import('@/components/cinema/HallInfo/HallInfo.vue')
             ),
             needCard: true
         }

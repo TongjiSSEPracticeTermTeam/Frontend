@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import Hall from '@/models/Hall'
+import axios from "axios"
+import { ElMessage, ElMessageBox } from 'element-plus'
 </script>
 
 <template>
@@ -73,11 +76,6 @@
 </template>
 
 <script lang="ts">
-
-import axios from "axios"
-import { ElMessage } from 'element-plus'
-import { ElMessageBox } from 'element-plus';
-
 interface Hall {
     hallID: number
     row: number
