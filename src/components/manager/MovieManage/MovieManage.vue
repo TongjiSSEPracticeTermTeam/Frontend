@@ -416,7 +416,7 @@ const handleSearch = (movieId: string) => {
   <div>
     <h1 class="text-2xl font-bold">电影管理</h1>
     <el-divider />
-    <el-dialog v-model="dialogVisible" title="评论管理">
+    <el-dialog v-model="dialogVisible" title="评论管理" width="1300px">
         <Comment :initialSearchInfo="searchInfo" />
     </el-dialog>
     <el-space>
