@@ -7,9 +7,12 @@ import { createApp } from 'vue'
 import App from '@/App.vue'
 import 'element-plus/theme-chalk/src/message.scss'
 import 'element-plus/theme-chalk/src/message-box.scss'
+import 'element-plus/theme-chalk/el-loading.css'
 import router from '@/router'
 
+import 'moment/dist/locale/zh-cn'
 import '@/helpers/axios'
+
 import store from './store'
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'

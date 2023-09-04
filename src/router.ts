@@ -16,8 +16,19 @@ import AdminView from '@/components/admin/AdminView.vue'
 import MovieDetailPage from '@/components/customer/movie/MovieDetailPage.vue'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import CustomerRegister from '@/components/RegisterPage.vue'
+import StaffDetailPage from '@/components/customer/staff/StaffDetailPage.vue'
 
+import CinemaDetailPage from './components/customer/cinema/CinemaDetailPage.vue'
+
+import CinemaMainPage from './components/customer/cinema/CinemaMainPage.vue'
+
+import CustomerRegister from '@/components/RegisterPage.vue'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import ChooseSeatPage from '@/components/customer/ticket/ChooseSeatPage.vue'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import MovieMainPage from "@/components/customer/movie/MovieMainPage.vue";
 export default createRouter({
   history: createWebHistory(),
   routes: [
@@ -26,6 +37,11 @@ export default createRouter({
     { path: '/manager', component: ManagerView },
     { path: '/admin', component: AdminView },
     { path: '/movie/:movieId', component: MovieDetailPage },
-    { path: '/register', component: CustomerRegister }
+    { path: '/staff/:staffId', component: StaffDetailPage },
+    { path: '/cinema', component: CinemaMainPage },
+    { path: '/cinema/:cinemaId', component: CinemaDetailPage },
+    { path: '/register', component: CustomerRegister },
+    { path: '/buy/:movieId/:cinemaId/:hallId/:startTime', component: ChooseSeatPage },
+    {path:'/movie',component:MovieMainPage}
   ]
 })

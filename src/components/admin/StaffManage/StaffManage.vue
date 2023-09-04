@@ -5,7 +5,7 @@ import type { FormInstance } from 'element-plus'
 import Staff from '@/models/Staff'
 import { onMounted, ref } from 'vue'
 import type { Ref } from 'vue';
-import TopBar from '@/components/manager/TopBar.vue'
+import TopBar from '@/components/admin/TopBar.vue'
 import UploadImage from '@/helpers/UploadImage.vue'
 
 const targetIndex = ref(0)

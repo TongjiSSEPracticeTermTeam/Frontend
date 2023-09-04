@@ -11,7 +11,7 @@ const handle_select = (path: string) => {
       router.push('/')
       break
     case '2':
-      router.push('/')
+      router.push('/movie')
       break
     case '3':
       router.push('/')

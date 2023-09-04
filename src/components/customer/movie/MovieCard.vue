@@ -32,6 +32,9 @@ const handleMovieClick = (movie: Movie) => {
         <p class="movie-card-releaseDate">
           上映日期：{{ moment(movie.releaseDate).format('MM-DD') }}
         </p>
+        <p class="movie-card-relmovalDate">
+          下架日期：{{ moment(movie.removalDate).format('MM-DD') }}
+        </p>
         <el-tag v-for="(tag, index) in movie.tags?.split(',')" :key="index" class="movie-card-tag">
           {{ tag }}
         </el-tag>
@@ -89,7 +92,12 @@ const handleMovieClick = (movie: Movie) => {
 }
 .movie-card-releaseDate {
   font-size: 15px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+}
+
+.movie-card-relmovalDate {
+  font-size: 15px;
+  margin-bottom: 12px;
 }
 
 .movie-card-tag {
