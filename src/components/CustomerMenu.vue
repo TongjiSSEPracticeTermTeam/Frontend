@@ -17,7 +17,7 @@ const handle_select = (path: string) => {
       router.push('/')
       break
     case '4':
-      router.push('/')
+      router.push('/tickets')
       break
     case '5':
       router.push('/login')

@@ -21,6 +21,7 @@ import CustomerRegister from '@/components/RegisterPage.vue'
 // @ts-ignore
 import ChooseSeatPage from '@/components/customer/ticket/ChooseSeatPage.vue'
 import TicketSuccessPage from "@/components/customer/ticket/TicketSuccessPage.vue";
+import TicketListPage from '@/components/customer/orders/TicketListPage.vue'
 
 export default createRouter({
   history: createWebHistory(),
@@ -32,6 +33,7 @@ export default createRouter({
     { path: '/movie/:movieId', component: MovieDetailPage },
     { path: '/register', component: CustomerRegister },
     { path: '/buy/:movieId/:cinemaId/:hallId/:startTime', component: ChooseSeatPage },
-    { path: '/ticket/success', component: TicketSuccessPage },
+    { path: '/buy/success', component: TicketSuccessPage },
+    { path: '/tickets', component: TicketListPage }
   ]
 })
