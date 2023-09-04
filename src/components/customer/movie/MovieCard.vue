@@ -35,9 +35,11 @@ const handleMovieClick = (movie: Movie) => {
         <p class="movie-card-relmovalDate">
           下架日期：{{ moment(movie.removalDate).format('MM-DD') }}
         </p>
-        <el-tag v-for="(tag, index) in movie.tags?.split(',')" :key="index" class="movie-card-tag">
-          {{ tag }}
-        </el-tag>
+        <el-row>
+          <el-tag v-for="(tag, index) in movie.tags?.split(',')" :key="index" class="movie-card-tag">
+            {{ tag }}
+          </el-tag>
+        </el-row>
         <el-button type="primary" class="movie-card-button" @click="handleMovieClick(movie)"
           >查看详情
         </el-button>
@@ -102,9 +104,10 @@ const handleMovieClick = (movie: Movie) => {
 
 .movie-card-tag {
   margin-right: 8px;
+  margin-bottom: 8px;
 }
 .movie-card-button {
-  margin-top: 32px;
+  margin-top: 16px;
   margin-bottom: 0px;
 }
 </style>

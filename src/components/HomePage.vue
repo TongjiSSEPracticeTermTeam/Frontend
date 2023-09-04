@@ -5,10 +5,13 @@ import Movie from '@/models/Movie'
 import axios from 'axios'
 import MovieCard from '@/components/customer/movie/MovieCard.vue'
 import { ElMessage } from 'element-plus'
+import Cinema from "@/models/Cinema";
+import CinemaCard from "@/components/customer/cinema/CinemaCard.vue";
 
 const movies = ref<Movie[]>([])
 const hotMovies = ref<Movie[]>([])
 const comingSoonMovies = ref<Movie[]>([])
+const cinemas=ref<Cinema[]>([])
 
 const isOnPlay = (releaseDate: string|null, removalDate: string|null) => {
   if(!releaseDate || !removalDate) return false
@@ -53,9 +56,18 @@ const loadComingSoonMovies = async () => {
   comingSoonMovies.value = movies.value.filter((movie) => isCommingSoon(movie.releaseDate));
 }
 
+const loadCinemas = ()=>{
+   axios.get('/api/Cinema?page_size=10&page_number=1').then((r)=>{
+     if(r.data&&r.data.status&&r.data.status==='10000'){
+       cinemas.value=r.data.data
+     }
+   })
+}
+
 onMounted(() => {
   loadMovies()
   loadBoxOffice()
+  loadCinemas()
 })
 
 /**
@@ -163,7 +175,17 @@ const loadBoxOffice = () => {
                 <div style="display: flex" class="mx-5">
                   <h1 class="title">热门电影院</h1>
                   <div style="flex-grow: 1" />
-                  <el-link href="">全部</el-link>
+                  <el-link href="/cinema">全部</el-link>
+                </div>
+                <div class="mx-auto px-5">
+                  <el-space wrap>
+                    <div v-for="(cinema, index) in cinemas" :key="index">
+                      <div class="my-3">
+                        <cinema-card :cinema="cinema"/>
+                        <div class="mt-3 text-center">{{ cinema.name }}</div>
+                      </div>
+                    </div>
+                  </el-space>
                 </div>
               </el-card>
             </el-space>
