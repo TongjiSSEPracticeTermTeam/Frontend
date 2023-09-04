@@ -16,11 +16,15 @@ const currentClass=ref('1') //表示当前处于正在热映还是即将上映,1
 const onPlayMovies=ref<Movie[]>([])
 const commingSoonMovies=ref<Movie[]>([])
 const currentPage=ref(1)
-const pageSize=ref(6) //一页展示的电影数量
+const pageSize=ref(10) //一页展示的电影数量
 
 const start = computed(() => (currentPage.value - 1) * pageSize.value);
 const paginatedMovies = computed(() => movies.value.slice(start.value, start.value + pageSize.value));
 const totalMovies = computed(() => movies.value.length);
+
+const orderType=ref('1') //电影排列按照什么排序,1为按照评分排序，2为按照时间排序
+
+const searchText=ref('')
 
 const tagSelected=(t)=>{
   selectedTags.value=t
@@ -58,11 +62,37 @@ const initMovies=()=>{
         }else if(currentClass.value==='2'){
           movies.value=commingSoonMovies.value
         }
+        orderMovie()
       }
     }
   })
+}
 
-
+const orderMovie=()=>{
+  currentPage.value=1
+  if(orderType.value==='1'){
+      //按评分排序
+      movies.value=movies.value.sort((a,b)=>{
+        if(a.score===null){
+          return 1
+        }else if(b.score===null){
+          return -1
+        }else{
+          return b.score-a.score
+        }
+      })
+    }else if(orderType.value==='2'){
+      //按时间排序
+      movies.value=movies.value.sort((a,b)=>{
+        if(a.releaseDate===null){
+          return -1
+        }else if(b.releaseDate===null){
+          return 1
+        }else{
+          return new Date(b.releaseDate).getTime()-new Date(a.releaseDate).getTime()
+        }
+      })
+  }
 }
 
 const updateMoviesByTag=()=>{
@@ -98,6 +128,7 @@ const updateMoviesByTag=()=>{
       return flag
     })
   }
+  orderMovie()
 }
 
 const isOnPlay=(releaseDate:string|null,removalDate:string|null)=>{
@@ -137,9 +168,17 @@ const updateMoviesByYear=()=>{
     return selectedYears.value.includes(movie.releaseDate.substring(0,4))
   })
 }
+
+const updateMoviesBySearch=()=>{
+  movies.value=movies.value.filter((movie)=>{
+    return movie.name.includes(searchText.value)
+  })
+}
+
 const updateMovies=()=>{
   updateMoviesByTag()
   // updateMoviesByYear()
+  updateMoviesBySearch()
 }
 
 onMounted(()=>{
@@ -168,11 +207,34 @@ onMounted(()=>{
           <el-col :span="3"/>
         </el-row>
       </div>
-      <div class="m-5">
+      <div class="m-5 ">
         <el-row>
           <el-col :span="3"/>
           <el-col :span="18">
             <el-card class="translucent-card">
+              <el-row>
+                <el-col :span="6">
+                  <el-radio-group v-model="orderType" class="ml-4" @change="orderMovie">
+                    <el-radio label="1">按评分排序</el-radio>
+                    <el-radio label="2">按时间排序</el-radio>
+                  </el-radio-group>
+                </el-col>
+                <el-col :span="8"/>
+                <el-col :span="7" >
+                  <!-- 搜索框 -->
+                  <el-input
+                      placeholder="请搜索电影名称"
+                      v-model="searchText"
+                      class="mx-4">
+                      <template #prefix>
+                        <el-icon class="el-input__icon"><search /></el-icon>
+                      </template>
+                  </el-input>
+                </el-col>
+                <el-col :span="2">
+                  <el-button type="primary" class="ml-10" @click="updateMovies">搜索</el-button>
+                </el-col>
+              </el-row>
               <el-space wrap>
                 <div v-for="(movie, index) in paginatedMovies" :key="index">
                   <div class="my-3">
