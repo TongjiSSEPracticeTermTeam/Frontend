@@ -4,10 +4,12 @@ import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import Cinema from '@/models/Cinema'
 import type { SessionDetail } from '@/models/QuickType/SessionDetail'
+import MovieSessionsCard from '@/components/customer/movie/MovieSessionsCard.vue'
 import { ElCard, ElMessage, ElLoading, } from 'element-plus'
 
 const cinema = ref(new Cinema())
 const sessions = ref<{ [key: string]: SessionDetail[] }>({})
+const activeSessionDate = ref('0')
 const route = useRoute()
 const router = useRouter()
 
@@ -18,10 +20,22 @@ onMounted(() => {
         fullscreen: true
     })
 
+    let finished = 0
+    const callFinish = () => {
+        finished += 1
+        if (finished >= 2) {
+            loading.close()
+        }
+    }
+
     axios.get(`/api/Cinema/${route.params.cinemaId}`)
         .then((res) => {
             if (res.data.status && res.data.status === '10000') {
                 cinema.value = res.data.data
+                callFinish()
+            }
+            else {
+                ElMessage.error('影院加载错误')
             }
         })
         .catch((err) => {
@@ -33,21 +47,24 @@ onMounted(() => {
         .then((res) => {
             if (res.data.status && res.data.status === '10000') {
                 sessions.value = res.data.data
+                // console.log(sessions.value)
+                callFinish()
+            }
+            else {
+                ElMessage.error('影院加载错误')
             }
         })
         .catch((err) => {
             console.log(err)
             ElMessage.error('影院排片加载错误')
         })
-
-    loading.close()
 })
 
 </script>
 
 <template>
     <div class="content">
-        <div class="mx-10 pt-5">
+        <div class="mx-10 pt-10">
             <el-card class="w-full">
                 <div class="flex items-center">
                     <h2 class="text-red-500 text-2xl font-bold">影院信息</h2>
@@ -80,7 +97,15 @@ onMounted(() => {
             </el-card>
         </div>
         <div class="mx-10 pt-5">
-            
+            <el-card class="w-full">
+                <div class="flex items-center">
+                    <h2 class="text-red-500 text-2xl font-bold">近期场次</h2>
+                    <div class="grow" />
+                    <!-- <el-button link>全部</el-button> -->
+                    <!--这个是假按钮-->
+                </div>
+                <MovieSessionsCard v-model:active-session-date="activeSessionDate" :sessions="sessions" />
+            </el-card>
         </div>
     </div>
 </template>

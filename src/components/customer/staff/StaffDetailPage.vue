@@ -35,8 +35,8 @@ const handleMovieDetail = (movieId: string) => {
 </script>
 
 <template>
-    <div class="content">
-        <div class="mx-10 pt-5">
+    <div class="content  py-10">
+        <div class="mx-10">
             <el-card class="w-full">
                 <div class="flex items-center">
                     <h2 class="text-red-500 text-2xl font-bold">演员信息</h2>
@@ -65,7 +65,7 @@ const handleMovieDetail = (movieId: string) => {
             </el-card>
         </div>
         <div class="mx-10 pt-5">
-            <el-card class="max-w-fit">
+            <el-card class="max-w-full">
                 <div class="flex items-center">
                     <h2 class="text-red-500 text-2xl font-bold">导演电影</h2>
                 </div>
@@ -86,7 +86,7 @@ const handleMovieDetail = (movieId: string) => {
             </el-card>
         </div>
         <div class="mx-10 pt-5">
-            <el-card class="max-w-fit">
+            <el-card class="max-w-full">
                 <div class="flex items-center">
                     <h2 class="text-red-500 text-2xl font-bold">参演电影</h2>
                 </div>
