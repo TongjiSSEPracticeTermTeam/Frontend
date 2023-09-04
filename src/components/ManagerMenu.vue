@@ -8,8 +8,15 @@ const router = useRouter()
 const handle_select = (path: string) => {
   switch (path) {
     case '0':
-      if (store.state.currentUser.type === 'Manager') router.push('/manager')
-      else router.push('/admin')
+            if (store.state.currentUser.type === 'CinemaAdmin') {
+                router.push('/manager')
+                console.log(store.state.currentUser.type);
+            }
+            else if (store.state.currentUser.type === 'SysAdmin') {
+                router.push('/admin')
+                console.log(store.state.currentUser.type);
+            }
+            else { console.log(store.state.currentUser.type); }
       break
     case '2':
       router.push('/')
@@ -18,7 +25,6 @@ const handle_select = (path: string) => {
       window.localStorage.removeItem('token')
       store.commit('logout')
       router.push('/')
-      window.location.reload()
       break
   }
 }

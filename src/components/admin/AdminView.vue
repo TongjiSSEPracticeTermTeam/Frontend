@@ -38,6 +38,7 @@ const settingItems: {
     ),
     needCard: true
   }
+  
 ]
 
 let currentItem = ref(0)
