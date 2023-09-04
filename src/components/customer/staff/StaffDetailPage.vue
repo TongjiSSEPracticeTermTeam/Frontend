@@ -20,6 +20,7 @@ onMounted(() => {
         .then((res) => {
             console.log(res)
             staff.value = res.data.data
+            console.log(staff.value)
             loading.close()
         })
         .catch((err) => {
@@ -54,7 +55,7 @@ const handleMovieDetail = (movieId: string) => {
                             </div>
                             <div>
                                 <h2 class="text-lg font-extrabold">影人性别：</h2>
-                                <span class="text-gray-400">{{ staff.gender == '1' ? '女' : '男' }}</span>
+                                <span class="text-gray-400">{{ staff.gender == 'female' ? '女' : '男' }}</span>
                             </div>
                             <div>
                                 <h2 class="text-lg font-extrabold">影人介绍：</h2>

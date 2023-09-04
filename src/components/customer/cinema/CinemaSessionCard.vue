@@ -53,7 +53,7 @@ const handleBuyTicket = (session: SessionDetail) => {
     </el-tabs>
     <div v-else class="my-28 text-center">
       <h3 v-if="isMovie">很抱歉，该影片当前暂无排片</h3>
-      <h3 v-else>很抱歉，影院当天暂无排片</h3>
+      <h3 v-else>很抱歉，影院当前暂无排片</h3>
     </div>
   </div>
 </template>

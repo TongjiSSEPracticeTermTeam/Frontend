@@ -17,7 +17,7 @@ const handle_select = (path: string) => {
       router.push('/')
       break
     case '4':
-      router.push('/')
+      router.push('/staff')
       break
     case '5':
       router.push('/login')
@@ -45,7 +45,7 @@ defineExpose({ handle_select })
   </el-menu-item>
   <el-menu-item index="2"><span style="font-size: 1.3em">电影</span></el-menu-item>
   <el-menu-item index="3"><span style="font-size: 1.3em">影院</span></el-menu-item>
-  <el-menu-item index="4"><span style="font-size: 1.3em">订单</span></el-menu-item>
+  <el-menu-item index="4"><span style="font-size: 1.3em">影人</span></el-menu-item>
   <el-sub-menu v-if="store.state.isLogged" index="5">
     <template #title>
       <span style="font-size: 1.3em">{{ store.state.currentUser.displayName }}</span>

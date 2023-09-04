@@ -80,31 +80,6 @@ const updateTable = () => {
     })
 }
 
-// onMounted(() => {
-//   loading.value = true
-//   axios
-//     .get('/api/Staff')
-//     .then((res) => {
-//       staffs.value = res.data.data
-
-//       //分页初始化
-//       total.value = staffs.value.length
-//       loading.value = false
-//     })
-//     .catch((err) => {
-//       // 处理错误情况
-//       console.log(err)
-//       ElMessageBox.alert('数据加载失败！', '错误', {
-//         // if you want to disable its autofocus
-//         // autofocus: false,
-//         confirmButtonText: 'OK',
-//         callback: () => {
-//           ElMessage.error('数据加载错误')
-//         }
-//       })
-//     })
-// })
-
 const staffDelete = function (name: string, id: string) {
   ElMessageBox.confirm(`确定要删除 ${name} 吗`, 'Warning', {
     confirmButtonText: '确定',
