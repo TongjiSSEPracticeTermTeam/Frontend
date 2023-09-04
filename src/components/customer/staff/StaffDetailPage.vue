@@ -2,7 +2,7 @@
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElCard, ElMessage, } from 'element-plus'
+import { ElCard, ElMessage, ElLoading, } from 'element-plus'
 import { StaffDetail } from '@/models/Staff'
 
 const route = useRoute()
@@ -10,10 +10,17 @@ const router = useRouter()
 const staff = ref(new StaffDetail())
 
 onMounted(() => {
+    const loading = ElLoading.service({
+        lock: true,
+        text: '加载中',
+        fullscreen: true
+    })
+
     axios.get(`/api/Staff/detail/${route.params.staffId}`)
         .then((res) => {
             console.log(res)
             staff.value = res.data.data
+            loading.close()
         })
         .catch((err) => {
             console.log(err)
@@ -29,13 +36,12 @@ const handleMovieDetail = (movieId: string) => {
 
 <template>
     <div class="content">
-        <div class="mx-10 pt-2">
-            <el-card style="margin: 10px auto" shadow="hover">
+        <div class="mx-10 pt-5">
+            <el-card class="w-full">
                 <div class="flex items-center">
                     <h2 class="text-red-500 text-2xl font-bold">演员信息</h2>
                 </div>
-                <div class="my-5 pt-1">
-                    <div class="flex flex-row">
+                    <div class="flex flex-row my-5 pt-1">
                         <div class="grid place-item-center basis-1/3 mx-10">
                             <el-space alignment="center" :fill="true">
                                 <el-image style="width: 300px; height: 400px;" :src="staff.imageUrl" fit="contain" />
@@ -56,11 +62,10 @@ const handleMovieDetail = (movieId: string) => {
                             </div>
                         </el-space>
                     </div>
-                </div>
             </el-card>
         </div>
-        <div class="my-5">
-            <el-card class="max-w-fit mx-10 px-5">
+        <div class="mx-10 pt-5">
+            <el-card class="max-w-fit">
                 <div class="flex items-center">
                     <h2 class="text-red-500 text-2xl font-bold">导演电影</h2>
                 </div>
@@ -80,8 +85,8 @@ const handleMovieDetail = (movieId: string) => {
                 </div>
             </el-card>
         </div>
-        <div class="my-5">
-            <el-card class="max-w-fit mx-10 px-5">
+        <div class="mx-10 pt-5">
+            <el-card class="max-w-fit">
                 <div class="flex items-center">
                     <h2 class="text-red-500 text-2xl font-bold">参演电影</h2>
                 </div>
