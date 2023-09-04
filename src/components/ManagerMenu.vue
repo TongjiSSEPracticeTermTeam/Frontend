@@ -25,7 +25,6 @@ const handle_select = (path: string) => {
       window.localStorage.removeItem('token')
       store.commit('logout')
       router.push('/')
-      window.location.reload()
       break
   }
 }
