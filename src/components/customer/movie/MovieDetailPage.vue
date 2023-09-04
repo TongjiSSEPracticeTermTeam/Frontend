@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { type MovieDetail } from '@/models/QuickType/MovieDetail'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElCard, ElMessage } from 'element-plus'
 import ColorThief from 'color-thief-ts'
 import tinygradient from 'tinygradient'
@@ -143,6 +143,12 @@ const posterLoaded = () => {
 }
 
 const activeSessionDate = ref('0')
+
+const router = useRouter()
+const handleStaffDetail = (staffId: string) => {
+  console.log("test")
+  router.push(`/staff/${staffId}`)
+}
 </script>
 
 <template>
@@ -181,7 +187,8 @@ const activeSessionDate = ref('0')
               </div>
               <div class="my-5 pt-1">
                 <el-space size="large" wrap>
-                  <div v-for="act in movie.acts" :key="act.staffId">
+                  <div v-for="act in movie.acts" :key="act.staffId" 
+                  @click="handleStaffDetail(act.staffId)" class="cursor-pointer">
                     <el-image
                       :src="act.staff.imageUrl"
                       fit="contain"

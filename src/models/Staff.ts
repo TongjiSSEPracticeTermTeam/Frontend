@@ -1,3 +1,5 @@
+import { eMovie } from './Movie'
+
 export default class Staff {
   staffId: string
   name: string
@@ -21,5 +23,16 @@ export class eStaff {
   public constructor() {
     this.staffId = ''
     this.name = ''
+  }
+}
+
+export class StaffDetail extends Staff {
+  directMovies: eMovie[] | null
+  starMovies: eMovie[] | null
+
+  public constructor() {
+    super()
+    this.directMovies = null
+    this.starMovies = null
   }
 }

@@ -16,6 +16,8 @@ import AdminView from '@/components/admin/AdminView.vue'
 import MovieDetailPage from '@/components/customer/movie/MovieDetailPage.vue'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import StaffDetailPageVue from '@/components/customer/staff/StaffDetailPage.vue'
+
 import CustomerRegister from '@/components/RegisterPage.vue'
 
 export default createRouter({
@@ -26,6 +28,7 @@ export default createRouter({
     { path: '/manager', component: ManagerView },
     { path: '/admin', component: AdminView },
     { path: '/movie/:movieId', component: MovieDetailPage },
+    { path: '/staff/:staffId', component: StaffDetailPageVue },
     { path: '/register', component: CustomerRegister }
   ]
 })

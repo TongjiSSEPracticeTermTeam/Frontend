@@ -57,3 +57,15 @@ export default class Movie {
     }
   }
 }
+
+export class eMovie {
+  movieId: string
+  name: string
+  postUrl: string
+
+  public constructor() {
+    this.movieId = ''
+    this.name = ''
+    this.postUrl = ''
+  }
+}

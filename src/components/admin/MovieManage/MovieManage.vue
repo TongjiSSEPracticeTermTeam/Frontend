@@ -277,13 +277,22 @@ const saveDetail = async () => {
   }
   await formRef.value.validate((valid, fields) => {
     // 表单检验
+    let actorTest = currentMovie.value.actors?.find(actor => actor.staffId == currentMovie.value.director?.staffId)
+    if (actorTest != undefined) {
+      ElMessage({
+        message: `${actorTest.name} 不能既是导演又是演员`,
+        type: 'warning'
+      })
+      return
+    }
+
     if (valid) {
       if (addingMovie.value) {
         addSaveMovie()
         return
       }
       savingDetail.value = true
-      console.log(currentMovie.value)
+      // console.log(currentMovie.value)
 
       axios
         .post('/api/Movies', currentMovie.value)
@@ -407,8 +416,8 @@ const topbarHandleFail = () => {
 const searchInfo = ref('')
 const dialogVisible = ref(false)
 const handleSearch = (movieId: string) => {
-    searchInfo.value = movieId
-    dialogVisible.value = true
+  searchInfo.value = movieId
+  dialogVisible.value = true
 }
 </script>
 
@@ -417,7 +426,7 @@ const handleSearch = (movieId: string) => {
     <h1 class="text-2xl font-bold">电影管理</h1>
     <el-divider />
     <el-dialog v-model="dialogVisible" title="评论管理">
-        <Comment :initialSearchInfo="searchInfo" />
+      <Comment :initialSearchInfo="searchInfo" />
     </el-dialog>
     <el-space>
       <el-button type="primary" @click="addMovie">添加电影</el-button>
@@ -427,10 +436,10 @@ const handleSearch = (movieId: string) => {
       <el-table :data="movies" style="width: 100%" :stripe="true" v-loading="moviesLoading"
         @cell-mouse-enter="changeCurrentIndex">
 
-        <el-table-column prop="movieId" label="电影Id" width="80" >
+        <el-table-column prop="movieId" label="电影Id" width="80">
           <template #default="{ $index }">
-          {{ movies[$index]['movieId'] }}
-          <el-button link type="primary" size="small" @click="() => {
+            {{ movies[$index]['movieId'] }}
+            <el-button link type="primary" size="small" @click="() => {
               Object.assign(currentMovie, movies[$index])
               handleSearch(movies[$index]['movieId'])
             }">查看评论
