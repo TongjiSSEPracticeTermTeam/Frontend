@@ -12,6 +12,7 @@ declare module 'vue' {
     AttributeSelect: typeof import('./src/components/customer/movie/AttributeSelect.vue')['default']
     ChooseSeatPage: typeof import('./src/components/customer/ticket/ChooseSeatPage.vue')['default']
     ChooseSeatView: typeof import('./src/components/customer/ticket/ChooseSeatView.vue')['default']
+    CinemaCard: typeof import('./src/components/customer/cinema/CinemaCard.vue')['default']
     CinemaDetailPage: typeof import('./src/components/customer/cinema/CinemaDetailPage.vue')['default']
     CinemaInfo: typeof import('./src/components/admin/CinemaManage/CinemaInfo.vue')['default']
     CinemaMainPage: typeof import('./src/components/customer/cinema/CinemaMainPage.vue')['default']

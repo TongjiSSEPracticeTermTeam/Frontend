@@ -74,9 +74,7 @@ const handleMovieDetail = (movieId: string) => {
                         <div v-for="movie in staff.directMovies" :key="movie.movieId"
                             @click="handleMovieDetail(movie.movieId)" class="cursor-pointer">
                             <el-image :src="movie.postUrl" fit="cover" style="height: 300px; width: 200px" />
-                            <div class="text-center">
-                                <h3>{{ movie.name }}</h3>
-                            </div>
+                            <div class="mt-3 text-center">{{ movie.name }}</div>
                         </div>
                     </el-space>
                 </div>
@@ -95,9 +93,7 @@ const handleMovieDetail = (movieId: string) => {
                         <div v-for="movie in staff.starMovies" :key="movie.movieId"
                             @click="handleMovieDetail(movie.movieId)" class="cursor-pointer">
                             <el-image :src="movie.postUrl" fit="cover" style="height: 300px; width: 200px" />
-                            <div class="text-center break-words">
-                                <h3>{{ movie.name }}</h3>
-                            </div>
+                            <div class="mt-3 text-center">{{ movie.name }}</div>
                         </div>
                     </el-space>
                 </div>
