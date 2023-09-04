@@ -3,15 +3,18 @@ import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { type MovieDetail } from '@/models/QuickType/MovieDetail'
 import { useRoute, useRouter } from 'vue-router'
-import { ElCard, ElMessage } from 'element-plus'
+import { ElCard, ElLoading, ElMessage } from 'element-plus'
 import ColorThief from 'color-thief-ts'
 import tinygradient from 'tinygradient'
-import moment from 'moment'
 import type { SessionDetail } from '@/models/QuickType/SessionDetail'
 import CommentCard from '@/components/customer/comment/CommentCard.vue'
-import type { CommentData } from '@/models/QuickType/CommentData'
+import type { Comment, CommentData } from '@/models/QuickType/CommentData'
+import { useStore } from 'vuex'
+import Interaction from '@/models/interaction'
+import MovieSessionsCard from '@/components/customer/movie/MovieSessionsCard.vue'
 
 const route = useRoute()
+const store = useStore()
 const movie = ref<MovieDetail>({
   movieId: '',
   name: '',
@@ -27,11 +30,30 @@ const movie = ref<MovieDetail>({
   sessions: []
 })
 const sessions = ref<{ [key: string]: SessionDetail[] }>({})
-const comments = ref<CommentData>({ hotComments: [], newComments: [] })
+const comments = ref<{ [key: string]: Comment }>({})
+const commentIndex = ref<{ hotComments: string[]; newComments: string[] }>({
+  hotComments: [],
+  newComments: []
+})
+const interactions = ref<{ [key: string]: Interaction }>({})
 
 onMounted(async () => {
   let domImg = document.querySelector('#poster') as HTMLImageElement
   domImg.crossOrigin = ''
+
+  const loading = ElLoading.service({
+    lock: true,
+    text: '加载中',
+    fullscreen: true
+  })
+
+  let finished = 0
+  const callFinish = () => {
+    finished += 1
+    if (finished >= 3) {
+      loading.close()
+    }
+  }
 
   axios
     .get(`/api/Movies/detail/${route.params.movieId}`)
@@ -40,11 +62,12 @@ onMounted(async () => {
         movie.value = res.data.data
 
         // 预处理数据，把导演移到最前
-        let directorIndex = movie.value.acts.findIndex((a) => a.role == '导演')
+        let directorIndex = movie.value.acts.findIndex((a) => a.role == '1')
         if (directorIndex >= 0) {
           let director = movie.value.acts.splice(directorIndex, 1)
           movie.value.acts.unshift(director[0])
         }
+        callFinish()
       } else {
         ElMessage({
           message: `请求电影信息失败：${res.data.message}`,
@@ -65,6 +88,7 @@ onMounted(async () => {
       if (res.data.status && res.data.status === '10000') {
         sessions.value = res.data.data
         activeSessionDate.value = Object.keys(sessions.value)[0]
+        callFinish()
       } else {
         ElMessage({
           message: `请求排片信息失败：${res.data.message}`,
@@ -83,7 +107,47 @@ onMounted(async () => {
     .get(`/api/Comment/inMovieDetail/${route.params.movieId}`)
     .then((res) => {
       if (res.data.status && res.data.status === '10000') {
-        comments.value = res.data.data
+        let rawComments: CommentData = res.data.data
+        rawComments.hotComments.forEach((v) => {
+          if (!comments.value[v.commentId]) {
+            comments.value[v.commentId] = v
+          }
+          commentIndex.value.hotComments.push(v.commentId)
+        })
+        rawComments.newComments.forEach((v) => {
+          if (!comments.value[v.commentId]) {
+            comments.value[v.commentId] = v
+          }
+          commentIndex.value.newComments.push(v.commentId)
+        })
+
+        if (store.state.currentUser.type === 'Customer') {
+          let commentIdSet = Object.keys(comments.value)
+          axios
+            .post(`/api/Interaction/get`, Array.from(commentIdSet))
+            .then((res) => {
+              if (res.data.status && res.data.status === '10000') {
+                let result: Interaction[] = res.data.data
+                result.forEach((v) => {
+                  if (!interactions.value[v.commentId]) {
+                    interactions.value[v.commentId] = v
+                  }
+                })
+              } else {
+                ElMessage({
+                  message: `请求评论交互信息失败：${res.data.message}`,
+                  type: 'warning'
+                })
+              }
+            })
+            .catch(() => {
+              ElMessage({
+                message: `请求评论交互信息失败：网络错误`,
+                type: 'warning'
+              })
+            })
+        }
+        callFinish()
       } else {
         ElMessage({
           message: `请求评论信息失败：${res.data.message}`,
@@ -149,6 +213,60 @@ const handleStaffDetail = (staffId: string) => {
   console.log("test")
   router.push(`/staff/${staffId}`)
 }
+const commentInteraction = (commentId: string, type: number) => {
+  let backup: [Comment, Interaction | undefined] = [
+    comments.value[commentId],
+    interactions.value[commentId]
+  ]
+  if (!interactions.value[commentId]) {
+    interactions.value[commentId] = new Interaction(commentId)
+  }
+  if (backup[1] && backup[1]?.type >= 0) {
+    if (backup[1] && backup[1]?.type === 0) {
+      comments.value[commentId].dislikeCount -= 1
+    } else {
+      comments.value[commentId].likeCount -= 1
+    }
+  }
+  if (type === 1) {
+    comments.value[commentId].likeCount += 1
+  } else if (type === 0) {
+    comments.value[commentId].dislikeCount += 1
+  }
+  interactions.value[commentId].type = type
+  axios
+    .post('/api/Interaction', interactions.value[commentId])
+    .then((res) => {
+      if (res.data.status && res.data.status === '10000') {
+        /* empty */
+      } else {
+        ElMessage({
+          message: `评论交互操作失败：${res.data.message}`,
+          type: 'warning'
+        })
+        comments.value[commentId] = backup[0]
+        if (backup[1]) {
+          interactions.value[commentId] = backup[1]!
+        } else {
+          delete interactions.value[commentId]
+        }
+      }
+    })
+    .catch(() => {
+      ElMessage({
+        message: `评论交互操作失败：网络错误`,
+        type: 'warning'
+      })
+      comments.value[commentId] = backup[0]
+      if (backup[1]) {
+        interactions.value[commentId] = backup[1]!
+      } else {
+        delete interactions.value[commentId]
+      }
+    })
+}
+
+const pickSessionsDialogOpen = ref(false)
 </script>
 
 <template>
@@ -166,7 +284,7 @@ const handleStaffDetail = (staffId: string) => {
               <div class="ml-10 py-5" :style="`color: ${posterCardFontColor}`">
                 <h1 class="text-4xl font-extrabold">{{ movie.name }}</h1>
                 <h2 class="mt-5">时长：{{ movie.duration }}分钟</h2>
-                <h2 class="mt-1 mb-5" v-if="movie.acts.length > 0 && movie.acts[0].role === '导演'">
+                <h2 class="mt-1 mb-5" v-if="movie.acts.length > 0 && movie.acts[0].role === '1'">
                   导演：{{ movie.acts[0].staff.name }}
                 </h2>
                 <h2
@@ -175,7 +293,9 @@ const handleStaffDetail = (staffId: string) => {
                 />
                 <h2 class="my-3">观众评分：{{ movie.score ?? '暂无评分' }}</h2>
                 <div class="my-10">
-                  <el-button color="#FFA500"><span class="m-5">选座购票</span></el-button>
+                  <el-button color="#FFA500" @click="pickSessionsDialogOpen = true">
+                    <span class="m-5">选座购票</span>
+                  </el-button>
                 </div>
               </div>
             </div>
@@ -196,7 +316,7 @@ const handleStaffDetail = (staffId: string) => {
                     />
                     <div class="text-center">
                       <h3>{{ act.staff.name }}</h3>
-                      <h3 class="text-gray-400">{{ act.role }}</h3>
+                      <h3 class="text-gray-400">{{ act.role === '1' ? '导演' : '演员' }}</h3>
                     </div>
                   </div>
                 </el-space>
@@ -205,35 +325,15 @@ const handleStaffDetail = (staffId: string) => {
           </div>
           <el-card class="mx-10 px-5">
             <div class="flex items-center">
-              <h2 class="text-red-500 text-2xl font-bold">近期排片</h2>
+              <h2 class="text-red-500 text-2xl font-bold">近期场次</h2>
               <div class="grow" />
               <!-- <el-button link>全部</el-button> -->
               <!--这个是假按钮-->
             </div>
-            <div class="my-5">
-              <el-tabs v-model="activeSessionDate">
-                <el-tab-pane
-                  v-for="(dt, i) in sessions"
-                  :key="i"
-                  :label="moment(i).format('MM-DD')"
-                  :name="i"
-                >
-                  <div v-for="(s, j) in dt" :key="j" class="pt-2">
-                    <div class="flex items-center">
-                      <h3 class="text-xl">{{ moment(s.startTime).format('HH:mm') }}</h3>
-                      <h3 class="ml-5">{{ s.hallLocatedAt.cinemaBelongTo.name }}</h3>
-                      <h3 class="ml-5">{{ parseInt(s.hallLocatedAt.id) }}号厅</h3>
-                      <h3 class="ml-5">{{ s.language }}</h3>
-                      <h3 class="ml-5">{{ s.dimesion }}</h3>
-                      <div class="grow" />
-                      <h3 class="text-xl">￥{{ s.price }}</h3>
-                      <el-button class="ml-5" type="primary">购票</el-button>
-                    </div>
-                    <el-divider />
-                  </div>
-                </el-tab-pane>
-              </el-tabs>
-            </div>
+            <MovieSessionsCard
+              v-model:active-session-date="activeSessionDate"
+              :sessions="sessions"
+            />
           </el-card>
           <el-card class="mx-10 px-5">
             <div class="flex items-center">
@@ -247,9 +347,11 @@ const handleStaffDetail = (staffId: string) => {
                 <div class="w-full my-5">
                   <CommentCard
                     class="mb-5"
-                    v-for="c in comments.hotComments"
-                    :key="c"
-                    :comment="c"
+                    v-for="c in commentIndex.hotComments"
+                    :key="comments[c]"
+                    :comment="comments[c]"
+                    :interaction="interactions[c]"
+                    @Interact="commentInteraction"
                   />
                 </div>
               </div>
@@ -260,9 +362,11 @@ const handleStaffDetail = (staffId: string) => {
                 <div class="w-full my-5">
                   <CommentCard
                     class="mb-5"
-                    v-for="c in comments.newComments"
-                    :key="c"
-                    :comment="c"
+                    v-for="c in commentIndex.newComments"
+                    :key="comments[c]"
+                    :comment="comments[c]"
+                    :interaction="interactions[c]"
+                    @Interact="commentInteraction"
                   />
                 </div>
               </div>
@@ -273,6 +377,9 @@ const handleStaffDetail = (staffId: string) => {
       <div class="grow" />
     </div>
   </div>
+  <el-dialog v-model="pickSessionsDialogOpen" title="选择场次" width="800px" align-center>
+    <MovieSessionsCard :sessions="sessions" v-model:active-session-date="activeSessionDate" />
+  </el-dialog>
 </template>
 
 <style scoped lang="scss">
