@@ -5,7 +5,7 @@
   <h1 class="text-2xl font-bold">排片管理</h1>
   <el-divider />
 
-  <el-container class="layout-container-demo" style="height: 80vh">
+  <el-container style="height: 80vh">
 
     <el-aside width="250px">
       <el-scrollbar>
@@ -27,8 +27,88 @@
     </el-aside>
 
     <el-container>
-      <el-main>Main</el-main>
-      <el-footer style=" height: 170px;">
+      <el-main>
+
+        <el-container>
+          <el-aside style="width: auto; height: 440px;">
+            <el-container>
+              <el-main>
+                <!-- <br>
+                <el-row justify="center">
+                  <el-col :span="10" class="statistic_bgcolor">
+                    <el-statistic class="pt10 pb10 pl10 pr10" title="电影时长" :value="duration" />
+                  </el-col>
+
+                  <el-col :span="10" class="statistic_bgcolor">
+                    <el-statistic class="pt10 pb10 pl10 pr10" title="标签" :value="tags" />
+                  </el-col>
+                </el-row>
+                <br>
+                <el-row justify="center">
+                  <el-col :span="10" class="statistic_bgcolor">
+                    <el-statistic class="pt10 pb10 pl10 pr10" title="影院上座率" :value="occupancyRate" />
+                  </el-col>
+
+                  <el-col :span="10" class="statistic_bgcolor">
+                    <el-statistic class="pt10 pb10 pl10 pr10" title="票房" :value="ticketSales" />
+                  </el-col>
+                </el-row>
+                <br> -->
+              </el-main>
+              <el-footer>
+                <h3 class="text-xl">电影排片</h3>
+                <div class="demo-datetime-picker">
+                  <div class="block">
+                    电影开始时间&nbsp;&nbsp;
+                    <el-date-picker v-model="value" type="datetime" placeholder="请选择日期和时间" size="large"
+                      style="width: 220px;" />
+                    <br>
+                    &nbsp;&nbsp;电影影厅选择
+                    <el-select v-model="value" class="m-2" placeholder="请选择影厅" size="large" style="width: 220px;">
+                      <el-option v-for="item in halls" :key="item.value" :label="item.label" :value="item.value" />
+                    </el-select>
+                    <br>
+                    <div style="text-align: right;">
+                      <el-button type="primary">确定</el-button>&nbsp;&nbsp;
+                    </div>
+                  </div>
+                </div>
+              </el-footer>
+            </el-container>
+          </el-aside>
+
+          <el-main>
+            <h3 class="text-xl">场次上座率与时间段函数</h3>
+            <br>
+            <el-row justify="center">
+              <el-col :span="10" class="statistic_bgcolor">
+                <el-statistic class="pt10 pb10 pl10 pr10" title="电影时长" :value="duration" />
+              </el-col>
+
+              <el-col :span="10" class="statistic_bgcolor">
+                <el-statistic class="pt10 pb10 pl10 pr10" title="标签" :value="tags" />
+              </el-col>
+            </el-row>
+            <br>
+            <el-row justify="center">
+              <el-col :span="10" class="statistic_bgcolor">
+                <el-statistic class="pt10 pb10 pl10 pr10" title="影院上座率" :value="occupancyRate" />
+              </el-col>
+
+              <el-col :span="10" class="statistic_bgcolor">
+                <el-statistic class="pt10 pb10 pl10 pr10" title="票房" :value="ticketSales" />
+              </el-col>
+            </el-row>
+            <br>
+          </el-main>
+
+        </el-container>
+      </el-main>
+
+      <el-footer style=" height: 230px;">
+        <el-select v-model="value" class="m-2" placeholder="请选择影厅" size="large">
+          <el-option v-for="item in halls" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
         <el-scrollbar>
           <div class="scrollbar-flex-content">
             <div v-for="time in times" class="scrollbar-item">
@@ -42,8 +122,20 @@
   </el-container>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
+import { ref } from 'vue'
+
+const value = ref('')
+</script>
+
+<script script lang = "ts" >
+// import echarts from 'echarts';
+// import VueECharts from 'vue-echarts'; // 引入 VueECharts 组件
+
 export default {
+  // components: {
+  //   VueECharts, // 注册 VueECharts 组件
+  // },
   data: () => {
     return {
       movies: [
@@ -104,9 +196,55 @@ export default {
             'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
           name: 'Movie 2'
         },
-        // 其他电影信息...
       ],
-      selectedMovie: ""
+      selectedMovie: "",
+      halls: [
+        {
+          value: 'Option1',
+          label: 'Option1',
+        },
+        {
+          value: 'Option2',
+          label: 'Option2',
+        },
+        {
+          value: 'Option3',
+          label: 'Option3',
+        },
+        {
+          value: 'Option4',
+          label: 'Option4',
+        },
+        {
+          value: 'Option5',
+          label: 'Option5',
+        },
+      ],
+      duration: "这么长",
+      tags: "tag tag tag",
+      occupancyRate: "这么da",
+      ticketSales: 1,
+      chartOptions: {
+        xAxis: {
+          type: 'category',
+          data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月'],
+        },
+        yAxis: {
+          type: 'value',
+        },
+        series: [
+          {
+            type: 'line',
+            data: [120, 200, 150, 80, 70, 110, 130],
+          },
+        ],
+        title: {
+          text: '折线图示例',
+        },
+        legend: {
+          data: ['销量'],
+        },
+      },
     }
   },
   methods: {
@@ -115,7 +253,8 @@ export default {
     }
   },
   mounted() {
-
+    // 设置初始选中第一个电影
+    this.selectedMovie = this.movies[0].id;
   },
   watch: {
 
@@ -186,34 +325,35 @@ export default {
   /* 去掉链接下划线样式 */
 }
 
-.layout-container-demo .el-header {
-  position: relative;
-  background-color: var(--el-color-primary-light-7);
-  color: var(--el-text-color-primary);
-}
-
-.layout-container-demo .el-aside {
-  color: var(--el-text-color-primary);
-  background: var(--el-color-primary-light-8);
-}
-
-.layout-container-demo .el-menu {
-  border-right: none;
-}
-
-.layout-container-demo .el-main {
-  padding: 0;
-}
-
-.layout-container-demo .toolbar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  right: 20px;
-}
-
 .highlighted {
   background-color: #c7deed;
   /* 自定义被选中项的背景颜色 */
-}</style>
+}
+</style>
+
+<style scoped>
+.demo-datetime-picker {
+  display: flex;
+  width: 100%;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.demo-datetime-picker .block {
+  padding: 30px 0;
+  text-align: center;
+  border-right: solid 1px var(--el-border-color);
+  flex: 1;
+}
+
+.demo-datetime-picker .block:last-child {
+  border-right: none;
+}
+
+.demo-datetime-picker .demonstration {
+  display: block;
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+</style>
