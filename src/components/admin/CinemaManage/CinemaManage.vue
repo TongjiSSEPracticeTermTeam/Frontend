@@ -7,6 +7,7 @@ import type { FormInstance } from 'element-plus'
 import TopBar from '@/components/admin/TopBar.vue'
 import CinemaInfo from '@/components/admin/CinemaManage/CinemaInfo.vue'
 import UploadImage from '@/helpers/UploadImage.vue'
+import AreaSelect from '@/helpers/AreaSelect.vue'
 
 let currentTags = computed({
   get(): string[] {
@@ -351,6 +352,11 @@ const topbarHandleFail = () => {
   currentPage.value = 1
   updateTable()
 }
+
+const handleSelected = (selectedOptions: string) => {
+  newCinema.value.location = selectedOptions
+  console.log(newCinema.value.location)
+  }
 </script>
 
 <template>
@@ -412,9 +418,13 @@ const topbarHandleFail = () => {
         <el-input v-model="newCinema.name" @change="formStatus = true" placeholder="请输入影院名称" trigger="blur" />
       </el-form-item>
 
-      <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
+      <!-- <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
         <el-input v-model="newCinema.location" type="textarea" @change="formStatus = true"
           :autosize="{ minRows: 2, maxRows: 3 }" placeholder="请输入影院地址" />
+      </el-form-item> -->
+
+      <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
+        <AreaSelect @selected="handleSelected"></AreaSelect>
       </el-form-item>
 
       <el-form-item label="影院标签">
