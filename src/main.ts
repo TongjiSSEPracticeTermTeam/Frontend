@@ -16,6 +16,7 @@ import '@/helpers/axios'
 import store from './store'
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import VueQrcode from '@chenfengyuan/vue-qrcode'
 
 import '@/helpers/fontawesome'
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome'
@@ -25,4 +26,5 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 app.component('font-awesome-icon', FontAwesomeIcon)
+app.component(VueQrcode.name, VueQrcode)
 app.mount('#app')

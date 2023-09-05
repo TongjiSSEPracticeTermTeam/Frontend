@@ -27,6 +27,7 @@ declare module 'vue' {
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
     ElCarouselItem: typeof import('element-plus/es')['ElCarouselItem']
+    ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElCheckTag: typeof import('element-plus/es')['ElCheckTag']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElDialog: typeof import('element-plus/es')['ElDialog']
@@ -42,6 +43,7 @@ declare module 'vue' {
     ElPagination: typeof import('element-plus/es')['ElPagination']
     ElRadio: typeof import('element-plus/es')['ElRadio']
     ElRadioGroup: typeof import('element-plus/es')['ElRadioGroup']
+    ElResult: typeof import('element-plus/es')['ElResult']
     ElRow: typeof import('element-plus/es')['ElRow']
     ElSkeleton: typeof import('element-plus/es')['ElSkeleton']
     ElSkeletonItem: typeof import('element-plus/es')['ElSkeletonItem']
@@ -67,6 +69,9 @@ declare module 'vue' {
     StaffDetailPage: typeof import('./src/components/customer/staff/StaffDetailPage.vue')['default']
     StaffMainPage: typeof import('./src/components/customer/staff/StaffMainPage.vue')['default']
     StaffManage: typeof import('./src/components/admin/StaffManage/StaffManage.vue')['default']
+    TicketComponent: typeof import('./src/components/customer/orders/TicketComponent.vue')['default']
+    TicketListPage: typeof import('./src/components/customer/orders/TicketListPage.vue')['default']
+    TicketSuccessPage: typeof import('./src/components/customer/ticket/TicketSuccessPage.vue')['default']
     TopBar: typeof import('./src/components/admin/TopBar.vue')['default']
   }
   export interface ComponentCustomProperties {
