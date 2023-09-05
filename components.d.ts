@@ -17,7 +17,6 @@ declare module 'vue' {
     CinemaDetailPage: typeof import('./src/components/customer/cinema/CinemaDetailPage.vue')['default']
     CinemaInfo: typeof import('./src/components/admin/CinemaManage/CinemaInfo.vue')['default']
     CinemaMainPage: typeof import('./src/components/customer/cinema/CinemaMainPage.vue')['default']
-    'CinemaMainPage - 副本': typeof import('./src/components/customer/cinema/CinemaMainPage - 副本.vue')['default']
     CinemaManage: typeof import('./src/components/admin/CinemaManage/CinemaManage.vue')['default']
     CinemaSessionCard: typeof import('./src/components/customer/cinema/CinemaSessionCard.vue')['default']
     ClickTag: typeof import('./src/components/customer/movie/ClickTag.vue')['default']
