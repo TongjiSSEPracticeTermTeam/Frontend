@@ -1,4 +1,60 @@
 <script setup lang="ts">
+import axios from 'axios';
+import { ElMessageBox, ElMessage } from 'element-plus'
+import { ref } from 'vue'
+import Cinema from '@/models/Cinema'
+const loading = ref(true)
+const paginationLoading = ref(false)
+const total = ref(10)
+const cinemaId = ref('000008')
+const movieId = ref('000010')
+let value = ref('')
+const cinemas = ref<Cinema[]>([])
+
+const updateTable = () => {
+  paginationLoading.value = true
+  axios
+    .get(`/api/MoviesInHall/${cinemaId.value}`)
+    .then((res) => {
+      if (res.data && res.data.status && res.data.status === '10000') {
+        total.value = res.data.data
+      }
+      paginationLoading.value = false
+      loading.value = true
+      axios
+        .get(`/api/MoviesInHall/detail/${movieId.value}`)//这里不对
+        .then((res) => {
+          if (res.data && res.data.status && res.data.status === '10000') {
+            cinemas.value = res.data.data
+          }
+          loading.value = false
+        })
+        .catch((err) => {
+          loading.value = false
+          console.log(err)
+          ElMessageBox.alert('数据加载失败！', '错误', {
+            // if you want to disable its autofocus
+            // autofocus: false,
+            confirmButtonText: 'OK',
+            callback: () => {
+              ElMessage.error('数据加载错误')
+            }
+          })
+        })
+    })
+    .catch((err) => {
+      paginationLoading.value = false
+      console.log(err)
+      ElMessageBox.alert('数据加载失败！', '错误', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: 'OK',
+        callback: () => {
+          ElMessage.error('数据加载错误')
+        }
+      })
+    })
+}
 </script>
 
 <template>
@@ -83,7 +139,17 @@
             <br>
             <el-row justify="center">
               <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="电影时长" :value="duration" />
+                <el-statistic class="pt10 pb10 pl10 pr10" title="电影名" :value="name" />
+              </el-col>
+
+              <el-col :span="10" class="statistic_bgcolor">
+                <el-statistic class="pt10 pb10 pl10 pr10" title="时长" :value="duration" />
+              </el-col>
+            </el-row>
+            <br>
+            <el-row justify="center">
+              <el-col :span="10" class="statistic_bgcolor">
+                <el-statistic class="pt10 pb10 pl10 pr10" title="评分" :value="score" />
               </el-col>
 
               <el-col :span="10" class="statistic_bgcolor">
@@ -91,16 +157,7 @@
               </el-col>
             </el-row>
             <br>
-            <el-row justify="center">
-              <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="影院上座率" :value="occupancyRate" />
-              </el-col>
 
-              <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="票房" :value="ticketSales" />
-              </el-col>
-            </el-row>
-            <br>
           </el-main>
 
         </el-container>
@@ -123,20 +180,9 @@
   </el-container>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue'
-
-const value = ref('')
-</script>
-
-<script script lang = "ts" >
-// import echarts from 'echarts';
-// import VueECharts from 'vue-echarts'; // 引入 VueECharts 组件
+<script lang = "ts" >
 
 export default {
-  // components: {
-  //   VueECharts, // 注册 VueECharts 组件
-  // },
   data: () => {
     return {
       movies: [
@@ -223,13 +269,15 @@ export default {
       ],
       duration: "这么长",
       tags: "tag tag tag",
-      occupancyRate: "这么da",
-      ticketSales: 1,
+      introduction: "jieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjie",
+      score: 10,
+      name: "aobenhaim o",
     }
   },
   methods: {
     selectMovie(movieId: string) {
       this.selectedMovie = movieId;
+
     }
   },
   mounted() {
