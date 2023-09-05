@@ -65,7 +65,7 @@ onMounted(() => {
   <div class="content">
     <div class="flex">
       <div class="grow" />
-      <div class="m-5" style="width: 1024px">
+      <div class="m-5 my-5" style="width: 1024px">
         <el-card class="w-full">
           <div class="flex items-center">
             <h2 class="text-red-500 text-2xl font-bold">影院信息</h2>
@@ -106,7 +106,7 @@ onMounted(() => {
             </el-space>
           </div>
         </el-card>
-        <el-card class="w-full">
+        <el-card class="w-full my-5">
           <div class="flex items-center">
             <h2 class="text-red-500 text-2xl font-bold">近期场次</h2>
             <div class="grow" />
