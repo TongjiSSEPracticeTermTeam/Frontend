@@ -20,7 +20,9 @@ data () {
 },
 methods: {
     handleChange() {
-    this.$emit('selected', this.selectedOptions)
+        //返回选中的省市区，将selectedOptions数组转化为一个string存储在selectedArea中
+        let selectedArea = this.selectedOptions.join('')
+        this.$emit('selected', selectedArea)
     }
 }
 }

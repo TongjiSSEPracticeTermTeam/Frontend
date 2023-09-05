@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SessionDetail } from '@/models/QuickType/SessionDetail'
 import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import Movie from '@/models/Movie'
@@ -12,6 +12,7 @@ import type { TicketDetail } from '@/models/QuickType/TicketDetail'
 import SeatNumberComponent from '@/components/customer/ticket/SeatNumberComponent.vue'
 
 const route = useRoute()
+const router = useRouter()
 
 const session = ref<SessionDetail>()
 const movie = ref<Movie>(new Movie())
@@ -109,10 +110,7 @@ const handleBuy = () => {
     .post('/api/Ticket/buy', form)
     .then((res) => {
       if (res.data.status && res.data.status === '10000') {
-        ElMessage({
-          message: `购票成功`,
-          type: 'success'
-        })
+        router.push('/buy/success')
       } else {
         ElMessage({
           message: `购票失败：${res.data.message}`,

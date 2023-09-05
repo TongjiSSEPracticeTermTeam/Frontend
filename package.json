@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@chenfengyuan/vue-qrcode": "2",
     "@element-plus/icons-vue": "^2.1.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
@@ -23,6 +24,7 @@
     "element-plus": "^2.3.7",
     "font-pingfang-sc": "^1.0.5",
     "moment": "^2.29.4",
+    "qrcode": "1",
     "sass": "^1.63.6",
     "tinygradient": "^1.1.5",
     "uuid": "^9.0.0",
