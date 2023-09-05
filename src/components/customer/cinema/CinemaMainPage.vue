@@ -112,13 +112,31 @@ onMounted(()=>{
           <el-col :span="3"/>
           <el-col :span="18" class="translucent-card">
             <el-card>
-              <tagSelect @selected="tagSelected" :label="'类型'" :tags="tags" ></tagSelect>
-
-              <div style="display: flex; align-items: center;">
-                <label for="area-select" style="margin-right: 10px;">地区选择</label>
-                <AreaSelect id="area-select" @selected="areaSelected"></AreaSelect>
-              </div>
-
+              <el-row>
+                <el-col :span="10">
+                  <div style="display: flex; align-items:center;">
+                    <label for="area-select" class="mx-5" style="color: darkblue;">地区选择</label>
+                    <AreaSelect id="area-select" @selected="areaSelected" class="mr-10"></AreaSelect>
+                  </div>
+                </el-col>
+                <el-col :span="14">
+                  <el-row>
+                    <el-col :span="16">
+                      <!-- 搜索框 -->
+                      <el-input placeholder="请搜索影院名称" v-model="searchText" class="ml-10">
+                        <template #prefix>
+                          <el-icon class="el-input__icon"><search /></el-icon>
+                        </template>
+                      </el-input>
+                    </el-col>
+                    <el-col :span="1"/>
+                    <el-col :span="6">
+                      <el-button type="primary" class="ml-4" @click="updateCinemasBySearch">搜索</el-button>
+                    </el-col>
+                  </el-row>
+                </el-col>
+              </el-row>
+              <tagSelect @selected="tagSelected" :label="'类型'" :tags="tags"></tagSelect>
             </el-card>
           </el-col>
           <el-col :span="3"/>
@@ -129,23 +147,6 @@ onMounted(()=>{
           <el-col :span="3"/>
           <el-col :span="18">
             <el-card class="translucent-card">
-              <el-row>
-                <el-col :span="14"/>
-                <el-col :span="7" >
-                  <!-- 搜索框 -->
-                  <el-input
-                      placeholder="请搜索影院名称"
-                      v-model="searchText"
-                      class="mx-4">
-                      <template #prefix>
-                        <el-icon class="el-input__icon"><search /></el-icon>
-                      </template>
-                  </el-input>
-                </el-col>
-                <el-col :span="2">
-                  <el-button type="primary" class="ml-10" @click="updateCinemasBySearch">搜索</el-button>
-                </el-col>
-              </el-row>
               <el-space wrap>
                 <div v-for="(cinema, index) in paginatedCinemas" :key="index">
                   <div class="my-3">

@@ -7,7 +7,7 @@
     :placeholder="defaultPlace"
     @change="handleChange">
     </el-cascader>
-    <el-button type="primary" @click="resetArea">重置</el-button>
+    <el-button class="mx-2.5" type="primary" @click="resetArea">重置</el-button>
 </div>
 </template>
 
