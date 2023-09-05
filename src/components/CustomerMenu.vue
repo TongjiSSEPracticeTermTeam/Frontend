@@ -16,7 +16,7 @@ const handle_select = (path: string) => {
     case '2':
       router.push('/movie')
       break
-    case '3'://进入影院界面
+    case '3': //进入影院界面
       console.log('3')
       router.push('/cinema')
       break
@@ -41,7 +41,6 @@ const handle_select = (path: string) => {
       router.push('/')
       window.location.reload()
       break
-
   }
 }
 defineExpose({ handle_select })
@@ -58,7 +57,10 @@ defineExpose({ handle_select })
   <el-menu-item index="4"><span style="font-size: 1.3em">影人</span></el-menu-item>
   <el-sub-menu v-if="store.state.isLogged" index="5">
     <template #title>
-      <span style="font-size: 1.3em">{{ store.state.currentUser.displayName }}</span>
+      <span style="font-size: 1.3em" class="flex items-center">
+        {{ store.state.currentUser.displayName }}
+        <img v-if="store.state.currentUser.vip" src="/img/vip.png" class="ml-2" style="width: 32px; height: 32px;"/>
+      </span>
     </template>
     <el-menu-item index="5-1">个人中心</el-menu-item>
     <el-menu-item index="5-2">订单</el-menu-item>

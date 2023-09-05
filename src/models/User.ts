@@ -5,6 +5,7 @@ export default class User {
   email: string
   vip:string //vip结束日期
   type: 'Anonymous' | 'Customer' | 'Manager' | 'Administrator'
+  vip: boolean
 
   constructor() {
     this.id = ''
@@ -13,5 +14,6 @@ export default class User {
     this.email = ''
     this.vip = ''
     this.type = 'Anonymous'
+    this.vip = false
   }
 }
