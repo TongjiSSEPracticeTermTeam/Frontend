@@ -84,6 +84,7 @@ declare module 'vue' {
     TicketSuccessPage: typeof import('./src/components/customer/ticket/TicketSuccessPage.vue')['default']
     TopBar: typeof import('./src/components/admin/TopBar.vue')['default']
     TopBarForCus: typeof import('./src/components/customer/staff/topBarForCus.vue')['default']
+    VipCreator: typeof import('./src/components/customer/vip/VipCreator.vue')['default']
   }
   export interface ComponentCustomProperties {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
