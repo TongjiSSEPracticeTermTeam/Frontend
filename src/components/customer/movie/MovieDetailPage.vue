@@ -273,9 +273,8 @@ const pickSessionsDialogOpen = ref(false)
   <div class="content py-10">
     <div class="flex w-full">
       <div class="grow" />
-      <div>
-        <el-space direction="vertical" alignment="normal" size="large" fill>
-          <el-card class="mx-10 poster-card">
+      <div style="width: 1200px;">
+          <el-card class="mx-10 my-5 poster-card">
             <div class="poster-card-background" :style="`background: ${posterCardBackground};`" />
             <div class="poster-card-content flex">
               <div class="movie-poster">
@@ -301,7 +300,7 @@ const pickSessionsDialogOpen = ref(false)
             </div>
           </el-card>
           <div>
-            <el-card class="mx-10 px-5">
+            <el-card class="mx-10 my-5 px-5">
               <div class="flex items-center">
                 <h2 class="text-red-500 text-2xl font-bold">演职员</h2>
               </div>
@@ -323,7 +322,7 @@ const pickSessionsDialogOpen = ref(false)
               </div>
             </el-card>
           </div>
-          <el-card class="mx-10 px-5">
+          <el-card class="mx-10 my-5 px-5">
             <div class="flex items-center">
               <h2 class="text-red-500 text-2xl font-bold">近期场次</h2>
               <div class="grow" />
@@ -335,7 +334,7 @@ const pickSessionsDialogOpen = ref(false)
               :sessions="sessions"
             />
           </el-card>
-          <el-card class="mx-10 px-5">
+          <el-card class="mx-10 my-5 px-5">
             <div class="flex items-center">
               <h2 class="text-red-500 text-2xl font-bold">评论</h2>
               <div class="grow" />
@@ -372,7 +371,6 @@ const pickSessionsDialogOpen = ref(false)
               </div>
             </div>
           </el-card>
-        </el-space>
       </div>
       <div class="grow" />
     </div>
