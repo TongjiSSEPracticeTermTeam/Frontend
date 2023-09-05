@@ -7,11 +7,15 @@ import MovieCard from '@/components/customer/movie/MovieCard.vue'
 import { ElMessage } from 'element-plus'
 import Cinema from "@/models/Cinema";
 import CinemaCard from "@/components/customer/cinema/CinemaCard.vue";
+import PersonCard from '@/components/customer/person/PersonCard.vue'
+import { useStore } from 'vuex'
 
 const movies = ref<Movie[]>([])
 const hotMovies = ref<Movie[]>([])
 const comingSoonMovies = ref<Movie[]>([])
 const cinemas=ref<Cinema[]>([])
+
+const store = useStore()
 
 const isOnPlay = (releaseDate: string|null, removalDate: string|null) => {
   if(!releaseDate || !removalDate) return false
@@ -192,7 +196,7 @@ const loadBoxOffice = () => {
           </el-col>
           <el-col :span="6">
             <el-space size="large" direction="vertical" alignment="normal" fill class="w-full">
-              <el-card>欢迎您访问同济院线</el-card>
+              <PersonCard :user="store.state.currentUser"></PersonCard>
               <el-card>
                 <h2 class="text-xl font-bold">今日全国票房</h2>
                 <p class="text-gray-400">全国票房数据由艺恩提供</p>
