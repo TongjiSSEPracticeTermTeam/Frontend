@@ -94,31 +94,34 @@ const topbarHandleFail = () => {
 </script>
 
 <template>
-    <div class="content w-4/5 mx-auto py-5 ">
-        <el-row align="middle" justify="space-between">
-            <el-col :span="20">
-                <TopBar currentItem="1" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
-            </el-col>
-        </el-row>
-        <main class="w-full m-0">
-            <!-- 加载时的骨架屏 -->
-            <el-skeleton :loading="loading" animated>
-                <template #template>
-                    <el-row :gutter="10">
-                        <el-col :span="4" v-for="n in pageSize" :key="n">
-                            <div class="skeleton" style="height: 280px">
-                                <el-skeleton-item variant="rect" class="w-full h-280px" />
-                            </div>
-                        </el-col>
-                    </el-row>
-                </template>
-                <template #default>
-                    <el-row :gutter="10">
-                        <el-col :span="4" v-for="staff in staffs" :key="staff">
-                            <el-card shadow="hover" class="p-0 mb-0 h-280px cursor-pointer" @click="handleStaffDetail(staff.staffId)">
-                                <el-image :src="staff.imageUrl" fit="cover"
-                                    style="height: 160px; width: 100%; margin: 0; padding: 0" />
-                                <div class="staffInfo" style="
+    <div class="content">
+        <div class="w-4/5 mx-auto py-5 ">
+            <el-card class="w-full">
+                <el-row align="middle" justify="space-between">
+                    <el-col :span="20">
+                        <TopBar currentItem="1" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
+                    </el-col>
+                </el-row>
+                <main class="w-full m-0">
+                    <!-- 加载时的骨架屏 -->
+                    <el-skeleton :loading="loading" animated>
+                        <template #template>
+                            <el-row :gutter="10">
+                                <el-col :span="4" v-for="n in pageSize" :key="n">
+                                    <div class="skeleton" style="height: 280px">
+                                        <el-skeleton-item variant="rect" class="w-full h-280px" />
+                                    </div>
+                                </el-col>
+                            </el-row>
+                        </template>
+                        <template #default>
+                            <el-row :gutter="10">
+                                <el-col :span="4" v-for="staff in staffs" :key="staff">
+                                    <el-card shadow="hover" class="p-0 mb-0 h-280px cursor-pointer"
+                                        @click="handleStaffDetail(staff.staffId)">
+                                        <el-image :src="staff.imageUrl" fit="cover"
+                                            style="height: 160px; width: 100%; margin: 0; padding: 0" />
+                                        <div class="staffInfo" style="
                   padding: 2px;
                   height: 90px;
                   display: flex;
@@ -126,24 +129,26 @@ const topbarHandleFail = () => {
                   justify-content: space-between;
                   align-items: center;
                 ">
-                                    <div class="flex justify-around w-4/5">
-                                        <span class="text-lg text-gray-400">{{ staff.gender == '1' ? '女' : '男' }}</span>
-                                    </div>
-                                    <div class="staffName">
-                                        <span class="staffName" style="font-size: 1.2em">{{ staff.name }}</span>
-                                    </div>
-                                </div>
-                            </el-card>
-                        </el-col>
-                    </el-row>
-                    <!-- 分页栏 -->
-                    <el-pagination background layout="sizes, prev, pager, next" :page-sizes="[12, 18, 24, 30]"
-                        class="mx-0 py-5 justify-center" v-model:total="total" v-model:page-size="pageSize"
-                        v-model:current-page="currentPage" v-loading="paginationLoading"
-                        @current-change="handleCurrentChange" @size-change="handleSizeChange" />
-                </template>
-            </el-skeleton>
-        </main>
+                                            <div class="flex justify-around w-4/5">
+                                                <span class="text-lg text-gray-400">{{ staff.gender == '1' ? '女' : '男'
+                                                }}</span>
+                                            </div>
+                                            <div class="staffName">
+                                                <span class="staffName" style="font-size: 1.2em">{{ staff.name }}</span>
+                                            </div>
+                                        </div>
+                                    </el-card>
+                                </el-col>
+                            </el-row>
+                            <!-- 分页栏 -->
+                            <el-pagination background layout="sizes, prev, pager, next" :page-sizes="[12, 18, 24, 30]"
+                                class="mx-0 py-5 justify-center" v-model:total="total" v-model:page-size="pageSize"
+                                v-model:current-page="currentPage" v-loading="paginationLoading"
+                                @current-change="handleCurrentChange" @size-change="handleSizeChange" />
+                        </template>
+                    </el-skeleton>
+                </main>
+            </el-card>
+        </div>
     </div>
-
 </template>
