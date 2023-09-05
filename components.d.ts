@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    '副本': typeof import('./src/components/customer/cinema/CinemaMainPage - 副本.vue')['default']
     ActorSetting: typeof import('./src/components/admin/MovieManage/actorSetting.vue')['default']
     AdminView: typeof import('./src/components/admin/AdminView.vue')['default']
     AttributeSelect: typeof import('./src/components/customer/movie/AttributeSelect.vue')['default']
@@ -28,6 +29,7 @@ declare module 'vue' {
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
     ElCarouselItem: typeof import('element-plus/es')['ElCarouselItem']
+    ElCascader: typeof import('element-plus/es')['ElCascader']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
     ElCheckTag: typeof import('element-plus/es')['ElCheckTag']
     ElCol: typeof import('element-plus/es')['ElCol']

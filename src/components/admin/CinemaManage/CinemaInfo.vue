@@ -5,7 +5,7 @@ import { computed, onMounted, ref, nextTick } from 'vue'
 import Cinema from '@/models/Cinema'
 import axios from 'axios'
 import UploadImage from '@/helpers/UploadImage.vue'
-
+import AreaSelect from '@/helpers/AreaSelect.vue'
 const props = defineProps({
   cinemaId: String,
   modelValue: Boolean
@@ -176,7 +176,10 @@ const confirmForm = async () => {
     }
   })
 }
-
+const handleSelected = (selectedOptions: string) => {
+  cinema.value.location = selectedOptions
+  console.log(cinema.value.location)
+  }
 defineExpose({ cancelForm })
 </script>
 
@@ -213,9 +216,12 @@ defineExpose({ cancelForm })
                 placeholder="请输入影院名" />
             </el-form-item>
             <!-- 电影院地址修改 -->
-            <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
+            <!-- <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
               <el-input v-model="cinema.location" type="textarea" @change="formStatus = true" maxlength="25"
                 show-word-limit :autosize="{ minRows: 2, maxRows: 3 }" placeholder="请输入影院地址" />
+            </el-form-item> -->
+            <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
+              <AreaSelect @selected="handleSelected"></AreaSelect>{{ cinema.location }}
             </el-form-item>
             <!-- 电影院特点 -->
             <el-form-item label="影院标签">

@@ -20,6 +20,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "axios": "^1.4.0",
     "color-thief-ts": "^1.1.1",
+    "element-china-area-data": "^6.0.2",
     "element-plus": "^2.3.7",
     "font-pingfang-sc": "^1.0.5",
     "moment": "^2.29.4",

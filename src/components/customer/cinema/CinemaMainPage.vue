@@ -4,7 +4,7 @@ import tagSelect from "@/components/customer/movie/AttributeSelect.vue"
 import axios from "axios";
 import type Cinema from "@/models/Cinema";
 import CinemaCard from "./CinemaCard.vue";
-
+import AreaSelect from "@/helpers/AreaSelect.vue";
 const tags=ref<string[]>([])
 const selectedTags=ref([])
 
@@ -12,10 +12,9 @@ const cinemas=ref<Cinema[]>([])
 const allCinemas=ref<Cinema[]>([])
 const currentPage=ref(1)
 const pageSize=ref(10) //一页展示的影院数量
-
 const start = computed(() => (currentPage.value - 1) * pageSize.value);
 const paginatedCinemas = computed(() => cinemas.value.slice(start.value, start.value + pageSize.value));
-
+const AreaSelected=ref('')
 const searchText=ref('')
 
 const tagSelected=(t)=>{
@@ -53,6 +52,9 @@ const updateCinemasByTag=()=>{
     })
     return flag
   })
+  cinemas.value = cinemas.value.filter((cinema) => {
+    return cinema.location.includes(AreaSelected.value)
+  })
 }
 
 
@@ -71,8 +73,29 @@ const updateCinemasBySearch=()=>{
     })
     return flag
   })
+  cinemas.value = cinemas.value.filter((cinema) => {
+    return cinema.location.includes(AreaSelected.value)
+  })
 }
 
+const areaSelected = (selectedOptions: [string, string, string]) => {
+  AreaSelected.value = selectedOptions[0] + selectedOptions[1] + selectedOptions[2]
+  console.log('所选地区为', AreaSelected)
+  AreaSelected.value = AreaSelected.value.slice(0, 3)//由于地区设置问题只保留省份
+  cinemas.value = allCinemas.value.filter((cinema) => {
+    return cinema.location.includes(AreaSelected.value)
+  })
+  cinemas.value = cinemas.value.filter((cinema) => {
+    let flag = true
+    selectedTags.value.forEach((tag) => {
+      if (!cinema.feature.includes(tag)) {
+        flag = false
+      }
+    })
+    return flag
+  })
+  
+}
 
 onMounted(()=>{
   initCinemas()
@@ -90,6 +113,12 @@ onMounted(()=>{
           <el-col :span="18" class="translucent-card">
             <el-card>
               <tagSelect @selected="tagSelected" :label="'类型'" :tags="tags" ></tagSelect>
+
+              <div style="display: flex; align-items: center;">
+                <label for="area-select" style="margin-right: 10px;">地区选择</label>
+                <AreaSelect id="area-select" @selected="areaSelected"></AreaSelect>
+              </div>
+
             </el-card>
           </el-col>
           <el-col :span="3"/>
