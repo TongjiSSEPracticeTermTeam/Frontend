@@ -402,6 +402,11 @@ const handleSearch = (movieId: string) => {
   searchInfo.value = movieId
   dialogVisible.value = true
 }
+
+const handleUploadSuccess = (Url: string) => {
+  currentMovie.value.postUrl = Url
+  editStatus.value = true
+}
 </script>
 
 <template>
@@ -618,7 +623,7 @@ const handleSearch = (movieId: string) => {
           <!--          </el-button-group>-->
           <UploadImage
             api-path="/api/Movies/poster"
-            @Success="(url) => (currentMovie.postUrl = url)"
+            @Success="handleUploadSuccess"
           />
         </el-space>
       </el-form-item>

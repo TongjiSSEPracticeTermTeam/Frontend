@@ -4,7 +4,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter, } from 'vue-router'
 import { ElCard, ElMessage, ElMessageBox } from 'element-plus'
 import { Staff } from '@/models/Staff'
-import TopBar from '@/components/admin/TopBar.vue'
+import topBarForCus from './topBarForCus.vue'
 
 const staffs = ref<Staff[]>([])
 const router = useRouter()
@@ -99,7 +99,7 @@ const topbarHandleFail = () => {
             <el-card class="w-full">
                 <el-row align="middle" justify="space-between">
                     <el-col :span="20">
-                        <TopBar currentItem="1" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
+                        <topBarForCus @success="topbarHandleSuccess" @fail="topbarHandleFail" />
                     </el-col>
                 </el-row>
                 <main class="w-full m-0">
