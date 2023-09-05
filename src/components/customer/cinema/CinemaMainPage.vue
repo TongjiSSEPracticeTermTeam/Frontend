@@ -78,10 +78,10 @@ const updateCinemasBySearch=()=>{
   })
 }
 
-const areaSelected = (selectedOptions: [string, string, string]) => {
-  AreaSelected.value = selectedOptions[0] + selectedOptions[1] + selectedOptions[2]
+const areaSelected = (selectedOptions:  string) => {
+  AreaSelected.value = selectedOptions
   console.log('所选地区为', AreaSelected)
-  AreaSelected.value = AreaSelected.value.slice(0, 3)//由于地区设置问题只保留省份
+  //AreaSelected.value = AreaSelected.value.slice(0, 3)//由于地区设置问题只保留省份
   cinemas.value = allCinemas.value.filter((cinema) => {
     return cinema.location.includes(AreaSelected.value)
   })

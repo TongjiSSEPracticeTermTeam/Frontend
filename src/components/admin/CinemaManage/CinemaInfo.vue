@@ -215,13 +215,10 @@ defineExpose({ cancelForm })
               <el-input v-model="cinema.name" maxlength="20" @change="formStatus = true" show-word-limit
                 placeholder="请输入影院名" />
             </el-form-item>
-            <!-- 电影院地址修改 -->
-            <!-- <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
-              <el-input v-model="cinema.location" type="textarea" @change="formStatus = true" maxlength="25"
-                show-word-limit :autosize="{ minRows: 2, maxRows: 3 }" placeholder="请输入影院地址" />
-            </el-form-item> -->
             <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
-              <AreaSelect @selected="handleSelected"></AreaSelect>{{ cinema.location }}
+              <AreaSelect :defaultPlace="cinema.location" @selected="handleSelected"></AreaSelect>
+              <el-input v-model="cinema.location" type="textarea" @change="formStatus = true" maxlength="25"
+                show-word-limit :autosize="{ minRows: 2, maxRows: 3 }" placeholder="请输入详情地址" />
             </el-form-item>
             <!-- 电影院特点 -->
             <el-form-item label="影院标签">
