@@ -74,6 +74,8 @@ onMounted(() => {
       })
     })
 })
+
+// const filters = ref(['open','closed'])
 </script>
 
 <template>
@@ -85,6 +87,13 @@ onMounted(() => {
           <div class="flex items-center">
             <h2 class="text-red-500 text-2xl font-bold">订单列表</h2>
           </div>
+          <!-- <div class="mt-4 mb-1 flex items-center">
+            <span class="text-sm">筛选</span>
+            <el-checkbox-group class="ml-3" v-model="filters">
+              <el-checkbox-button label="open">未结束</el-checkbox-button>
+              <el-checkbox-button label="closed">已结束</el-checkbox-button>
+            </el-checkbox-group>
+          </div> -->
         </el-card>
         <div v-if="loadFinished">
           <TicketComponent

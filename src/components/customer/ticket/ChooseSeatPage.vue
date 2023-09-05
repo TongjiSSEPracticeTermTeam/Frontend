@@ -10,9 +10,12 @@ import ChooseSeatView from '@/components/customer/ticket/ChooseSeatView.vue'
 import SeatComponent from '@/components/customer/ticket/SeatComponent.vue'
 import type { TicketDetail } from '@/models/QuickType/TicketDetail'
 import SeatNumberComponent from '@/components/customer/ticket/SeatNumberComponent.vue'
+import { useStore } from 'vuex'
 
 const route = useRoute()
 const router = useRouter()
+
+const store = useStore()
 
 const session = ref<SessionDetail>()
 const movie = ref<Movie>(new Movie())
@@ -165,10 +168,19 @@ const handleBuy = () => {
               </div>
               <div class="grow" />
               <div>
-                <h3 class="text-right mr-5">
-                  <span class="text-2xl">{{ session.price * selectedSeat.size }}</span>
-                  元
-                </h3>
+                <div class="text-right mr-5">
+                  <h3 v-if="store.state.currentUser.vip">
+                    <span v-if="selectedSeat.size > 0" class="text-sm text-gray-400 line-through">
+                      {{ session.price * selectedSeat.size }}
+                    </span>
+                    <span class="ml-1 text-2xl">{{ session.price * selectedSeat.size * 0.5 }}</span>
+                    元
+                  </h3>
+                  <h3 v-else>
+                    <span class="text-2xl">{{ session.price * selectedSeat.size }}</span>
+                    元
+                  </h3>
+                </div>
                 <el-button
                   type="primary"
                   class="mr-5 mt-1"
