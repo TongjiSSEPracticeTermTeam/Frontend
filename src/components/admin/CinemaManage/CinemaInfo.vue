@@ -123,6 +123,11 @@ const cancelForm = () => {
   }
 }
 
+const handleUploadSuccess = (Url: string) => {
+  cinema.value.cinemaImageUrl = Url
+  formStatus.value = true
+}
+
 const formRef = ref<FormInstance>()
 const confirmForm = async () => {
   if (!formStatus.value) {
@@ -133,6 +138,7 @@ const confirmForm = async () => {
 
   await formRef.value?.validate((valid, field) => {
     if (valid) {
+      // console.log(cinema.value)
       axios
         .post('/api/Cinema', cinema.value)
         .then((res) => {
@@ -232,7 +238,7 @@ defineExpose({ cancelForm })
               </el-input>
             </el-form-item>
             <el-form-item>
-              <UploadImage prefix="cinema" @Success="(url) => (cinema.cinemaImageUrl = url)" />
+              <UploadImage prefix="cinema" @Success="handleUploadSuccess" />
             </el-form-item>
           </el-col>
         </el-row>

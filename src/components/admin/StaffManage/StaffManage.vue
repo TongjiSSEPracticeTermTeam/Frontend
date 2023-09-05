@@ -5,7 +5,7 @@ import type { FormInstance } from 'element-plus'
 import Staff from '@/models/Staff'
 import { onMounted, ref } from 'vue'
 import type { Ref } from 'vue';
-import TopBar from '@/components/admin/TopBar.vue'
+import topBar from '@/components/admin/TopBar.vue'
 import UploadImage from '@/helpers/UploadImage.vue'
 
 const targetIndex = ref(0)
@@ -79,31 +79,6 @@ const updateTable = () => {
       })
     })
 }
-
-// onMounted(() => {
-//   loading.value = true
-//   axios
-//     .get('/api/Staff')
-//     .then((res) => {
-//       staffs.value = res.data.data
-
-//       //分页初始化
-//       total.value = staffs.value.length
-//       loading.value = false
-//     })
-//     .catch((err) => {
-//       // 处理错误情况
-//       console.log(err)
-//       ElMessageBox.alert('数据加载失败！', '错误', {
-//         // if you want to disable its autofocus
-//         // autofocus: false,
-//         confirmButtonText: 'OK',
-//         callback: () => {
-//           ElMessage.error('数据加载错误')
-//         }
-//       })
-//     })
-// })
 
 const staffDelete = function (name: string, id: string) {
   ElMessageBox.confirm(`确定要删除 ${name} 吗`, 'Warning', {
@@ -303,6 +278,11 @@ const topbarHandleFail = () => {
   currentPage.value = 1
   updateTable()
 }
+
+const handleUploadSuccess = (Url: string) => {
+  staff.value.imageUrl = Url
+  formStatus.value = true
+}
 </script>
 
 <template>
@@ -311,7 +291,7 @@ const topbarHandleFail = () => {
   <!-- 顶栏 -->
   <el-row align="middle" justify="space-between">
     <el-col :span="20">
-      <TopBar currentItem="1" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
+      <topBar currentItem="1" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
     </el-col>
     <el-col :span="2" :offset="2">
       <el-button size="large" type="success" @click="addForm()">添加</el-button>
@@ -420,7 +400,7 @@ const topbarHandleFail = () => {
               </el-input>
             </el-form-item>
             <el-form-item>
-              <UploadImage prefix="staff" @Success="(url) => (staff.imageUrl = url)" />
+              <UploadImage prefix="staff" @Success="handleUploadSuccess" />
             </el-form-item>
           </el-col>
         </el-row>

@@ -2,7 +2,7 @@
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
 import { type MovieDetail } from '@/models/QuickType/MovieDetail'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElCard, ElLoading, ElMessage } from 'element-plus'
 import ColorThief from 'color-thief-ts'
 import tinygradient from 'tinygradient'
@@ -208,6 +208,11 @@ const posterLoaded = () => {
 
 const activeSessionDate = ref('0')
 
+const router = useRouter()
+const handleStaffDetail = (staffId: string) => {
+  console.log("test")
+  router.push(`/staff/${staffId}`)
+}
 const commentInteraction = (commentId: string, type: number) => {
   let backup: [Comment, Interaction | undefined] = [
     comments.value[commentId],
@@ -268,9 +273,8 @@ const pickSessionsDialogOpen = ref(false)
   <div class="content py-10">
     <div class="flex w-full">
       <div class="grow" />
-      <div>
-        <el-space direction="vertical" alignment="normal" size="large" fill>
-          <el-card class="mx-10 poster-card">
+      <div style="width: 1200px;">
+          <el-card class="mx-10 my-5 poster-card">
             <div class="poster-card-background" :style="`background: ${posterCardBackground};`" />
             <div class="poster-card-content flex">
               <div class="movie-poster">
@@ -296,13 +300,14 @@ const pickSessionsDialogOpen = ref(false)
             </div>
           </el-card>
           <div>
-            <el-card class="mx-10 px-5">
+            <el-card class="mx-10 my-5 px-5">
               <div class="flex items-center">
                 <h2 class="text-red-500 text-2xl font-bold">演职员</h2>
               </div>
               <div class="my-5 pt-1">
                 <el-space size="large" wrap>
-                  <div v-for="act in movie.acts" :key="act.staffId">
+                  <div v-for="act in movie.acts" :key="act.staffId" 
+                  @click="handleStaffDetail(act.staffId)" class="cursor-pointer">
                     <el-image
                       :src="act.staff.imageUrl"
                       fit="contain"
@@ -317,7 +322,7 @@ const pickSessionsDialogOpen = ref(false)
               </div>
             </el-card>
           </div>
-          <el-card class="mx-10 px-5">
+          <el-card class="mx-10 my-5 px-5">
             <div class="flex items-center">
               <h2 class="text-red-500 text-2xl font-bold">近期场次</h2>
               <div class="grow" />
@@ -329,7 +334,7 @@ const pickSessionsDialogOpen = ref(false)
               :sessions="sessions"
             />
           </el-card>
-          <el-card class="mx-10 px-5">
+          <el-card class="mx-10 my-5 px-5">
             <div class="flex items-center">
               <h2 class="text-red-500 text-2xl font-bold">评论</h2>
               <div class="grow" />
@@ -366,7 +371,6 @@ const pickSessionsDialogOpen = ref(false)
               </div>
             </div>
           </el-card>
-        </el-space>
       </div>
       <div class="grow" />
     </div>
