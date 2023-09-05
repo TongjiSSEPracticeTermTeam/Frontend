@@ -4,6 +4,7 @@
     size="default"
     :options="pcaTextArr"
     v-model="selectedOptions"
+    placeholder="请选择地区"
     @change="handleChange">
     </el-cascader>
 </div>
@@ -15,7 +16,9 @@ export default {
 data () {
     return {
     pcaTextArr,
-    selectedOptions: []
+        selectedOptions: [],
+    
+    
     }
 },
 methods: {

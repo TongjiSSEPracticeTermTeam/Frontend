@@ -418,11 +418,6 @@ const handleSelected = (selectedOptions: string) => {
         <el-input v-model="newCinema.name" @change="formStatus = true" placeholder="请输入影院名称" trigger="blur" />
       </el-form-item>
 
-      <!-- <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
-        <el-input v-model="newCinema.location" type="textarea" @change="formStatus = true"
-          :autosize="{ minRows: 2, maxRows: 3 }" placeholder="请输入影院地址" />
-      </el-form-item> -->
-
       <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
         <AreaSelect @selected="handleSelected"></AreaSelect>
       </el-form-item>
