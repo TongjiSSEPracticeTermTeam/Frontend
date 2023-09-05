@@ -30,7 +30,7 @@
       <el-main>
 
         <el-container>
-          <el-aside style="width: auto; height: 440px;">
+          <el-aside style="width: auto; height: 300px;">
             <el-container>
               <el-main>
                 <!-- <br>
@@ -78,7 +78,8 @@
           </el-aside>
 
           <el-main>
-            <h3 class="text-xl">场次上座率与时间段函数</h3>
+            <br>
+            <h3 class="text-xl">&nbsp;&nbsp;&nbsp;&nbsp;电影相关数据</h3>
             <br>
             <el-row justify="center">
               <el-col :span="10" class="statistic_bgcolor">
@@ -105,7 +106,7 @@
         </el-container>
       </el-main>
 
-      <el-footer style=" height: 230px;">
+      <el-footer style=" height: 250px;">
         <el-select v-model="value" class="m-2" placeholder="请选择影厅" size="large">
           <el-option v-for="item in halls" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
@@ -224,27 +225,6 @@ export default {
       tags: "tag tag tag",
       occupancyRate: "这么da",
       ticketSales: 1,
-      chartOptions: {
-        xAxis: {
-          type: 'category',
-          data: ['一月', '二月', '三月', '四月', '五月', '六月', '七月'],
-        },
-        yAxis: {
-          type: 'value',
-        },
-        series: [
-          {
-            type: 'line',
-            data: [120, 200, 150, 80, 70, 110, 130],
-          },
-        ],
-        title: {
-          text: '折线图示例',
-        },
-        legend: {
-          data: ['销量'],
-        },
-      },
     }
   },
   methods: {
