@@ -105,47 +105,40 @@ onMounted(()=>{
 
 <template>
   <div class="content">
-    <div class="py-5" style="">
+    <div class="py-10" style="">
       <div style="flex-grow: 1" />
       <div class="mx-5" style="">
         <el-row >
-          <el-col :span="3"/>
-          <el-col :span="18" class="translucent-card">
+          <el-col :span="6"/>
+          <el-col :span="12" class="translucent-card">
             <el-card>
               <el-row>
-                <el-col :span="10">
+                <div style="display: flex; align-items: center;">
                   <div style="display: flex; align-items:center;">
-                    <label for="area-select" class="mx-5" style="color: darkblue;">地区选择</label>
-                    <AreaSelect id="area-select" @selected="areaSelected" class="mr-10"></AreaSelect>
+                    <label for="area-select" class="mx-5" style="color: darkblue;">地区</label>
+                    <AreaSelect id="area-select" @selected="areaSelected" style="margin-right: 110px;"></AreaSelect>
                   </div>
-                </el-col>
-                <el-col :span="14">
-                  <el-row>
-                    <el-col :span="16">
-                      <!-- 搜索框 -->
-                      <el-input placeholder="请搜索影院名称" v-model="searchText" class="ml-10">
-                        <template #prefix>
-                          <el-icon class="el-input__icon"><search /></el-icon>
-                        </template>
-                      </el-input>
-                    </el-col>
-                    <el-col :span="1"/>
-                    <el-col :span="6">
-                      <el-button type="primary" class="ml-4" @click="updateCinemasBySearch">搜索</el-button>
-                    </el-col>
-                  </el-row>
-                </el-col>
+                  <div style="display: flex; align-items: center;">
+                    <!-- 搜索框 -->
+                    <el-input placeholder="请搜索影院名称" v-model="searchText" class="ml-10">
+                      <template #prefix>
+                        <el-icon class="el-input__icon"><search /></el-icon>
+                      </template>
+                    </el-input>
+                    <el-button type="primary" class="mx-2.5" @click="updateCinemasBySearch">搜索</el-button>
+                    </div>
+                </div>
               </el-row>
               <tagSelect @selected="tagSelected" :label="'类型'" :tags="tags"></tagSelect>
             </el-card>
           </el-col>
-          <el-col :span="3"/>
+          <el-col :span="6"/>
         </el-row>
       </div>
       <div class="m-5 ">
         <el-row>
-          <el-col :span="3"/>
-          <el-col :span="18">
+          <el-col :span="6"/>
+          <el-col :span="12">
             <el-card class="translucent-card">
               <el-space wrap>
                 <div v-for="(cinema, index) in paginatedCinemas" :key="index">
@@ -167,7 +160,7 @@ onMounted(()=>{
             </el-card>
           </el-col>
 
-          <el-col :span="3"/>
+          <el-col :span="6"/>
         </el-row>
       </div>
     </div>

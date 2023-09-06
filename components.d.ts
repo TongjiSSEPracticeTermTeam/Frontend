@@ -74,6 +74,7 @@ declare module 'vue' {
     MovieManage: typeof import('./src/components/admin/MovieManage/MovieManage.vue')['default']
     MovieSessionsCard: typeof import('./src/components/customer/movie/MovieSessionsCard.vue')['default']
     PersonCard: typeof import('./src/components/customer/person/PersonCard.vue')['default']
+    PersonPage: typeof import('./src/components/customer/person/PersonPage.vue')['default']
     RegisterPage: typeof import('./src/components/RegisterPage.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
