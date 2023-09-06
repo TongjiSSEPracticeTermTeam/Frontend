@@ -1,134 +1,288 @@
 <script setup lang="ts">
+import axios from 'axios';
+import { ElMessageBox, ElMessage } from 'element-plus'
+import { ref } from 'vue'
+import Cinema from '@/models/Cinema'
+const loading = ref(true)
+const paginationLoading = ref(false)
+const total = ref(10)
+const cinemaId = ref('000008')
+const movieId = ref('000010')
+let value = ref('')
+const cinemas = ref<Cinema[]>([])
+
+const updateTable = () => {
+  paginationLoading.value = true
+  axios
+    .get(`/api/MoviesInHall/${cinemaId.value}`)
+    .then((res) => {
+      if (res.data && res.data.status && res.data.status === '10000') {
+        total.value = res.data.data
+      }
+      paginationLoading.value = false
+      loading.value = true
+      axios
+        .get(`/api/MoviesInHall/detail/${movieId.value}`)//这里不对
+        .then((res) => {
+          if (res.data && res.data.status && res.data.status === '10000') {
+            cinemas.value = res.data.data
+          }
+          loading.value = false
+        })
+        .catch((err) => {
+          loading.value = false
+          console.log(err)
+          ElMessageBox.alert('数据加载失败！', '错误', {
+            // if you want to disable its autofocus
+            // autofocus: false,
+            confirmButtonText: 'OK',
+            callback: () => {
+              ElMessage.error('数据加载错误')
+            }
+          })
+        })
+    })
+    .catch((err) => {
+      paginationLoading.value = false
+      console.log(err)
+      ElMessageBox.alert('数据加载失败！', '错误', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: 'OK',
+        callback: () => {
+          ElMessage.error('数据加载错误')
+        }
+      })
+    })
+}
 </script>
 
 <template>
-  <div class="content">
-    <el-menu :default-active="activeIndex1" class="el-menu-demo" mode="horizontal" @select="handleSelect"
-      background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" :ellipsis="false" style="height: 7vh;">
-      <el-menu-item index="0">{{ cinemaName }}</el-menu-item>
-      <div class="flex-grow disabled-el-menu-item"></div>
-      <el-menu-item index="1">排片管理</el-menu-item>
-      <el-menu-item index="2">影厅管理</el-menu-item>
-      <el-menu-item index="3">登出</el-menu-item>
-    </el-menu>
-    <div class="common-layout">
-      <el-container>
-        <el-aside width="20vw">
-          <el-menu default-active="1" style="height: 93vh; background-color: rgba(105, 213, 211, 0.4)">
-            <el-scrollbar>
-              <el-menu-item index="1">
-                <div class="movie-item">
-                  <img
-                    src="https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0">
-                  <div class="movie-name">Movie 1</div>
-                </div>
-              </el-menu-item>
-              <el-menu-item index="2">
-                <div class="movie-item">
-                  <img
-                    src="https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0">
-                  <div class="movie-name">Movie 2</div>
-                </div>
-              </el-menu-item>
-              <el-menu-item index="3">
-                <div class="movie-item">
-                  <img
-                    src="https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0">
-                  <div class="movie-name">Movie 3</div>
-                </div>
-              </el-menu-item>
-              <el-menu-item index="4">
-                <div class="movie-item">
-                  <img
-                    src="https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0">
-                  <div class="movie-name">Movie 4</div>
-                </div>
-              </el-menu-item>
-            </el-scrollbar>
-          </el-menu>
-        </el-aside>
-        <el-container>
-          <el-main>Main</el-main>
-          <el-footer style=" height: 25vh;">
-            <el-scrollbar>
-              <div class="scrollbar-flex-content">
-                <div class="scrollbar-item">
-                  <img
-                    src="https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0">
-                  <div class="movie-name">Movie 4</div>
-                </div>
-                <div class="scrollbar-item">
-                  <img
-                    src="https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0">
-                  <div class="movie-name">Movie 4</div>
-                </div>
-                <div class="scrollbar-item">
-                  <img
-                    src="https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0">
-                  <div class="movie-name">Movie 4</div>
-                </div>
-                <div class="scrollbar-item">
-                  <img
-                    src="https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0">
-                  <div class="movie-name">Movie 4</div>
-                </div>
-                <div class="scrollbar-item">
-                  <img
-                    src="https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0">
-                  <div class="movie-name">Movie 4</div>
-                </div>
-                <div class="scrollbar-item">
-                  <img
-                    src="https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0">
-                  <div class="movie-name">Movie 4</div>
-                </div>
+  <h1 class="text-2xl font-bold">排片管理</h1>
+  <el-divider />
+
+  <el-container style="height: 80vh">
+
+    <el-aside width="250px">
+      <el-scrollbar>
+        <el-menu>
+          <el-menu-item-group>
+            <template #title>
+              <span style="font-size: 18px;">电影列表</span>
+            </template>
+            <el-menu-item v-for="movie in movies" :key="movie.id" :index="movie.id"
+              :class="{ 'highlighted': selectedMovie === movie.id }" @click="selectMovie(movie.id)">
+              <div class="movie-item">
+                <img :src="movie.image" />
+                <div class="movie-name">{{ movie.name }}</div>
               </div>
-            </el-scrollbar>
-          </el-footer>
+            </el-menu-item>
+          </el-menu-item-group>
+        </el-menu>
+      </el-scrollbar>
+    </el-aside>
+
+    <el-container>
+      <el-main>
+
+        <el-container>
+          <el-aside style="width: auto; height: 300px;">
+            <el-container>
+              <el-main>
+                <!-- <br>
+                <el-row justify="center">
+                  <el-col :span="10" class="statistic_bgcolor">
+                    <el-statistic class="pt10 pb10 pl10 pr10" title="电影时长" :value="duration" />
+                  </el-col>
+
+                  <el-col :span="10" class="statistic_bgcolor">
+                    <el-statistic class="pt10 pb10 pl10 pr10" title="标签" :value="tags" />
+                  </el-col>
+                </el-row>
+                <br>
+                <el-row justify="center">
+                  <el-col :span="10" class="statistic_bgcolor">
+                    <el-statistic class="pt10 pb10 pl10 pr10" title="影院上座率" :value="occupancyRate" />
+                  </el-col>
+
+                  <el-col :span="10" class="statistic_bgcolor">
+                    <el-statistic class="pt10 pb10 pl10 pr10" title="票房" :value="ticketSales" />
+                  </el-col>
+                </el-row>
+                <br> -->
+              </el-main>
+              <el-footer>
+                <h3 class="text-xl">电影排片</h3>
+                <div class="demo-datetime-picker">
+                  <div class="block">
+                    电影开始时间&nbsp;&nbsp;
+                    <el-date-picker v-model="value" type="datetime" placeholder="请选择日期和时间" size="large"
+                      style="width: 220px;" />
+                    <br>
+                    &nbsp;&nbsp;电影影厅选择
+                    <el-select v-model="value" class="m-2" placeholder="请选择影厅" size="large" style="width: 220px;">
+                      <el-option v-for="item in halls" :key="item.value" :label="item.label" :value="item.value" />
+                    </el-select>
+                    <br>
+                    <div style="text-align: right;">
+                      <el-button type="primary">确定</el-button>&nbsp;&nbsp;
+                    </div>
+                  </div>
+                </div>
+              </el-footer>
+            </el-container>
+          </el-aside>
+
+          <el-main>
+            <br>
+            <h3 class="text-xl">&nbsp;&nbsp;&nbsp;&nbsp;电影相关数据</h3>
+            <br>
+            <el-row justify="center">
+              <el-col :span="10" class="statistic_bgcolor">
+                <el-statistic class="pt10 pb10 pl10 pr10" title="电影名" :value="name" />
+              </el-col>
+
+              <el-col :span="10" class="statistic_bgcolor">
+                <el-statistic class="pt10 pb10 pl10 pr10" title="时长" :value="duration" />
+              </el-col>
+            </el-row>
+            <br>
+            <el-row justify="center">
+              <el-col :span="10" class="statistic_bgcolor">
+                <el-statistic class="pt10 pb10 pl10 pr10" title="评分" :value="score" />
+              </el-col>
+
+              <el-col :span="10" class="statistic_bgcolor">
+                <el-statistic class="pt10 pb10 pl10 pr10" title="标签" :value="tags" />
+              </el-col>
+            </el-row>
+            <br>
+
+          </el-main>
+
         </el-container>
-      </el-container>
-    </div>
-  </div>
+      </el-main>
+
+      <el-footer style=" height: 250px;">
+        <el-select v-model="value" class="m-2" placeholder="请选择影厅" size="large">
+          <el-option v-for="item in halls" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-scrollbar>
+          <div class="scrollbar-flex-content">
+            <div v-for="time in times" class="scrollbar-item">
+              <img :src="time.imageUrl">
+              <div class="movie-name">{{ time.name }}</div>
+            </div>
+          </div>
+        </el-scrollbar>
+      </el-footer>
+    </el-container>
+  </el-container>
 </template>
 
-<script lang="ts">
+<script lang = "ts" >
+
 export default {
   data: () => {
     return {
-      activeIndex1: '1',
-      cinemaName: '我的影院名',
-      curIndex: '1',
-      debounceTimeout: null,
-      hallClass: ['bg-purple'],
-      isLeft: true,
+      movies: [
+        {
+          id: "1",
+          name: 'Movie 1',
+          image: 'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0'
+        },
+        {
+          id: "2",
+          name: 'Movie 2',
+          image: 'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0'
+        },
+        {
+          id: "3",
+          name: 'Movie 3',
+          image: 'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0'
+        },
+        {
+          id: "4",
+          name: 'Movie 4',
+          image: 'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0'
+        }
+      ],
+      times: [
+        {
+          imageUrl:
+            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
+          name: 'Movie 1'
+        },
+        {
+          imageUrl:
+            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
+          name: 'Movie 2'
+        },
+        {
+          imageUrl:
+            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
+          name: 'Movie 2'
+        },
+        {
+          imageUrl:
+            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
+          name: 'Movie 2'
+        },
+        {
+          imageUrl:
+            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
+          name: 'Movie 2'
+        },
+        {
+          imageUrl:
+            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
+          name: 'Movie 2'
+        },
+        {
+          imageUrl:
+            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
+          name: 'Movie 2'
+        },
+      ],
+      selectedMovie: "",
+      halls: [
+        {
+          value: 'Option1',
+          label: 'Option1',
+        },
+        {
+          value: 'Option2',
+          label: 'Option2',
+        },
+        {
+          value: 'Option3',
+          label: 'Option3',
+        },
+        {
+          value: 'Option4',
+          label: 'Option4',
+        },
+        {
+          value: 'Option5',
+          label: 'Option5',
+        },
+      ],
+      duration: "这么长",
+      tags: "tag tag tag",
+      introduction: "jieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjie",
+      score: 10,
+      name: "aobenhaim o",
     }
   },
   methods: {
-    logout() {
-      alert("我退出了");
-    },
-    handleSelect(key: string) {
-      this.curIndex = key;
-      this.isLeft = !this.isLeft;
-                  
-      switch (key) {
-        case '0':
-          this.$router.push('/');
-          break;
-        case '1':
-          this.$router.push('/movieInfo');
-          break;
-        case '2':
-          this.$router.push('/CinemaInfo');
-          break;
-        case '3':
-          this.logout();
-          return;
-      }
-    },
+    selectMovie(movieId: string) {
+      this.selectedMovie = movieId;
+
+    }
   },
   mounted() {
-
+    // 设置初始选中第一个电影
+    this.selectedMovie = this.movies[0].id;
   },
   watch: {
 
@@ -157,7 +311,7 @@ export default {
 }
 
 .scrollbar-item img {
-  height: 20vh;
+  height: 15vh;
 }
 
 /* 侧边栏 */
@@ -197,5 +351,37 @@ export default {
   /* 保持原本的颜色 */
   text-decoration: none;
   /* 去掉链接下划线样式 */
+}
+
+.highlighted {
+  background-color: #c7deed;
+  /* 自定义被选中项的背景颜色 */
+}
+</style>
+
+<style scoped>
+.demo-datetime-picker {
+  display: flex;
+  width: 100%;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.demo-datetime-picker .block {
+  padding: 30px 0;
+  text-align: center;
+  border-right: solid 1px var(--el-border-color);
+  flex: 1;
+}
+
+.demo-datetime-picker .block:last-child {
+  border-right: none;
+}
+
+.demo-datetime-picker .demonstration {
+  display: block;
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
+  margin-bottom: 20px;
 }
 </style>
