@@ -9,33 +9,36 @@ import Cinema from "@/models/Cinema";
 import CinemaCard from "@/components/customer/cinema/CinemaCard.vue";
 import PersonCard from '@/components/customer/person/PersonCard.vue'
 import { useStore } from 'vuex'
+import personPage from '@/components/customer/person/PersonPage.vue'
+
 
 const movies = ref<Movie[]>([])
 const hotMovies = ref<Movie[]>([])
 const comingSoonMovies = ref<Movie[]>([])
-const cinemas=ref<Cinema[]>([])
+const cinemas = ref<Cinema[]>([])
+const personPageShow = ref(false)
 
 const store = useStore()
 
-const isOnPlay = (releaseDate: string|null, removalDate: string|null) => {
-  if(!releaseDate || !removalDate) return false
+const isOnPlay = (releaseDate: string | null, removalDate: string | null) => {
+  if (!releaseDate || !removalDate) return false
   const now = new Date()
   const release = new Date(releaseDate)
   const removal = new Date(removalDate)
   return release <= now && now <= removal
 }
 
-const isCommingSoon=(releaseDate: string|null)=>{
-  if(!releaseDate) return false
+const isCommingSoon = (releaseDate: string | null) => {
+  if (!releaseDate) return false
   const now = new Date()
   const release = new Date(releaseDate)
   return release > now
 }
 
-const loadMovies=()=>{
-  axios.get('/api/Movies/tags').then((r)=>{
-    if(r.data&&r.data.status==='10000'){
-      movies.value=r.data.data
+const loadMovies = () => {
+  axios.get('/api/Movies/tags').then((r) => {
+    if (r.data && r.data.status === '10000') {
+      movies.value = r.data.data
       loadHotMovies()
       loadComingSoonMovies()
     }
@@ -43,14 +46,14 @@ const loadMovies=()=>{
 }
 
 const loadHotMovies = async () => {
-  hotMovies.value=movies.value.filter((movie) => isOnPlay(movie.releaseDate, movie.removalDate));
-  hotMovies.value=hotMovies.value.sort((a,b)=>{
-    if(a.score===null){
+  hotMovies.value = movies.value.filter((movie) => isOnPlay(movie.releaseDate, movie.removalDate));
+  hotMovies.value = hotMovies.value.sort((a, b) => {
+    if (a.score === null) {
       return 1
-    }else if(b.score===null){
+    } else if (b.score === null) {
       return -1
-    }else{
-      return b.score-a.score
+    } else {
+      return b.score - a.score
     }
   })
 }
@@ -60,12 +63,12 @@ const loadComingSoonMovies = async () => {
   comingSoonMovies.value = movies.value.filter((movie) => isCommingSoon(movie.releaseDate));
 }
 
-const loadCinemas = ()=>{
-   axios.get('/api/Cinema?page_size=10&page_number=1').then((r)=>{
-     if(r.data&&r.data.status&&r.data.status==='10000'){
-       cinemas.value=r.data.data
-     }
-   })
+const loadCinemas = () => {
+  axios.get('/api/Cinema?page_size=10&page_number=1').then((r) => {
+    if (r.data && r.data.status && r.data.status === '10000') {
+      cinemas.value = r.data.data
+    }
+  })
 }
 
 onMounted(() => {
@@ -107,6 +110,10 @@ const loadBoxOffice = () => {
       })
     })
 }
+
+const displayPersonPage = () => {
+  personPageShow.value = true
+}
 </script>
 
 <template>
@@ -120,18 +127,9 @@ const loadBoxOffice = () => {
               <el-card class="translucent-card">
                 <h1 class="title ml-5">首页推荐</h1>
 
-                <el-carousel
-                  class="mx-3"
-                  :interval="3000"
-                  indicator-position="outside"
-                  type="card"
-                  autoplay
-                >
-                  <el-carousel-item
-                    v-for="movie in hotMovies.slice(0,5)"
-                    :key="movie.movieId"
-                    style="display: flex; justify-content: center"
-                  >
+                <el-carousel class="mx-3" :interval="3000" indicator-position="outside" type="card" autoplay>
+                  <el-carousel-item v-for="movie in hotMovies.slice(0, 5)" :key="movie.movieId"
+                    style="display: flex; justify-content: center">
                     <MovieCard :movie="movie" />
                   </el-carousel-item>
                 </el-carousel>
@@ -146,7 +144,7 @@ const loadBoxOffice = () => {
 
                 <div class="mx-auto px-5">
                   <el-space wrap>
-                    <div v-for="(movie, index) in hotMovies.slice(0,8)" :key="index">
+                    <div v-for="(movie, index) in hotMovies.slice(0, 8)" :key="index">
                       <div class="my-3">
                         <MovieCard :movie="movie" />
                         <div class="mt-3 text-center">{{ movie.name }}</div>
@@ -185,7 +183,7 @@ const loadBoxOffice = () => {
                   <el-space wrap>
                     <div v-for="(cinema, index) in cinemas" :key="index">
                       <div class="my-3">
-                        <cinema-card :cinema="cinema"/>
+                        <cinema-card :cinema="cinema" />
                         <div class="mt-3 text-center">{{ cinema.name }}</div>
                       </div>
                     </div>
@@ -196,7 +194,10 @@ const loadBoxOffice = () => {
           </el-col>
           <el-col :span="6">
             <el-space size="large" direction="vertical" alignment="normal" fill class="w-full">
-              <PersonCard :user="store.state.currentUser"></PersonCard>
+              <PersonCard :user="store.state.currentUser" @show-person-page="displayPersonPage"></PersonCard>
+
+              <personPage v-model:user="store.state.currentUser" v-model:detail-person="personPageShow"></personPage>
+
               <el-card>
                 <h2 class="text-xl font-bold">今日全国票房</h2>
                 <p class="text-gray-400">全国票房数据由艺恩提供</p>

@@ -3,10 +3,12 @@ import { ref, } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import vipCreator from '@/components/customer/vip/VipCreator.vue'
+import personPage from '@/components/customer/person/PersonPage.vue'
 
 const store = useStore()
 const router = useRouter()
 const vipDialogShow = ref(false)
+const personPageShow = ref(false)
 
 const handle_select = (path: string) => {
   switch (path) {
@@ -27,7 +29,7 @@ const handle_select = (path: string) => {
       router.push('/login')
       break
     case '5-1':
-      router.push('/')
+      personPageShow.value = true
       break
     case '5-2':
       router.push('/tickets')
@@ -44,6 +46,7 @@ const handle_select = (path: string) => {
   }
 }
 defineExpose({ handle_select })
+
 </script>
 
 <template>
@@ -76,6 +79,8 @@ defineExpose({ handle_select })
   </el-menu-item>
 
   <vip-creator v-model:dialog-visible="vipDialogShow" />
+  <personPage v-model:user="store.state.currentUser" v-model:detail-person="personPageShow"></personPage>
+
 </template>
 
 <style scoped>

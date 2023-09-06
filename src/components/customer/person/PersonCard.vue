@@ -1,17 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import axios from 'axios'
-import { ElCard, ElLoading, ElMessage } from 'element-plus'
+import { ElCard, ElLoading, ElMessage, emitChangeFn } from 'element-plus'
 import ColorThief from 'color-thief-ts'
 import tinygradient from 'tinygradient'
 import { useStore } from 'vuex'
 import User from '@/models/User'
 
-import UploadImage from '@/helpers/UploadImage.vue'
-import type { FormInstance, FormRules } from 'element-plus'
-
 const store = useStore()
-
 
 
 const props = defineProps({
@@ -84,41 +80,16 @@ const avatarLoaded = () => {
   })
 }
 
+const emit = defineEmits(['showPersonPage'])
 
-
-let detailPerson = ref(false)
-let editStatus = ref(false)
-const savingDetail = ref(false)
-let formRef = ref<FormInstance | null>(null)
-
-
-const handleDrawerClose = () => {
-  if (editStatus.value) {
-    ElMessageBox.confirm('有未保存的数据，确定要退出编辑吗？', 'Warning', {
-      confirmButtonText: '确认',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-      .then(() => {
-        formRef.value?.clearValidate()
-        detailPerson.value = false
-        editStatus.value = false
-      })
-      .catch(() => {
-      })
-  } else {
-    detailPerson.value = false
-    editStatus.value = false
-  }
-}
-
-const saveDetail = async () => {
+function handleClick(){
+  emit('showPersonPage')
 }
 
 </script>
 
 <template>
-  <el-card shadow="hover" class="avatar-card" @click="()=>{detailPerson = true}">
+  <el-card shadow="hover" class="avatar-card" @click="handleClick">
     <div class="avatar-card-background" :style="`background: ${avatarCardBackground};`" />
     <div class="avatar-card-content flex" style="display: flex;align-items: center;">
       <div class="person-avatar">
@@ -133,54 +104,7 @@ const saveDetail = async () => {
     </div>
   </el-card>
 
-  <el-drawer v-model="detailPerson" title="个人主页" direction="rtl" :before-close="handleDrawerClose" style="min-width: 500px">
-    <el-form :model="user" label-width="120px" :rules="rules" ref="formRef">
-      
-      <el-form-item label="头像" class="w-full">
-        <el-space direction="vertical" alignment="normal" wrap>
-          <el-input
-            v-model="user.avatarUrl"
-            :rows="3"
-            type="textarea"
-            style="width: 350px"
-            @change="editStatus = true"
-          />
-          <el-image
-            :src="user.avatarUrl"
-            :fit="'contain'"
-            style="height: 300px; width: 300px"
-          >
-            <template #error>
-              <el-icon>
-                <Picture />
-              </el-icon>
-            </template>
-          </el-image>
-          <UploadImage
-            api-path="/api/Customer/poster"
-            @Success="(Url: string) => {
-              user.avatarUrl = Url
-              editStatus = true
-            }"
-          />
-        </el-space>
-      </el-form-item>
-      <el-form-item label="用户名">
-        <el-input  v-model="user.displayName" @change="()=>{editStatus=true}"/>
-      </el-form-item>
-
-      <el-form-item label="邮箱">
-        <el-input v-model="user.email" @change="()=>{editStatus=true}"/>
-      </el-form-item>
-
-      <el-form-item>
-        <el-button type="primary" @click="saveDetail" v-loading="savingDetail">保存</el-button>
-        <el-button @click="handleDrawerClose">取消</el-button>
-      </el-form-item>
-
-    </el-form>
-  </el-drawer>
-
+  <!-- <personPage v-model:user="user" v-model:detail-person="detailPerson"></personPage> -->
   
 </template>
 
