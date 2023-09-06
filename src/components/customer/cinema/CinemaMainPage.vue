@@ -11,7 +11,7 @@ const selectedTags=ref([])
 const cinemas=ref<Cinema[]>([])
 const allCinemas=ref<Cinema[]>([])
 const currentPage=ref(1)
-const pageSize=ref(10) //一页展示的影院数量
+const pageSize=ref(12) //一页展示的影院数量
 const start = computed(() => (currentPage.value - 1) * pageSize.value);
 const paginatedCinemas = computed(() => cinemas.value.slice(start.value, start.value + pageSize.value));
 const AreaSelected=ref('')

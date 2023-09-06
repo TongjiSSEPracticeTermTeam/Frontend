@@ -47,17 +47,21 @@ defineExpose({ handle_select })
 </script>
 
 <template>
-  <el-menu-item index="0">
-    <router-link to="/">
-      <span style="font-weight: 600; font-size: 1.5em; color: red">同济院线</span>
-    </router-link>
-  </el-menu-item>
-  <el-menu-item index="2"><span style="font-size: 1.3em">电影</span></el-menu-item>
-  <el-menu-item index="3"><span style="font-size: 1.3em">影院</span></el-menu-item>
-  <el-menu-item index="4"><span style="font-size: 1.3em">影人</span></el-menu-item>
-  <el-sub-menu v-if="store.state.isLogged" index="5">
+  <div style="display: flex; justify-content: center;">
+    <el-menu-item index="0">
+      <router-link to="/">
+        <span style="font-weight: 600; font-size: 1.5em; color: red">同济院线</span>
+      </router-link>
+    </el-menu-item>
+    <el-menu-item index="2"><span style="font-size: 1.3em">电影</span></el-menu-item>
+    <el-menu-item index="3"><span style="font-size: 1.3em">影院</span></el-menu-item>
+    <el-menu-item index="4"><span style="font-size: 1.3em">影人</span></el-menu-item>
+  </div>
+  
+  <el-sub-menu v-if="store.state.isLogged" index="5" class="el-sub-menu">
     <template #title>
       <span style="font-size: 1.3em" class="flex items-center">
+        <el-avatar :src="store.state.currentUser.avatarUrl" class="mx-2.5"/>
         {{ store.state.currentUser.displayName }}
         <img v-if="store.state.currentUser.vip" src="/img/vip.png" class="ml-2" style="width: 32px; height: 32px;"/>
       </span>
@@ -74,4 +78,9 @@ defineExpose({ handle_select })
   <vip-creator v-model:dialog-visible="vipDialogShow" />
 </template>
 
-<style scoped></style>
+<style scoped>
+
+.el-sub-menu{
+  float: right;
+}
+</style>
