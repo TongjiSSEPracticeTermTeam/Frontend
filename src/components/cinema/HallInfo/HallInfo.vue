@@ -313,6 +313,8 @@ defineExpose({ halls, search })
 </script>
 
 <template>
+    <h1 class="text-2xl font-bold">影厅管理</h1>
+    <el-divider />
     <div class="content">
         <div class="line"></div>
         <div >
