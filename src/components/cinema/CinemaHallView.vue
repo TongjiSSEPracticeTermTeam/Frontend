@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent, onMounted, ref } from 'vue'
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
+import { Action, ElLoading, ElMessage, ElMessageBox } from 'element-plus'
+import axios from 'axios'
+import router from '@/router'
 
 const settingItems: {
   component: any
@@ -9,45 +12,59 @@ const settingItems: {
   needCard: boolean // 默认为true，无特殊需要保持true即可。
 }[] = [
   {
-    name: '电影管理',
+    name: '影厅总览',
     icon: defineAsyncComponent(() =>
       import('@element-plus/icons-vue').then((module) => module.Film)
     ),
-    component: defineAsyncComponent(() => import('@/components/admin/MovieManage/MovieManage.vue')),
+    component: defineAsyncComponent(() => import('@/components/cinema/CinemaHome/CinemaHome.vue')),
     needCard: true
   },
   {
-    name: '影人信息管理',
+    name: '排片管理',
     icon: defineAsyncComponent(() =>
       import('@element-plus/icons-vue').then((module) => module.UserFilled)
     ),
-    component: defineAsyncComponent(() => import('@/components/admin/StaffManage/StaffManage.vue')),
+    component: defineAsyncComponent(() => import('@/components/cinema/MovieInfo/MovieInfo.vue')),
     needCard: true
   },
   {
-    name: '电影院管理',
+    name: '影厅管理',
     icon: defineAsyncComponent(() =>
       import('@element-plus/icons-vue').then((module) => module.HomeFilled)
     ),
-    component: defineAsyncComponent(
-      () => import('@/components/admin/CinemaManage/CinemaManage.vue')
-    ),
-    needCard: true
-  },
-  {
-    name: '评论管理',
-    icon: defineAsyncComponent(() =>
-      import('@element-plus/icons-vue').then((module) => module.Edit)
-    ),
-    component: defineAsyncComponent(
-      () => import('@/components/admin/MovieManage/CommentManage.vue')
-    ),
+    component: defineAsyncComponent(() => import('@/components/cinema/HallInfo/HallInfo.vue')),
     needCard: true
   }
 ]
 
 let currentItem = ref(0)
 let isCollapse = ref(false)
+
+onMounted(() => {
+  let loading = ElLoading.service({
+    lock: true,
+    text: '请稍候'
+  })
+
+  axios
+    .get('/api/Manager/check')
+    .then((res) => {
+      loading.close()
+      if (res.data.status && res.data.status === '10000') {
+        if (!res.data.data) {
+          ElMessageBox.alert('您当前没有正在管理的影院', '很抱歉', {
+            confirmButtonText: 'OK',
+            callback: () => {
+              router.push('/')
+            }
+          })
+        }
+      }
+    })
+    .catch(() => {
+      ElMessage.warning('网络错误')
+    })
+})
 </script>
 
 <template>
@@ -58,9 +75,9 @@ let isCollapse = ref(false)
         style="height: 100%"
         background-color="rgba(255,255,255,0.9)"
         :collapse="isCollapse"
-        @select="(index) => (currentItem = Number(index))"
+        @select="(index) => (currentItem = index)"
       >
-        <h5 class="font-bold text-center py-4">院线管理员菜单</h5>
+        <h5 class="font-bold text-center py-4">影院管理员菜单</h5>
         <el-menu-item v-for="(item, i) in settingItems" :index="i.toString()" :key="i">
           <el-icon>
             <component :is="item.icon" />
@@ -114,7 +131,8 @@ let isCollapse = ref(false)
 .mng-content {
   flex: 1;
   padding: 20px;
-  overflow-y: auto; /* This will ensure that content is scrollable if it exceeds the viewport height */
+  overflow-y: auto;
+  /* This will ensure that content is scrollable if it exceeds the viewport height */
 }
 
 .mng-content-card {
