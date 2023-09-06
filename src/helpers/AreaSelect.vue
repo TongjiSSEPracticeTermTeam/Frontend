@@ -1,14 +1,20 @@
 <template>
-<div>
-    <el-cascader
-    size="default"
-    :options="pcaTextArr"
-    v-model="selectedOptions"
-    :placeholder="defaultPlace"
-    @change="handleChange">
-    </el-cascader>
-    <el-button class="mx-2.5" type="primary" @click="resetArea">重置</el-button>
-</div>
+    <div>
+        <el-row>
+            <el-col :span="16">
+                <el-cascader
+                    size="default"
+                    :options="pcaTextArr"
+                    v-model="selectedOptions"
+                    :placeholder="defaultPlace"
+                    @change="handleChange">
+                </el-cascader>
+            </el-col>
+            <el-col :span="8">
+                <el-button class="mx-2.5" type="primary" @click="resetArea">重置</el-button>
+            </el-col>
+        </el-row>
+    </div>
 </template>
 
 <script>

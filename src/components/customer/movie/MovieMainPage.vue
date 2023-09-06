@@ -16,7 +16,7 @@ const currentClass = ref('1') //表示当前处于正在热映还是即将上映
 const onPlayMovies = ref<Movie[]>([])
 const commingSoonMovies = ref<Movie[]>([])
 const currentPage = ref(1)
-const pageSize = ref(10) //一页展示的电影数量
+const pageSize = ref(12) //一页展示的电影数量
 
 const start = computed(() => (currentPage.value - 1) * pageSize.value)
 const paginatedMovies = computed(() =>
@@ -223,8 +223,8 @@ onMounted(() => {
               <el-button type="primary" class="ml-10" @click="updateMovies">搜索</el-button>
             </el-col>
           </el-row>
-          <el-space class="mt-4" wrap>
-            <div v-for="(movie, index) in paginatedMovies" :key="index">
+          <el-space class="mt-4" wrap style="display: flex; flex-wrap: wrap;">
+            <div v-for="(movie, index) in paginatedMovies" :key="index" style="flex: 1 0 25%;">
               <div class="my-3">
                 <MovieCard :movie="movie" />
                 <div class="mt-3 text-center">{{ movie.name }}</div>

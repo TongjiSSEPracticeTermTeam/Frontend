@@ -277,10 +277,10 @@ const pickSessionsDialogOpen = ref(false)
           <el-card class="mx-10 my-5 poster-card">
             <div class="poster-card-background" :style="`background: ${posterCardBackground};`" />
             <div class="poster-card-content flex">
-              <div class="movie-poster">
-                <img id="poster" :src="movie.postUrl ?? ''" alt="" @load="posterLoaded" />
+              <div class="movie-poster basis-3/10">
+                <img id="poster" class="w-full" :src="movie.postUrl ?? ''" :alt="movie.name" object-fit="cover" @load="posterLoaded" />
               </div>
-              <div class="ml-10 py-5" :style="`color: ${posterCardFontColor}`">
+              <div class="ml-5 py-5" :style="`color: ${posterCardFontColor}`">
                 <h1 class="text-4xl font-extrabold">{{ movie.name }}</h1>
                 <h2 class="mt-5">时长：{{ movie.duration }}分钟</h2>
                 <h2 class="mt-1 mb-5" v-if="movie.acts.length > 0 && movie.acts[0].role === '1'">
@@ -382,7 +382,8 @@ const pickSessionsDialogOpen = ref(false)
 
 <style scoped lang="scss">
 .movie-poster {
-  max-width: 280px;
+  max-width: 300px;
+  min-width: 280px;
 }
 
 .poster-card {

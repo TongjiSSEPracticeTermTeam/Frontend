@@ -69,6 +69,7 @@ onMounted(async () => {
       mode="horizontal"
       @select="handleSelect"
       active-text-color="red"
+      style="display: flex;justify-content: space-between;"
     >
       <CustomerMenu
         ref="menu"
