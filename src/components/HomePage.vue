@@ -112,7 +112,7 @@ const loadBoxOffice = () => {
 }
 
 const displayPersonPage = () => {
-  personPageShow.value = true
+  personPageShow.value = true&&store.state.isLogged
   console.log(store.state.currentUser)
 }
 </script>
@@ -197,7 +197,6 @@ const displayPersonPage = () => {
             <el-space size="large" direction="vertical" alignment="normal" fill class="w-full">
               <PersonCard :user="store.state.currentUser" @show-person-page="displayPersonPage"></PersonCard>
 
-              <personPage :user="store.state.currentUser" v-model:detail-person="personPageShow"></personPage>
 
               <el-card>
                 <h2 class="text-xl font-bold">今日全国票房</h2>
@@ -256,6 +255,7 @@ const displayPersonPage = () => {
                   </span>
                 </div>
               </el-card>
+              <personPage :user="store.state.currentUser" v-model:detail-person="personPageShow"></personPage>
             </el-space>
           </el-col>
         </el-row>

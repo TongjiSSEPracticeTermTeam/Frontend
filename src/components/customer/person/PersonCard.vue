@@ -17,20 +17,8 @@ const props = defineProps({
 })
 
 onMounted(async () => {
-
-  // const loading = ElLoading.service({
-  //   lock: true,
-  //   text: '加载中',
-  //   fullscreen: true
-  // })
-
-  // let finished = 0
-  // const callFinish = () => {
-  //   finished += 1
-  //   if (finished >= 1) {
-  //     loading.close()
-  //   }
-  // }
+  let domImg = document.querySelector('#avatar') as HTMLImageElement
+  domImg.crossOrigin = ''
 })
 
 function getImageBrightness(imgElement: HTMLImageElement, callback: (brightness: number) => void) {
@@ -63,7 +51,6 @@ const avatarCardBackground = ref('grey')
 const avatarCardFontColor = ref('white')
 
 const avatarLoaded = () => {
-  console.log(props.user.avatarUrl)
   if (store.state.isLogged) {
     let domImg = document.querySelector('#avatar') as HTMLImageElement
     let colorThief = new ColorThief()

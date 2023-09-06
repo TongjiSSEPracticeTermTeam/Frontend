@@ -29,7 +29,7 @@ const handle_select = (path: string) => {
       router.push('/login')
       break
     case '5-1':
-      personPageShow.value = true
+      personPageShow.value = true && store.state.isLogged
       break
     case '5-2':
       router.push('/tickets')

@@ -175,25 +175,28 @@ const saveDetail = async () => {
 
 
 <template>
-    <el-drawer @open="handleOpen" v-model="detailPerson" title="个人主页" direction="rtl" :before-close="handleDrawerClose"
-        style="min-width: 500px">
+    <el-dialog @open="handleOpen" v-model="detailPerson" title="个人主页"  :before-close="handleDrawerClose"
+         width="40%">
         <el-form :model="tempUser" label-width="120px" :rules="rules" ref="formRef">
 
             <el-form-item label="头像" class="w-full" prop="avatarUrl">
                 <el-space direction="vertical" alignment="normal" wrap>
-                    <el-input v-model="tempUser.avatarUrl" :rows="3" type="textarea" style="width: 350px"
-                        @change="editStatus = true" />
-                    <el-image :src="tempUser.avatarUrl" :fit="'contain'" style="height: 300px; width: 300px">
-                        <template #error>
-                            <el-icon>
-                                <Picture />
-                            </el-icon>
-                        </template>
-                    </el-image>
-                    <UploadImage api-path="/api/Movies/poster" @Success="(Url: string) => {
-                        tempUser.avatarUrl = Url
-                        editStatus = true
-                    }" />
+                    <!-- <el-input v-model="tempUser.avatarUrl" :rows="3" type="textarea" style="width: 350px" -->
+                        <!-- @change="editStatus = true" /> -->
+                    <div style="display: flex; flex-direction:column; align-items: center;">
+                        <el-image :src="tempUser.avatarUrl" :fit="'cover'" style="height: 250px; width: 250px; border-radius: 50%;" >
+                            <template #error>
+                                <el-icon>
+                                    <Picture />
+                                </el-icon>
+                            </template>
+                        </el-image>
+                        <UploadImage class="mt-5" api-path="/api/Movies/poster" @Success="(Url: string) => {
+                            tempUser.avatarUrl = Url
+                            editStatus = true
+                        }" />
+                    </div>
+                    
                 </el-space>
             </el-form-item>
             <el-form-item label="用户名" prop="displayName">
@@ -210,5 +213,8 @@ const saveDetail = async () => {
             </el-form-item>
 
         </el-form>
-    </el-drawer>
+    </el-dialog>
 </template>
+
+<style scoped>
+</style>
