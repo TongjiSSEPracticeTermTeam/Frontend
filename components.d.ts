@@ -23,6 +23,7 @@ declare module 'vue' {
     CommentCard: typeof import('./src/components/customer/comment/CommentCard.vue')['default']
     CommentManage: typeof import('./src/components/admin/MovieManage/CommentManage.vue')['default']
     CustomerMenu: typeof import('./src/components/CustomerMenu.vue')['default']
+    ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCarousel: typeof import('element-plus/es')['ElCarousel']
