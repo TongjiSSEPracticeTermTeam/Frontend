@@ -9,14 +9,12 @@ import User from '@/models/User'
 
 const store = useStore()
 
-
 const props = defineProps({
   user: {
     type: User,
     required: true
   }
 })
-
 
 onMounted(async () => {
   let domImg = document.querySelector('#avatar') as HTMLImageElement
@@ -81,6 +79,11 @@ const avatarLoaded = () => {
     })
   }
 }
+
+const emits = defineEmits(['showPersonPage'])
+function handleClick(){
+  emits('showPersonPage')
+}
 </script>
 
 <template>
@@ -99,9 +102,6 @@ const avatarLoaded = () => {
       </div>
     </div>
   </el-card>
-
-  <!-- <personPage v-model:user="user" v-model:detail-person="detailPerson"></personPage> -->
-  
 </template>
 
 <style scoped lang="scss">
@@ -112,6 +112,7 @@ const avatarLoaded = () => {
 .avatar-card {
   position: relative;
   border: 0;
+  cursor: pointer;
 }
 
 .avatar-card-background {

@@ -33,6 +33,7 @@ onMounted(async () => {
           type: 'Customer' | 'Manager' | 'Administrator'
           username: string
           display_name: string | null
+          email: string
           avatar: string | null
           vip: boolean
         } = r.data
@@ -43,6 +44,7 @@ onMounted(async () => {
           currentUser.displayName = data.display_name ?? ''
           currentUser.type = data.type
           currentUser.vip = data.vip
+          currentUser.email = data.email
         }
       })
       .catch((err) => {
