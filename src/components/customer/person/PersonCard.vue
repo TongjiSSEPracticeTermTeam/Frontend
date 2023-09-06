@@ -17,8 +17,6 @@ const props = defineProps({
 })
 
 onMounted(async () => {
-  let domImg = document.querySelector('#avatar') as HTMLImageElement
-  domImg.crossOrigin = ''
 
   // const loading = ElLoading.service({
   //   lock: true,
@@ -65,7 +63,8 @@ const avatarCardBackground = ref('grey')
 const avatarCardFontColor = ref('white')
 
 const avatarLoaded = () => {
-  if(store.state.isLogged){
+  console.log(props.user.avatarUrl)
+  if (store.state.isLogged) {
     let domImg = document.querySelector('#avatar') as HTMLImageElement
     let colorThief = new ColorThief()
     let colors = colorThief.getPalette(domImg, 2)
@@ -81,7 +80,7 @@ const avatarLoaded = () => {
 }
 
 const emits = defineEmits(['showPersonPage'])
-function handleClick(){
+function handleClick() {
   emits('showPersonPage')
 }
 </script>
@@ -91,14 +90,12 @@ function handleClick(){
     <div class="avatar-card-background" :style="`background: ${avatarCardBackground};`" />
     <div class="avatar-card-content flex" style="display: flex;align-items: center;">
       <div class="person-avatar">
-        <img id="avatar"
-          :src="user.avatarUrl"
-          alt="" @load="avatarLoaded" />
+        <img id="avatar" :src="user.avatarUrl" alt="" @load="avatarLoaded" />
       </div>
       <div class="ml-10" :style="`display: flex; flex-direction:column; color: ${avatarCardFontColor}`">
         <h1 v-if="store.state.isLogged" class="text-4xl font-extrabold">{{ user.displayName }}</h1>
-        <h2 v-else class="text-2xl" >{{ user.displayName }}</h2>
-                    <h3 v-if="store.state.isLogged" class="text-1xl font-light my-2.5">欢迎来到同济院线</h3>
+        <h2 v-else class="text-2xl">{{ user.displayName }}</h2>
+        <h3 v-if="store.state.isLogged" class="text-1xl font-light my-2.5">欢迎来到同济院线</h3>
       </div>
     </div>
   </el-card>
