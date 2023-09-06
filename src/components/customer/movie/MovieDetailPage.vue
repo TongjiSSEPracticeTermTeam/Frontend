@@ -270,7 +270,7 @@ const pickSessionsDialogOpen = ref(false)
 </script>
 
 <template>
-  <div class="content py-10">
+  <div class="content py-10" >
     <div class="flex w-full">
       <div class="grow" />
       <div style="width: 1200px;">
@@ -300,7 +300,7 @@ const pickSessionsDialogOpen = ref(false)
             </div>
           </el-card>
           <div>
-            <el-card class="mx-10 my-5 px-5">
+            <el-card class="mx-10 my-5 px-5" >
               <div class="flex items-center">
                 <h2 class="text-red-500 text-2xl font-bold">演职员</h2>
               </div>
@@ -322,7 +322,7 @@ const pickSessionsDialogOpen = ref(false)
               </div>
             </el-card>
           </div>
-          <el-card class="mx-10 my-5 px-5">
+          <el-card class="mx-10 my-5 px-5" >
             <div class="flex items-center">
               <h2 class="text-red-500 text-2xl font-bold">近期场次</h2>
               <div class="grow" />

@@ -64,9 +64,9 @@ defineExpose({ handle_select })
   <el-sub-menu v-if="store.state.isLogged" index="5" class="el-sub-menu">
     <template #title>
       <span style="font-size: 1.3em" class="flex items-center">
-        <el-avatar :src="store.state.currentUser.avatarUrl" class="mx-2.5"/>
+        <img :src="store.state.currentUser.avatarUrl" class="mx-2.5" style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;"/>
         {{ store.state.currentUser.displayName }}
-        <img v-if="store.state.currentUser.vip" src="/img/vip.png" class="ml-2" style="width: 32px; height: 32px;"/>
+        <img v-if="store.state.currentUser.vip" src="/img/vip.png" class="ml-2" style="width: 25px; height: 25px;"/>
       </span>
     </template>
     <el-menu-item index="5-1">个人中心</el-menu-item>
