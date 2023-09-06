@@ -110,8 +110,8 @@ const topbarHandleFail = () => {
               <template #template>
                 <el-row :gutter="10">
                   <el-col :span="4" v-for="n in pageSize" :key="n">
-                    <div class="skeleton" style="height: 280px">
-                      <el-skeleton-item variant="rect" class="w-full h-280px" />
+                    <div class="skeleton">
+                      <el-skeleton-item variant="rect" class="w-full mb-5" style="height: 280px;"/>
                     </div>
                   </el-col>
                 </el-row>
@@ -121,7 +121,8 @@ const topbarHandleFail = () => {
                   <el-col :span="4" v-for="staff in staffs" :key="staff">
                     <el-card
                       shadow="hover"
-                      class="p-0 mb-0 h-280px cursor-pointer"
+                      class="p-0 mb-5 cursor-pointer"
+                      style="height: 280px;"
                       @click="handleStaffDetail(staff.staffId)"
                     >
                       <el-image

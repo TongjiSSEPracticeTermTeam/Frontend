@@ -3,14 +3,14 @@ import { eMovie } from './Movie'
 export default class Staff {
   staffId: string
   name: string
-  gender: string
+  gender: number
   introduction: string
   imageUrl: string
 
   public constructor() {
     this.staffId = ''
     this.name = ''
-    this.gender = '0'
+    this.gender = 0
     this.introduction = ''
     this.imageUrl = ''
   }
