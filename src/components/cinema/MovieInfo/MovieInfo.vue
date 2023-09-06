@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { ElMessageBox, ElMessage } from 'element-plus'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref,computed } from 'vue'
 import { useStore } from 'vuex'
 import MovieInHall from '@/models/MovieInHall'
 import Movie from '@/models/Movie';
@@ -290,6 +290,26 @@ const sessionAdd = async function () {
       })
     })
 }
+const filterPictureData = computed(() => {
+  return (movieId: string) => {
+    for (let i = 0; i < movieInHall.value.length; i++) {
+      if (movieInHall.value[i].movieId === movieId) {
+        return movieInHall.value[i].postUrl!;
+      }
+    }
+    return '';
+  };
+});
+const filterNameData = computed(() => {
+  return (movieId: string) => {
+    for (let i = 0; i < movieInHall.value.length; i++) {
+      if (movieInHall.value[i].movieId === movieId) {
+        return movieInHall.value[i].name!;
+      }
+    }
+    return '';
+  };
+});
 
 const updateCurrentHall = () => {
   console.log(currentHall.value)
@@ -397,7 +417,7 @@ onMounted(() => {
           </el-main>
         </el-container>
       </el-container>
-      <el-footer style=" height: 250px;">
+      <el-footer style=" height: 270px;">
         <el-select v-model="currentHall" class="m-2" placeholder="请选择影厅" size="large" @change="updateCurrentHall">
           <el-option v-for="item in halls" :key="item.hallID" :label="item.hallID" :value="item.hallID" />
         </el-select>
@@ -405,12 +425,12 @@ onMounted(() => {
         <el-scrollbar>
           <div class="scrollbar-flex-content">
             <div v-for="session in sessions" :key="session.movieId" class="scrollbar-item">
-              <!-- <img :src="session.imageUrl"> -->
-              <div>{{ session.movieId }}</div>
+              <el-image style="height: 120px" :src="filterPictureData(session.movieId)" />              
+              <div><b>{{ filterNameData(session.movieId) }}</b></div>
               <div>{{ new Date(session.startTime).toLocaleDateString() }}</div>
               <div>{{ new Date(session.startTime).toLocaleTimeString() }}</div>
             </div>
-          </div>
+            </div>
         </el-scrollbar>
       </el-footer>
     </el-container>
