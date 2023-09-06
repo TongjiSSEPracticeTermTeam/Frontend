@@ -410,55 +410,11 @@ export default {
             newHallID: -1,
             tableHeight: window.innerHeight - 500,
             WindowHeight: window.innerHeight,
-            tableData: [
-                {
-                    hallID: 1234,
-                    row: 3245,
-                    col: 2151417,
-                    type: 'Dolby Atmos',
-                },
-                {
-                    hallID: 2151417,
-                    row: 3245,
-                    col: 2151417,
-                    type: 'Dolby Atmos',
-                },
-            ],
         }
     },
     methods: {
         logout() {
             alert("我退出了");
-        },
-        handleEdit(index: number, data: any) {
-            //让组件可修改
-            //this.$refs.editDialog.editData = data;
-            this.editIndex = index;
-            console.log(data);
-        },
-        handleAdd() {
-
-            // this.newHallID = this.tableData.length;
-            // this.tableData.push({
-            //     hallID: 0,
-            //     row: 0,
-            //     col: 0,
-            //     type: '',
-            // });
-            // this.editIndex = this.newHallID;
-        },
-        handleSave(index: any, data: any) {
-            if (this.newHallID === index) {
-                this.newHallID = -1;
-            }
-            //这里写相应操作
-
-            this.tableData = this.tableData.sort((obj1, obj2) => {//根据hallID进行排序
-                return obj1.hallID - obj2.hallID;
-            });
-
-            this.editIndex = -1;
-            console.log(data);
         },
         updateHeight() {
         },
