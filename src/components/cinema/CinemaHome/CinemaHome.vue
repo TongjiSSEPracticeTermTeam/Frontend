@@ -1,5 +1,100 @@
 <script setup lang="ts">
-import type { routerKey } from 'vue-router';
+import axios from 'axios';
+import {ref, onMounted} from 'vue'
+import MovieData from '@/models/MHData';
+import Cinema from "@/models/Cinema";
+import User from "@/models/User";
+import { ElMessage } from 'element-plus';
+
+let user = new User()
+const cinema = ref(new Cinema())
+
+let TotalCinemaBoxOffice = ref(0)
+let TotalCinemaAudiNumber = ref(0)
+let CinemaData = ref(new Array<MovieData>())
+
+const getUserInfo = function () {
+    return new Promise((resolve, reject) => {
+        axios
+            .get('/api/manager', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            .then((res) => {
+                user = res.data;
+                console.log('已登录用户信息-:', res.data);
+                resolve(res.data)
+            })
+            .catch((err) => {
+                console.log(err)
+                reject(err)
+            });
+    })
+}
+
+const fetchOverviewData = function() {
+    console.log(cinema.value.cinemaId)
+    axios
+        .get('/api/CinemaOverview/' + cinema.value.cinemaId)
+        .then((res) => {
+            if (res.data && res.data.status && res.data.status === '10000') {
+                TotalCinemaBoxOffice.value = res.data.data.globalData.totalBoxOfficeToday;
+                TotalCinemaAudiNumber.value = res.data.data.globalData.audienceNumberToday
+                CinemaData.value = res.data.data.movieDatas;
+                console.log(TotalCinemaBoxOffice)
+            }
+            else {
+                TotalCinemaBoxOffice.value = 0;
+                TotalCinemaAudiNumber.value = 0
+                CinemaData.value = [];
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+        });
+}
+
+const GetCinemaByMID = function () {
+    return new Promise((resolve, reject) => {
+        axios
+            .get('/api/Hall/manager/' + user.id + '/cinemas', { 
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            .then(
+                res => {
+                    if (res.data && res.data.status && res.data.status == '10000') {
+                        cinema.value = res.data.data[0]
+                    }
+                    else {
+                        console.log(res.data)
+                        ElMessage({
+                            type: 'error',
+                            message: '获取影院信息失败'
+                        })
+                    }
+                    resolve(res.data)
+                }
+            )
+            .catch((err) => {
+                console.log(err)
+                ElMessage({
+                    type: 'error',
+                    message: '获取影院信息失败'
+                })
+                reject(err)
+            })
+    })
+}
+
+onMounted(async () => {
+    await getUserInfo()
+    await GetCinemaByMID()
+    console.log(cinema.value)
+    fetchOverviewData()
+})
 
 </script>
 
@@ -21,20 +116,20 @@ import type { routerKey } from 'vue-router';
     <div class="el-divider el-divider--horizontal" role="separator" style="--el-border-style: solid;" />
     <!-- <el-divider border-style="double" /> -->
     <el-table :data="CinemaData" style="width:100%;">
-        <el-table-column label="电影名" prop="MovieName" sortable>
+        <el-table-column label="电影名" prop="movieName" sortable>
             <template #default="scope">
-                <el-button style="border: none;">{{ scope.row.MovieName }}</el-button>
+                <el-button style="border: none;">{{ scope.row.movieName }}</el-button>
             </template>
         </el-table-column>
-        <el-table-column label="总票房（当前影院）" prop="BoxOffice" sortable/>
+        <el-table-column label="总票房（当前影院）" prop="totalBoxOffice" sortable/>
             
-        <el-table-column label="影院上座率" prop="Attendence" sortable/>
+        <el-table-column label="影院上座率" prop="attendance" sortable/>
             
-        <el-table-column label="观影人次" prop="AudiNumber" sortable/>
+        <el-table-column label="观影人次" prop="audienceNumber" sortable/>
             
-        <el-table-column label="首映日期" prop="PremiereDate" sortable>
+        <el-table-column label="首映日期" prop="premiereDate" sortable>
             <template #default="scope">
-                <span>{{ formattedPremiereDate(scope.row.PremiereDate) }}</span>
+                <span>{{ formattedPremiereDate(scope.row.premiereDate) }}</span>
             </template>
         </el-table-column>
     </el-table>
@@ -43,73 +138,13 @@ import type { routerKey } from 'vue-router';
 
 <script lang="ts">
 export default {
-    data: () => {
-        return {
-            // activeIndex: '0',
-            // curIndex: '0',
-            // debounceTimeout: null,
-            // hallClass: ['bg-purple'],
-            // isLeft: true,
-
-            TotalCinemaBoxOffice: 3562536253263562,
-            TotalCinemaAudiNumber: 2378273823,
-            CinemaData: [
-                {
-                    MovieName: "奥本海默",
-                    BoxOffice: 1000000,
-                    Attendence: 0.85,
-                    AudiNumber: 1000000,
-                    PremiereDate: new Date("2023-08-31T00:00:00"),
-                },
-                {
-                    MovieName: "孤注一掷",
-                    BoxOffice: 3623783,
-                    Attendence: 0.75,
-                    AudiNumber: 2637263,
-                    PremiereDate: new Date("2023-08-14T00:00:00"),
-                },
-            ]
-        }
-    },
     methods: {
-        logout() {
-            alert("我退出了");
-        },
-        // handleSelect(key: string) {
-        //     this.curIndex = key;
-        //     this.isLeft = !this.isLeft;
-
-        //     // switch (key) {
-        //     //     case '0':
-        //     //         this.$router.push('/');
-        //     //         break;
-        //     //     case '1':
-        //     //         this.$router.push('/movieInfo');
-        //     //         break;
-        //     //     case '2':
-        //     //         this.$router.push('/CinemaInfo');
-        //     //         break;
-        //     //     case '3':
-        //     //         this.logout();
-        //     //         return;
-        //     // }
-        // },
         formattedPremiereDate(value: string) {
             if (!value)
                 return "";
             return new Date(value).toLocaleString();
-        }
+        },
     },
-    mounted() {
-
-    },
-    watch: {
-
-    },
-    computed: {
-        
-    },
-
 }
 </script>
 
