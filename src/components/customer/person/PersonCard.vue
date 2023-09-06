@@ -64,21 +64,23 @@ function getImageBrightness(imgElement: HTMLImageElement, callback: (brightness:
   callback(brightness)
 }
 
-const avatarCardBackground = ref('white')
+const avatarCardBackground = ref('grey')
 const avatarCardFontColor = ref('white')
 
 const avatarLoaded = () => {
-  let domImg = document.querySelector('#avatar') as HTMLImageElement
-  let colorThief = new ColorThief()
-  let colors = colorThief.getPalette(domImg, 2)
-  colors = [colors[0], colors[1]]
-  let gradients = tinygradient(colors.map((v) => v.toString()))
-  avatarCardBackground.value = gradients.css()
-  getImageBrightness(domImg, (brightness) => {
-    if (brightness > 155) {
-      avatarCardFontColor.value = 'black'
-    }
-  })
+  if(store.state.isLogged){
+    let domImg = document.querySelector('#avatar') as HTMLImageElement
+    let colorThief = new ColorThief()
+    let colors = colorThief.getPalette(domImg, 2)
+    colors = [colors[0], colors[1]]
+    let gradients = tinygradient(colors.map((v) => v.toString()))
+    avatarCardBackground.value = gradients.css()
+    getImageBrightness(domImg, (brightness) => {
+      if (brightness > 155) {
+        avatarCardFontColor.value = 'black'
+      }
+    })
+  }
 }
 </script>
 
@@ -87,11 +89,12 @@ const avatarLoaded = () => {
         <div class="avatar-card-background" :style="`background: ${avatarCardBackground};`" />
             <div class="avatar-card-content flex" style="display: flex;align-items: center;">
                   <div class="person-avatar">
-                      <img id="avatar" :src="'https://cinemadb-1305284863.cos.accelerate.myqcloud.com/userdata/poster/27d257e3ba7c4d3b81ad144f9b304975.jpg'" alt="" @load="avatarLoaded" />
+                      <img id="avatar" :src="user.avatarUrl" alt="" @load="avatarLoaded" />
                   </div>
                   <div class="ml-10" :style="`display: flex; flex-direction:column; color: ${avatarCardFontColor}`">
-                    <h1 class="text-4xl font-extrabold">{{ user.displayName }}</h1>
-                    <h3 class="text-1xl font-light my-2.5">欢迎来到同济院线</h3>
+                    <h1 v-if="store.state.isLogged" class="text-4xl font-extrabold">{{ user.displayName }}</h1>
+                    <h2 v-else class="text-2xl" >{{ user.displayName }}</h2>
+                    <h3 v-if="store.state.isLogged" class="text-1xl font-light my-2.5">欢迎来到同济院线</h3>
                   </div>
             </div>
     </el-card>

@@ -146,7 +146,7 @@ const loadBoxOffice = () => {
 
                 <div class="mx-auto px-5">
                   <el-space wrap>
-                    <div v-for="(movie, index) in hotMovies.slice(0,8)" :key="index">
+                    <div v-for="(movie, index) in hotMovies.slice(0,12)" :key="index">
                       <div class="my-3">
                         <MovieCard :movie="movie" />
                         <div class="mt-3 text-center">{{ movie.name }}</div>
@@ -165,7 +165,7 @@ const loadBoxOffice = () => {
 
                 <div class="mx-auto px-5">
                   <el-space wrap>
-                    <div v-for="(movie, index) in comingSoonMovies.slice(0, 8)" :key="index">
+                    <div v-for="(movie, index) in comingSoonMovies.slice(0, 12)" :key="index">
                       <div class="my-3">
                         <MovieCard :movie="movie" />
                         <div class="mt-3 text-center">{{ movie.name }}</div>
