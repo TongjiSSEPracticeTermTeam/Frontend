@@ -17,6 +17,7 @@ const dialogTitle = ref('添加影厅')
 const hall = ref(new Hall())
 let halls = ref(new Array<Hall>())
 let search = ref('')
+let flag = ref(false)
 const formRef: Ref<FormInstance | null> = ref(null)
 let cinema = ref(new Cinema())
 
@@ -29,6 +30,7 @@ const updateForm = function (index: number, data: any) {
     dialogTitle.value = '修改影厅'
     console.log("原来的hall.hallID: " + hall.value.hallID)
     console.log("data.hallID: " + data.hallID)
+    flag.value = true
     hall.value = new Hall()
     hall.value.hallID = data.hallID
     hall.value.seat.rows = data.seat.rows
@@ -282,6 +284,10 @@ const filterTableData = computed(() => {
     })
 })
 watch(() => hall.value.seat.rows, (newRows: number, oldRows: number) => {
+    if (flag.value) {
+        flag.value = false
+        return
+    }
     console.log(`行数从 ${oldRows} 变为 ${newRows}`)
     // 如果新的行数大于旧的行数，说明增加了行数，需要在列数数组后面追加元素
     if (newRows > oldRows) {
