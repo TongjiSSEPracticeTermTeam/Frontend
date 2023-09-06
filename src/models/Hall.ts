@@ -1,7 +1,7 @@
-export default class Halll {
+export default class Hall {
     hallID: string
     cinemaID: string
-    type: string
+    hallType: string
     seat: {
         rows: number
         cols: number[]
@@ -10,7 +10,7 @@ export default class Halll {
     public constructor(data?: {
         hallID: string
         cinemaID: string
-        type: string
+        hallType: string
         seat: {
             rows: number
             cols: number[]
@@ -19,16 +19,16 @@ export default class Halll {
         if (data) {
             this.hallID = data.hallID
             this.cinemaID = data.cinemaID
-            this.type = data.type
+            this.hallType = data.hallType
             this.seat = data.seat
         }
         else {
             this.hallID = ''
             this.cinemaID = ''
-            this.type = ''
+            this.hallType = ''
             this.seat = {
-                rows: 0,
-                cols: []
+                rows: 1,
+                cols: [1]
             }
         }
     }
