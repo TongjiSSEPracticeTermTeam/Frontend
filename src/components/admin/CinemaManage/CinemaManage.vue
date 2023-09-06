@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import Cinema from '@/models/Cinema'
+import Cinema, { CinemaCreator } from '@/models/Cinema'
 import { onMounted, computed, ref, nextTick } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox, ElInput } from 'element-plus'
 import type { FormInstance } from 'element-plus'
-import TopBar from '@/components/manager/TopBar.vue'
-import CinemaInfo from '@/components/manager/CinemaManage/CinemaInfo.vue'
+import TopBar from '@/components/admin/TopBar.vue'
+import CinemaInfo from '@/components/admin/CinemaManage/CinemaInfo.vue'
 import UploadImage from '@/helpers/UploadImage.vue'
-// import CinemaManage from '@/components/manager/CinemaManage/CinemaManage.vue'
 
 let currentTags = computed({
   get(): string[] {
@@ -55,29 +54,28 @@ const tagShowInput = async () => {
   await nextTick()
   InputRef.value?.focus()
 }
-// const emailRules = ref([
-//   {
-//     required: true,
-//     message: '请输入邮箱',
-//     trigger: 'blur'
-//   },
-//   {
-//     validator: function (rule, value, callback) {
-//       //邮箱校验
-//       // console.log("邮箱通过！");
-//       // return callback()
-//       const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
-//       if (regEmail.test(value)) {
-//         // 合法的邮箱
-//         return callback()
-//       }
-//       callback(new Error('请输入合法的邮箱'))
-//     },
-//     trigger: 'blur'
-//   }
-// ])
-// const featureHint = ref(false)
-const newCinema = ref(new Cinema())
+const emailRules = ref([
+  {
+    required: true,
+    message: '请输入邮箱',
+    trigger: 'blur'
+  },
+  {
+    validator: function (rule, value, callback) {
+      //邮箱校验
+      // console.log("邮箱通过！");
+      // return callback()
+      const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+      if (regEmail.test(value)) {
+        // 合法的邮箱
+        return callback()
+      }
+      callback(new Error('请输入合法的邮箱'))
+    },
+    trigger: 'blur'
+  }
+])
+const newCinema = ref(new CinemaCreator())
 const cinemas = ref<Cinema[]>([])
 
 const loading = ref(true)
@@ -229,7 +227,7 @@ const formStatus = ref(false)
 const formRef = ref<FormInstance>()
 const formReset = () => {
   formStatus.value = false
-  newCinema.value = new Cinema()
+  newCinema.value = new CinemaCreator()
   formRef.value?.resetFields()
 }
 
@@ -249,6 +247,11 @@ const handleClose = () => {
   })
 }
 
+const handleUploadSuccess = (Url: string) => {
+  newCinema.value.cinemaImageUrl = Url
+  formStatus.value = true
+}
+
 const confirmForm = async function () {
   //表单确认函数
   if (!formRef.value) {
@@ -258,15 +261,17 @@ const confirmForm = async function () {
   console.log('开始进行表单检查！')
   await formRef.value.validate((valid, fields) => {
     if (valid) {
-      console.log('表单合法！')
+      // console.log('表单合法！')
       //...前后端交互数据
       loading.value = true
+      console.log(newCinema.value)
       axios
         .put('/api/Cinema', newCinema.value)
         .then((res) => {
           if (res.data.status == '10000') {
             let newC = new Cinema()
-            Object.assign(newC, newCinema.value)
+            // Object.assign(newC, newCinema.value)
+            newC = res.data.data
             cinemas.value.push(newC)
 
             ElMessage({
@@ -327,14 +332,33 @@ const editRef = ref<typeof CinemaInfo>()
 const handleEditClose = () => {
   editRef.value?.cancelForm()
 }
+
+const topbarHandleSuccess = (data: Cinema[]) => {
+  // 搜索结果不分页
+  total.value = data.length
+  pageSize.value = data.length
+  currentPage.value = 1
+  cinemas.value = data
+  // console.log(data)
+  // console.log(movies.value)
+}
+const topbarHandleFail = () => {
+  ElMessage({
+    message: `查询失败或结果不存在`,
+    type: 'warning'
+  })
+  pageSize.value = 10
+  currentPage.value = 1
+  updateTable()
+}
 </script>
 
 <template>
   <h1 class="text-2xl font-bold">影院管理</h1>
   <el-divider />
-  <topBar />
-  <el-table v-loading="loading" :data="cinemas.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-    style="width: 100%" :header-cell-style="{ backgroundColor: 'purple', color: 'white' }">
+  <topBar currentItem="2" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
+  <el-table v-loading="loading" :data="cinemas" style="width: 100%"
+    :header-cell-style="{ backgroundColor: 'purple', color: 'white' }">
     <el-table-column prop="cinemaId" label="影院id" align="left" min-width="10%"></el-table-column>
     <el-table-column prop="name" label="影院名" align="left" min-width="20%"></el-table-column>
     <el-table-column prop="location" label="地址" align="center" min-width="25%"></el-table-column>
@@ -380,7 +404,7 @@ const handleEditClose = () => {
           style="object-fit: contain; margin: 5px 0" /> -->
           <el-image :src="newCinema.cinemaImageUrl" :fit="'contain'" style="height: 300px; width: 300px">
           </el-image>
-          <UploadImage prefix="cinema" @Success="(url) => (newCinema.cinemaImageUrl = url)" />
+          <UploadImage prefix="cinema" @Success="handleUploadSuccess" />
         </el-space>
       </el-form-item>
 
@@ -406,41 +430,16 @@ const handleEditClose = () => {
         </el-space>
       </el-form-item>
 
-      <!-- <el-form-item label="影院标签">
-        <el-input
-          v-model="newCinema.feature"
-          @change="formStatus = true"
-          placeholder="请输入影院标签"
-          @focus="featureHint = true"
-          @blur="featureHint = false"
-          type="textarea"
-          :autosize="{ minRows: 1, maxRows: 3 }"
-        />
-        <span
-          v-show="featureHint"
-          style="
-            font: 5px 'Fira Sans', serif;
-            margin: 2px 0 0 0;
-            padding: 0;
-            color: red;
-            font-weight: bold;
-          "
-        >
-          标签之间请用半角逗号`,`隔开
-        </span>
-      </el-form-item> -->
-
-      <el-form-item label="管理员ID" prop="managerId" :rules="{ required: true, message: '管理员Id不能为空', trigger: 'blur' }">
-        <el-input v-model="newCinema.managerId" @change="formStatus = true" placeholder="请输入管理员Id" />
+      <el-form-item label="管理员名称" prop="managerName" :rules="{ required: true, message: '管理员名称不能为空', trigger: 'blur' }">
+        <el-input v-model="newCinema.managerName" @change="formStatus = true" placeholder="请输入管理员名称" />
       </el-form-item>
 
-      <!--      <el-form-item label="管理员邮箱" prop="managerEmail" :rules="emailRules">-->
-      <!--        <el-input v-model="newCinema.managerEmail" @change="formStatus = true" placeholder="请输入管理员邮箱" clearable />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="管理密码" prop="managerPassWD"-->
-      <!--                    :rules="{ required: true, message: '管理密码不能为空', trigger: 'blur' }">-->
-      <!--        <el-input v-model="newCinema.managerPassWD" @change="formStatus = true" placeholder="请输入管理密码" show-password/>-->
-      <!--      </el-form-item>-->
+      <el-form-item label="管理员邮箱" prop="managerEmail" :rules="emailRules">
+        <el-input v-model="newCinema.managerEmail" @change="formStatus = true" placeholder="请输入管理员邮箱" clearable />
+      </el-form-item>
+      <el-form-item label="管理密码" prop="managerPassword" :rules="{ required: true, message: '管理密码不能为空', trigger: 'blur' }">
+        <el-input v-model="newCinema.managerPassword" @change="formStatus = true" placeholder="请输入管理密码" show-password />
+      </el-form-item>
     </el-form>
 
     <template #footer>

@@ -13,9 +13,7 @@ const settingItems: {
     icon: defineAsyncComponent(() =>
       import('@element-plus/icons-vue').then((module) => module.Film)
     ),
-    component: defineAsyncComponent(
-      () => import('@/components/manager/MovieManage/MovieManage.vue')
-    ),
+    component: defineAsyncComponent(() => import('@/components/admin/MovieManage/MovieManage.vue')),
     needCard: true
   },
   {
@@ -23,9 +21,7 @@ const settingItems: {
     icon: defineAsyncComponent(() =>
       import('@element-plus/icons-vue').then((module) => module.UserFilled)
     ),
-    component: defineAsyncComponent(
-      () => import('@/components/manager/StaffManage/StaffManage.vue')
-    ),
+    component: defineAsyncComponent(() => import('@/components/admin/StaffManage/StaffManage.vue')),
     needCard: true
   },
   {
@@ -34,11 +30,20 @@ const settingItems: {
       import('@element-plus/icons-vue').then((module) => module.HomeFilled)
     ),
     component: defineAsyncComponent(
-      () => import('@/components/manager/CinemaManage/CinemaManage.vue')
+      () => import('@/components/admin/CinemaManage/CinemaManage.vue')
+    ),
+    needCard: true
+  },
+  {
+    name: '评论管理',
+    icon: defineAsyncComponent(() =>
+      import('@element-plus/icons-vue').then((module) => module.Edit)
+    ),
+    component: defineAsyncComponent(
+      () => import('@/components/admin/MovieManage/CommentManage.vue')
     ),
     needCard: true
   }
-  
 ]
 
 let currentItem = ref(0)
@@ -53,7 +58,7 @@ let isCollapse = ref(false)
         style="height: 100%"
         background-color="rgba(255,255,255,0.9)"
         :collapse="isCollapse"
-        @select="(index) => (currentItem = index)"
+        @select="(index) => (currentItem = Number(index))"
       >
         <h5 class="font-bold text-center py-4">院线管理员菜单</h5>
         <el-menu-item v-for="(item, i) in settingItems" :index="i.toString()" :key="i">
