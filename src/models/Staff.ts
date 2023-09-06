@@ -10,7 +10,7 @@ export default class Staff {
   public constructor() {
     this.staffId = ''
     this.name = ''
-    this.gender = 0
+    this.gender = 0// 0: 男, 1: 女
     this.introduction = ''
     this.imageUrl = ''
   }
