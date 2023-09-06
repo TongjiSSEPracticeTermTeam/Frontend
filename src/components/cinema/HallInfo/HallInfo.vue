@@ -441,8 +441,6 @@ export default {
         window.addEventListener('resize', this.updateHeight);// 添加窗口大小改变的事件监听器
         // 组件渲染完成后先调用一次更新高度的方法
         this.updateHeight();
-        this.getUserInfo();
-
     },
     watch: {
         updatedWindowHeight(Height) {
