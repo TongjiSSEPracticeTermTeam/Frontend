@@ -2,26 +2,69 @@
 import axios from 'axios';
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
+import { useStore } from 'vuex'
 import MovieInHall from '@/models/MovieInHall'
 import Movie from '@/models/Movie';
+import Hall from '@/models/Hall';
+import Cinema from '@/models/Cinema';
+import Session from '@/models/Session';
+
+const store = useStore()
+const dialogTitle = ref('电影排片')
 let movieInHall = ref(new Array<MovieInHall>())
 let movieDetail = ref(new Movie)
-let selectedMovieId = ref('000010')
-let value = ref('')
+let selectedMovieId = ref('')
+let valueTime = ref('')
+let currentHall = ref('')
+let price = ref(0)
+let language = ref('')
+let dimension = ref('')
+let halls = ref(new Array<Hall>())
+let cinema = ref(new Cinema())
+let sessions = ref(new Array<Session>())
 
-const price = ref(1)
-const handleChange = (value: number) => {
-  console.log(value)
+const updateSession = () => {
+  axios
+    .get(`/api/Session?cinema_id=${cinema.value.cinemaId}&hall_id=${currentHall.value}`)
+    .then((res) => {
+      if (res.data && res.data.status && res.data.status === '10000') {
+        sessions.value = res.data.data
+        // console.log(res.data.data)
+        // console.log(sessions.value)
+      }
+      else if (res.data && res.data.status && res.data.status === '40004') {
+        sessions.value = res.data.data
+        ElMessage({
+          type: 'info',
+          message: '当前影厅下无排片！'
+        })
+      }
+      else {
+        console.log(res.data)
+        ElMessage({
+          type: 'error',
+          message: '获取排片信息失败'
+        })
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+      ElMessageBox.alert('数据加载失败！', '错误', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: 'OK',
+        callback: () => {
+          ElMessage.error('数据加载错误')
+        }
+      })
+    })
 }
-
 const updateMoviesInHall = () => {
   axios
     .get(`/api/Movies/noremoval`)
     .then((res) => {
       if (res.data && res.data.status && res.data.status === '10000') {
         movieInHall.value = res.data.data
-        console.log(res.data.data)
-        console.log(movieInHall.value)
       }
       else {
         console.log(res.data)
@@ -42,6 +85,74 @@ const updateMoviesInHall = () => {
         }
       })
     })
+}
+const GetHallsByMID = function (ManagerID: string) {
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/Hall/manager/' + ManagerID + '/halls', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      .then(
+        res => {
+          if (res.data && res.data.status && res.data.status == '10000') {
+            halls.value = res.data.data
+            console.log(halls.value)
+          }
+          else {
+            console.log(res.data)
+            ElMessage({
+              type: 'error',
+              message: '获取影厅信息失败'
+            })
+          }
+          resolve(res.data)
+        }
+      )
+      .catch((err) => {
+        console.log(err)
+        ElMessage({
+          type: 'error',
+          message: '获取影厅信息失败'
+        })
+        reject(err)
+      })
+  })
+}
+const GetCinemaByMID = function (ManagerID: string) {
+  return new Promise((resolve, reject) => {
+    axios
+      .get('/api/Hall/manager/' + ManagerID + '/cinemas', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      })
+      .then(
+        res => {
+          if (res.data && res.data.status && res.data.status == '10000') {
+            cinema.value = res.data.data[0]
+            console.log(cinema.value)
+          }
+          else {
+            console.log(res.data)
+            ElMessage({
+              type: 'error',
+              message: '获取影院信息失败'
+            })
+          }
+          resolve(res.data)
+        }
+      )
+      .catch((err) => {
+        console.log(err)
+        ElMessage({
+          type: 'error',
+          message: '获取影院信息失败'
+        })
+        reject(err)
+      })
+  })
 }
 const updateMovieDetail = (id: string) => {
   selectedMovieId.value = id;
@@ -73,9 +184,124 @@ const updateMovieDetail = (id: string) => {
       })
     })
 }
+const sessionAdd = async function () {
+  if (cinema.value && cinema.value.cinemaId == '') {
+    ElMessage({
+      type: 'error',
+      message: '影院信息不存在'
+    })
+    return
+  }
+  if (selectedMovieId.value == '') {
+    ElMessage({
+      type: 'error',
+      message: '请在左侧栏选中要排片的电影'
+    })
+    return
+  }
+  if (currentHall.value == '') {
+    ElMessage({
+      type: 'error',
+      message: '请选择影厅'
+    })
+    return
+  }
+  if (valueTime.value == '') {
+    ElMessage({
+      type: 'error',
+      message: '请选择电影放映时间'
+    })
+    return
+  }
+  if (language.value == '') {
+    ElMessage({
+      type: 'error',
+      message: '请输入语言'
+    })
+    return
+  }
+  if (dimension.value == '') {
+    ElMessage({
+      type: 'error',
+      message: '请输入电影维度'
+    })
+    return
+  }
+  const date = new Date(valueTime.value);
+  date.setUTCHours(date.getUTCHours() + 8); // 将小时增加8个小时
+  const updatedDateString = date.toISOString();
+
+  let jsonObject = {
+    movieId: selectedMovieId.value,
+    cinemaId: cinema.value.cinemaId,
+    hallId: currentHall.value,
+    startTime: updatedDateString,
+    attendence: 0,
+    price: price.value,
+    language: language.value,
+    dimesion: dimension.value
+  }
+  const newSession = new Session(JSON.parse(JSON.stringify(jsonObject)))
+  console.log(newSession)
+  axios
+    .put('/api/Session', newSession)
+    .then((res) => {
+      if (res.data && res.data.status && res.data.status == '10000') {
+        updateSession()
+        ElMessage({
+          type: 'success',
+          message: dialogTitle.value.slice(4) + '成功'
+        })
+      }
+      else if (res.data && res.data.status && res.data.status == '40001') {
+        updateSession()
+        ElMessage({
+          type: 'error',
+          message: '影厅不存在'
+        })
+      }
+      else if (res.data && res.data.status && res.data.status == '40002') {
+        updateSession()
+        ElMessage({
+          type: 'error',
+          message: '电影不存在'
+        })
+      }
+      else if (res.data && res.data.status && res.data.status == '40003') {
+        updateSession()
+        ElMessage({
+          type: 'error',
+          message: '排片时间不在电影上映时间内'
+        })
+      }
+      else {
+        console.log(res.data)
+        ElMessage({
+          type: 'error',
+          message: dialogTitle.value.slice(4) + '失败'
+        })
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+      ElMessage({
+        type: 'error',
+        message: dialogTitle.value.slice(4) + '失败'
+      })
+    })
+}
+
+const updateCurrentHall = () => {
+  console.log(currentHall.value)
+  updateSession()
+}
 
 onMounted(() => {
   updateMoviesInHall()
+  // selectedMovieId.value=movieInHall.value[0].movieId
+  // updateMovieDetail(selectedMovieId.value)
+  GetHallsByMID(store.state.currentUser.id)
+  GetCinemaByMID(store.state.currentUser.id)
 });
 </script>
 
@@ -105,45 +331,52 @@ onMounted(() => {
     </el-aside>
 
     <el-container>
-      <el-header style="height: 240px;">
+      <el-container>
+        <el-aside style="width: auto;margin-left: 20px;">
+          <br>
+          <h3 class="text-xl">电影排片</h3>
+          <div class="demo-datetime-picker">
+            <div class="block">
+              电影开始时间&nbsp;&nbsp;
+              <el-date-picker v-model="valueTime" type="datetime" placeholder="请选择日期和时间" size="large"
+                style="width: 220px;" />
+              <br>
+              &nbsp;&nbsp;电影影厅选择
+              <el-select v-model="currentHall" class="m-2" placeholder="请选择影厅" size="large" style="width: 220px;"
+                @change="updateCurrentHall">
+                <el-option v-for="item in halls" :key="item.hallID" :label="item.hallID" :value="item.hallID" />
+              </el-select>
+              <br>
 
-        <el-container>
-          <el-aside style="width: auto; height: 300px;">
-            <br>
-            <h3 class="text-xl">电影排片</h3>
-            <div class="demo-datetime-picker">
-              <div class="block">
-                电影开始时间&nbsp;&nbsp;
-                <el-date-picker v-model="value" type="datetime" placeholder="请选择日期和时间" size="large"
-                  style="width: 220px;" />
-                <br>
-                &nbsp;&nbsp;电影影厅选择
-                <el-select v-model="value" class="m-2" placeholder="请选择影厅" size="large" style="width: 220px;">
-                  <el-option v-for="item in halls" :key="item.value" :label="item.label" :value="item.value" />
-                </el-select>
-                <br>
-                
-                  电影价格&nbsp;&nbsp;
-    <el-input-number v-model="price" :precision="2" :step="0.1" :min="1" :max="1000" @change="handleChange" style="width: 146px;" />
-    &nbsp;元&nbsp;&nbsp;&nbsp;&nbsp;
-    <br>
-                <div style="text-align: right;">
-                  <el-button type="primary">确定</el-button>&nbsp;&nbsp;
-                </div>
+              电影价格&nbsp;&nbsp;
+              <el-input-number v-model="price" :precision="2" :step="0.1" :min="1" :max="1000" style="width: 146px;"
+                size="large" class="m-2" />
+              &nbsp;元&nbsp;&nbsp;&nbsp;&nbsp;
+              <br>
+
+              电影语言&nbsp;&nbsp;&nbsp;<el-input v-model="language" placeholder="语言" style="width: 120px;" size="large"
+                class="m-2" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <br>
+              电影维度&nbsp;&nbsp;&nbsp;<el-input v-model="dimension" placeholder="维度" style="width: 120px;" size="large"
+                class="m-2" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <br>
+              <div style="text-align: right;">
+                <el-button type="primary" @click="sessionAdd">确定</el-button>&nbsp;&nbsp;
               </div>
             </div>
-          </el-aside>
-
-          <el-main>
+          </div>
+        </el-aside>
+        <el-container>
+          <el-header style="height: 240px;">
+            <br>
             <h3 class="text-xl">&nbsp;&nbsp;&nbsp;&nbsp;电影相关数据</h3>
             <br>
             <el-row justify="center">
               <el-col :span="10" class="statistic_bgcolor">
                 <el-statistic class="pt10 pb10 pl10 pr10" title="电影名" :value="movieDetail.name" />
               </el-col>
-
               <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="时长" :value="movieDetail.duration+' 分钟'" />
+                <el-statistic class="pt10 pb10 pl10 pr10" title="时长" :value="movieDetail.duration + ' 分钟'" />
               </el-col>
             </el-row>
             <br>
@@ -151,33 +384,31 @@ onMounted(() => {
               <el-col :span="10" class="statistic_bgcolor">
                 <el-statistic class="pt10 pb10 pl10 pr10" title="评分" :value="movieDetail.score" />
               </el-col>
-
               <el-col :span="10" class="statistic_bgcolor">
                 <el-statistic class="pt10 pb10 pl10 pr10" title="标签" :value="movieDetail.tags" />
               </el-col>
             </el-row>
             <br>
+          </el-header>
+          <el-main style="width: auto;margin-left: 24px;height: 100px;">
+            <h3 class="text-xl">电影简介</h3>
+            <div style="margin: 10px;">{{ movieDetail.instruction }}</div>
 
           </el-main>
-
         </el-container>
-      </el-header>
-      <el-main style="width: auto;">
-        <h3 class="text-xl">电影简介</h3>
-        <div style="margin: 10px;">{{ movieDetail.instruction }}</div>
-        
-      </el-main>
-
+      </el-container>
       <el-footer style=" height: 250px;">
-        <el-select v-model="value" class="m-2" placeholder="请选择影厅" size="large">
-          <el-option v-for="item in halls" :key="item.value" :label="item.label" :value="item.value" />
+        <el-select v-model="currentHall" class="m-2" placeholder="请选择影厅" size="large" @change="updateCurrentHall">
+          <el-option v-for="item in halls" :key="item.hallID" :label="item.hallID" :value="item.hallID" />
         </el-select>
+        号影厅
         <el-scrollbar>
           <div class="scrollbar-flex-content">
-            <div v-for="time in times" class="scrollbar-item">
-              <img :src="time.imageUrl">
-                <div class="movie-name">{{ time.name }}</div>
-                <div class="movie-starttime">{{ time.startTime.toLocaleString() }}</div>
+            <div v-for="session in sessions" :key="session.movieId" class="scrollbar-item">
+              <!-- <img :src="session.imageUrl"> -->
+              <div>{{ session.movieId }}</div>
+              <div>{{ new Date(session.startTime).toLocaleDateString() }}</div>
+              <div>{{ new Date(session.startTime).toLocaleTimeString() }}</div>
             </div>
           </div>
         </el-scrollbar>
@@ -185,71 +416,6 @@ onMounted(() => {
     </el-container>
   </el-container>
 </template>
-
-<script lang = "ts" >
-
-export default {
-  data: () => {
-    return {
-      times: [
-        {
-          imageUrl:
-            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
-          name: 'Movie 1',
-          startTime: new Date("2023-08-31T00:00:00"),
-        },
-        {
-          imageUrl:
-            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
-          name: 'Movie 2',
-          startTime: new Date("2023-08-31T00:00:00"),
-        },
-      ],
-      selectedMovie: "",
-      halls: [
-        {
-          value: 'Option1',
-          label: 'Option1',
-        },
-        {
-          value: 'Option2',
-          label: 'Option2',
-        },
-        {
-          value: 'Option3',
-          label: 'Option3',
-        },
-        {
-          value: 'Option4',
-          label: 'Option4',
-        },
-        {
-          value: 'Option5',
-          label: 'Option5',
-        },
-      ],
-      duration: "这么长",
-      tags: "tag tag tag",
-      introduction: "jieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjiejieanjie",
-      score: 10,
-      name: "aobenhaim o",
-    }
-  },
-  methods: {
-    
-  },
-  mounted() {
-
-  },
-  watch: {
-
-  },
-  computed: {
-
-  },
-
-}
-</script>
 
 <style>
 .scrollbar-flex-content {
