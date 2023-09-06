@@ -277,7 +277,7 @@ const pickSessionsDialogOpen = ref(false)
           <el-card class="mx-10 my-5 poster-card">
             <div class="poster-card-background" :style="`background: ${posterCardBackground};`" />
             <div class="poster-card-content flex">
-              <div class="movie-poster basis-3/10 bg-black">
+              <div class="movie-poster basis-3/10">
                 <img id="poster" class="w-full" :src="movie.postUrl ?? ''" :alt="movie.name" object-fit="cover" @load="posterLoaded" />
               </div>
               <div class="ml-5 py-5" :style="`color: ${posterCardFontColor}`">
