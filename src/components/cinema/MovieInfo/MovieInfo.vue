@@ -1,49 +1,37 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { ElMessageBox, ElMessage } from 'element-plus'
-import { ref } from 'vue'
-import Cinema from '@/models/Cinema'
-const loading = ref(true)
-const paginationLoading = ref(false)
-const total = ref(10)
-const cinemaId = ref('000008')
-const movieId = ref('000010')
+import { onMounted, ref } from 'vue'
+import MovieInHall from '@/models/MovieInHall'
+import Movie from '@/models/Movie';
+let movieInHall = ref(new Array<MovieInHall>())
+let movieDetail = ref(new Movie)
+let selectedMovieId = ref('000010')
 let value = ref('')
-const cinemas = ref<Cinema[]>([])
 
-const updateTable = () => {
-  paginationLoading.value = true
+const price = ref(1)
+const handleChange = (value: number) => {
+  console.log(value)
+}
+
+const updateMoviesInHall = () => {
   axios
-    .get(`/api/MoviesInHall/${cinemaId.value}`)
+    .get(`/api/Movies/noremoval`)
     .then((res) => {
       if (res.data && res.data.status && res.data.status === '10000') {
-        total.value = res.data.data
+        movieInHall.value = res.data.data
+        console.log(res.data.data)
+        console.log(movieInHall.value)
       }
-      paginationLoading.value = false
-      loading.value = true
-      axios
-        .get(`/api/MoviesInHall/detail/${movieId.value}`)//这里不对
-        .then((res) => {
-          if (res.data && res.data.status && res.data.status === '10000') {
-            cinemas.value = res.data.data
-          }
-          loading.value = false
+      else {
+        console.log(res.data)
+        ElMessage({
+          type: 'error',
+          message: '获取影院内所有电影信息失败'
         })
-        .catch((err) => {
-          loading.value = false
-          console.log(err)
-          ElMessageBox.alert('数据加载失败！', '错误', {
-            // if you want to disable its autofocus
-            // autofocus: false,
-            confirmButtonText: 'OK',
-            callback: () => {
-              ElMessage.error('数据加载错误')
-            }
-          })
-        })
+      }
     })
     .catch((err) => {
-      paginationLoading.value = false
       console.log(err)
       ElMessageBox.alert('数据加载失败！', '错误', {
         // if you want to disable its autofocus
@@ -55,6 +43,40 @@ const updateTable = () => {
       })
     })
 }
+const updateMovieDetail = (id: string) => {
+  selectedMovieId.value = id;
+  axios
+    .get(`/api/Movies/detail/${id}`)
+    .then((res) => {
+      if (res.data && res.data.status && res.data.status === '10000') {
+        movieDetail.value = res.data.data
+        console.log(res.data.data)
+        console.log(movieInHall.value)
+      }
+      else {
+        console.log(res.data)
+        ElMessage({
+          type: 'error',
+          message: '获取影院内所有电影信息失败'
+        })
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+      ElMessageBox.alert('数据加载失败！', '错误', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: 'OK',
+        callback: () => {
+          ElMessage.error('数据加载错误')
+        }
+      })
+    })
+}
+
+onMounted(() => {
+  updateMoviesInHall()
+});
 </script>
 
 <template>
@@ -70,10 +92,10 @@ const updateTable = () => {
             <template #title>
               <span style="font-size: 18px;">电影列表</span>
             </template>
-            <el-menu-item v-for="movie in movies" :key="movie.id" :index="movie.id"
-              :class="{ 'highlighted': selectedMovie === movie.id }" @click="selectMovie(movie.id)">
+            <el-menu-item v-for="movie in movieInHall" :key="movie.movieId"
+              :class="{ 'highlighted': selectedMovieId === movie.movieId }" @click="updateMovieDetail(movie.movieId)">
               <div class="movie-item">
-                <img :src="movie.image" />
+                <img :src="movie.postUrl" />
                 <div class="movie-name">{{ movie.name }}</div>
               </div>
             </el-menu-item>
@@ -83,77 +105,55 @@ const updateTable = () => {
     </el-aside>
 
     <el-container>
-      <el-main>
+      <el-header style="height: 240px;">
 
         <el-container>
           <el-aside style="width: auto; height: 300px;">
-            <el-container>
-              <el-main>
-                <!-- <br>
-                <el-row justify="center">
-                  <el-col :span="10" class="statistic_bgcolor">
-                    <el-statistic class="pt10 pb10 pl10 pr10" title="电影时长" :value="duration" />
-                  </el-col>
-
-                  <el-col :span="10" class="statistic_bgcolor">
-                    <el-statistic class="pt10 pb10 pl10 pr10" title="标签" :value="tags" />
-                  </el-col>
-                </el-row>
+            <br>
+            <h3 class="text-xl">电影排片</h3>
+            <div class="demo-datetime-picker">
+              <div class="block">
+                电影开始时间&nbsp;&nbsp;
+                <el-date-picker v-model="value" type="datetime" placeholder="请选择日期和时间" size="large"
+                  style="width: 220px;" />
                 <br>
-                <el-row justify="center">
-                  <el-col :span="10" class="statistic_bgcolor">
-                    <el-statistic class="pt10 pb10 pl10 pr10" title="影院上座率" :value="occupancyRate" />
-                  </el-col>
-
-                  <el-col :span="10" class="statistic_bgcolor">
-                    <el-statistic class="pt10 pb10 pl10 pr10" title="票房" :value="ticketSales" />
-                  </el-col>
-                </el-row>
-                <br> -->
-              </el-main>
-              <el-footer>
-                <h3 class="text-xl">电影排片</h3>
-                <div class="demo-datetime-picker">
-                  <div class="block">
-                    电影开始时间&nbsp;&nbsp;
-                    <el-date-picker v-model="value" type="datetime" placeholder="请选择日期和时间" size="large"
-                      style="width: 220px;" />
-                    <br>
-                    &nbsp;&nbsp;电影影厅选择
-                    <el-select v-model="value" class="m-2" placeholder="请选择影厅" size="large" style="width: 220px;">
-                      <el-option v-for="item in halls" :key="item.value" :label="item.label" :value="item.value" />
-                    </el-select>
-                    <br>
-                    <div style="text-align: right;">
-                      <el-button type="primary">确定</el-button>&nbsp;&nbsp;
-                    </div>
-                  </div>
+                &nbsp;&nbsp;电影影厅选择
+                <el-select v-model="value" class="m-2" placeholder="请选择影厅" size="large" style="width: 220px;">
+                  <el-option v-for="item in halls" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+                <br>
+                
+                  电影价格&nbsp;&nbsp;
+    <el-input-number v-model="price" :precision="2" :step="0.1" :min="1" :max="1000" @change="handleChange" style="width: 146px;" />
+    &nbsp;元&nbsp;&nbsp;&nbsp;&nbsp;
+    <br>
+                <div style="text-align: right;">
+                  <el-button type="primary">确定</el-button>&nbsp;&nbsp;
                 </div>
-              </el-footer>
-            </el-container>
+              </div>
+            </div>
           </el-aside>
 
           <el-main>
-            <br>
             <h3 class="text-xl">&nbsp;&nbsp;&nbsp;&nbsp;电影相关数据</h3>
             <br>
             <el-row justify="center">
               <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="电影名" :value="name" />
+                <el-statistic class="pt10 pb10 pl10 pr10" title="电影名" :value="movieDetail.name" />
               </el-col>
 
               <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="时长" :value="duration" />
+                <el-statistic class="pt10 pb10 pl10 pr10" title="时长" :value="movieDetail.duration+' 分钟'" />
               </el-col>
             </el-row>
             <br>
             <el-row justify="center">
               <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="评分" :value="score" />
+                <el-statistic class="pt10 pb10 pl10 pr10" title="评分" :value="movieDetail.score" />
               </el-col>
 
               <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="标签" :value="tags" />
+                <el-statistic class="pt10 pb10 pl10 pr10" title="标签" :value="movieDetail.tags" />
               </el-col>
             </el-row>
             <br>
@@ -161,6 +161,11 @@ const updateTable = () => {
           </el-main>
 
         </el-container>
+      </el-header>
+      <el-main style="width: auto;">
+        <h3 class="text-xl">电影简介</h3>
+        <div style="margin: 10px;">{{ movieDetail.instruction }}</div>
+        
       </el-main>
 
       <el-footer style=" height: 250px;">
@@ -171,7 +176,8 @@ const updateTable = () => {
           <div class="scrollbar-flex-content">
             <div v-for="time in times" class="scrollbar-item">
               <img :src="time.imageUrl">
-              <div class="movie-name">{{ time.name }}</div>
+                <div class="movie-name">{{ time.name }}</div>
+                <div class="movie-starttime">{{ time.startTime.toLocaleString() }}</div>
             </div>
           </div>
         </el-scrollbar>
@@ -185,63 +191,18 @@ const updateTable = () => {
 export default {
   data: () => {
     return {
-      movies: [
-        {
-          id: "1",
-          name: 'Movie 1',
-          image: 'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0'
-        },
-        {
-          id: "2",
-          name: 'Movie 2',
-          image: 'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0'
-        },
-        {
-          id: "3",
-          name: 'Movie 3',
-          image: 'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0'
-        },
-        {
-          id: "4",
-          name: 'Movie 4',
-          image: 'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0'
-        }
-      ],
       times: [
         {
           imageUrl:
             'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
-          name: 'Movie 1'
+          name: 'Movie 1',
+          startTime: new Date("2023-08-31T00:00:00"),
         },
         {
           imageUrl:
             'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
-          name: 'Movie 2'
-        },
-        {
-          imageUrl:
-            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
-          name: 'Movie 2'
-        },
-        {
-          imageUrl:
-            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
-          name: 'Movie 2'
-        },
-        {
-          imageUrl:
-            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
-          name: 'Movie 2'
-        },
-        {
-          imageUrl:
-            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
-          name: 'Movie 2'
-        },
-        {
-          imageUrl:
-            'https://ts1.cn.mm.bing.net/th/id/R-C.efeea7fe9c2700fcff22483246e448db?rik=2GOGPn7eZvqd7A&riu=http%3a%2f%2fpic.zsucai.com%2ffiles%2f2013%2f0830%2fxiaguang4.jpg&ehk=WiVr1cmj4u7RnOhKcAbAFDCbcnEuMDMJc1g9GVQAoj8%3d&risl=&pid=ImgRaw&r=0',
-          name: 'Movie 2'
+          name: 'Movie 2',
+          startTime: new Date("2023-08-31T00:00:00"),
         },
       ],
       selectedMovie: "",
@@ -275,14 +236,10 @@ export default {
     }
   },
   methods: {
-    selectMovie(movieId: string) {
-      this.selectedMovie = movieId;
-
-    }
+    
   },
   mounted() {
-    // 设置初始选中第一个电影
-    this.selectedMovie = this.movies[0].id;
+
   },
   watch: {
 
@@ -311,7 +268,7 @@ export default {
 }
 
 .scrollbar-item img {
-  height: 15vh;
+  height: 17vh;
 }
 
 /* 侧边栏 */
