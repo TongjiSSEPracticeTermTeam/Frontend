@@ -5,10 +5,12 @@ import type { TicketSideInfo } from '@/models/QuickType/TicketSideInfo'
 import moment from 'moment'
 import { computed, onMounted, ref } from 'vue'
 import axios from 'axios'
+import CommentComponent from '@/components/customer/orders/CommentComponent.vue'
 
 interface Props {
   ticket: TicketDetail[]
   sideInfo: TicketSideInfo
+  commented: boolean
 }
 
 const props = defineProps<Props>()
@@ -90,6 +92,14 @@ const getTicket = () => {
       })
     })
 }
+
+const showCommentDialog = ref(false)
+const scd = () => {
+  showCommentDialog.value = true
+}
+const cs = () => {
+  window.location.reload()
+}
 </script>
 
 <template>
@@ -148,7 +158,8 @@ const getTicket = () => {
     <div class="mt-4 flex items-center">
       <el-checkbox v-model="selectAll" label="全选" />
       <div class="grow" />
-      <el-button v-if="isOver">发表评论</el-button>
+      <el-button v-if="isOver && !commented" @click="scd">发表评论</el-button>
+      <el-button v-else-if="isOver && commented" @click="scd">修改评论</el-button>
       <el-button type="success" :disabled="cantGet" @click="getTicket">查看取票码</el-button>
     </div>
 
@@ -161,6 +172,10 @@ const getTicket = () => {
         </div>
         <div class="grow" />
       </div>
+    </el-dialog>
+
+    <el-dialog v-model="showCommentDialog" title="评论" align-center width="600">
+      <CommentComponent :movie-id="ticket[0].movieId" @success="cs" />
     </el-dialog>
   </el-card>
 </template>
