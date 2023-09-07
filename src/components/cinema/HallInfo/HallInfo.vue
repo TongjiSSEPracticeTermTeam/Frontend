@@ -15,6 +15,8 @@ const formStatus = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('添加影厅')
 const hall = ref(new Hall())
+const hallTypes = ref([])
+let _hallTypes = ref('')
 let halls = ref(new Array<Hall>())
 let search = ref('')
 let flag = ref(false)
@@ -70,6 +72,16 @@ const dialogConfirm = async function () {
     console.log('开始进行表单检查！')
     await formRef.value.validate((valid, fields) => {
         if (valid) {
+            if (hallTypes.value.length == 0) {
+                // ElMessage({
+                //     type: 'error',
+                //     message: '影厅类型不能为空'
+                // })
+                // return
+                hall.value.hallType = '普通2D'
+            }
+            else hall.value.hallType = hallTypes.value[hallTypes.value.length - 1]
+            console.log('hallTypes.value= ' + hallTypes.value)
             if (dialogTitle.value == '修改影厅') hallUpdate()
             else if (dialogTitle.value == '添加影厅') hallAdd()
         } else {
@@ -323,7 +335,7 @@ defineExpose({ halls, search })
                     <el-table-column label="影厅编号" prop="hallID" sortable :sort-method="mySort">
                         <template #default="scope" >
                             <div>
-                                <span>{{ scope.row.hallID }}</span>
+                                <span>{{ parseInt(scope.row.hallID, 10) }}</span>
                             </div>
                         </template>
                     </el-table-column>
@@ -344,7 +356,7 @@ defineExpose({ halls, search })
                     <el-table-column label="影厅类型" prop="hallType" >
                         <template #default="scope">
                             <div>
-                                <span>{{ scope.row.hallType }}</span>
+                                <el-tag class="mx-1" type="info" color='#F8829C' effect="dark" round>{{ scope.row.hallType }}</el-tag>
                             </div>
                         </template>
                     </el-table-column>
@@ -385,8 +397,17 @@ defineExpose({ halls, search })
                             <el-input-number v-model="hall.seat.cols[index]" :min="1" :max="50" @change="formStatus = true"/>
                         </el-form-item>
 
-                        <el-form-item label="影厅类型" prop="hallType" :rules="{ required: true, message: '影厅类型不能为空', trigger: 'blur' }">
-                            <el-input v-model="hall.hallType" maxlength="10" @change="formStatus = true" placeholder="影厅类型"></el-input>
+                        <el-form-item label="影厅类型" prop="_hallTypes">
+                            <!-- <el-input v-model="hall.hallType" maxlength="10" @change="formStatus = true" placeholder="影厅类型"></el-input> -->
+                            <el-cascader v-model="hallTypes" :options="options" :props="props" placeholder="普通2D" @change="formStatus = true"/>
+                            <span style="font-weight: lighter; color: darkgrey;">&nbsp;默认为普通2D影厅</span>
+                             <!-- <el-select v-model="hall.hallType" class="m-2" placeholder="Select" size="large">
+                                <el-option v-for="item in options"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
+                                />
+                            </el-select> -->
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -413,9 +434,82 @@ export default {
             User: new User(),
             curIndex: 1,
             debounceTimeout: null,
-            isLeft: true,
-            editIndex: -1,
-            newHallID: -1,
+            props: {
+                expandTrigger: 'hover' as const,
+            },
+            options: [
+                {
+                    value: '普通影厅',
+                    label: '普通影厅',
+                    children: [
+                        {
+                            value: '普通2D',
+                            label: '普通2D',
+                        },
+                        {
+                            value: '普通3D',
+                            label: '普通3D',
+                        },
+                        {
+                            value: '普通4D',
+                            label: '普通4D',
+                        },
+                    ]
+                },
+                {
+                    value: 'VIP影厅',
+                    label: 'VIP影厅',
+                    children: [
+                        {
+                            value: 'VIP 2D',
+                            label: 'VIP 2D',
+                        },
+                        {
+                            value: 'VIP 3D',
+                            label: 'VIP 3D',
+                        },
+                        {
+                            value: 'VIP 4D',
+                            label: 'VIP 4D',
+                        },
+                    ]
+                },
+                {
+                    value: 'IMAX影厅',
+                    label: 'IMAX影厅',
+                    children: [
+                        {
+                            value: 'IMAX2D',
+                            label: 'IMAX2D',
+                        },
+                    ]
+                },
+                {
+                    value: '杜比影厅',
+                    label: '杜比影厅',
+                    children: [
+                        {
+                            value: '杜比2D',
+                            label: '杜比2D',
+                        },
+                        {
+                            value: '杜比3D',
+                            label: '杜比3D',
+                        },
+                    ]
+                },
+                {
+                    value: 'CGS中国巨幕',
+                    label: 'CGS中国巨幕',
+                    children: [
+                        {
+                            value: 'CGS2D',
+                            label: 'CGS2D',
+                        },
+                    ]
+                }
+            ],
+
             tableHeight: window.innerHeight - 500,
             WindowHeight: window.innerHeight,
         }
