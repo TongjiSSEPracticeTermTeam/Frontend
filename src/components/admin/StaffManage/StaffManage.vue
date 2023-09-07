@@ -380,7 +380,7 @@ const handleUploadSuccess = (Url: string) => {
           <el-form-item label="性别" prop="gender">
             <el-switch v-model="staff.gender" 
             :active-value=1 :inactive-value=0 
-            :inactive-icon="Female" :active-icon="Male" 
+            :inactive-icon="Male" :active-icon="Female" 
             @change="formStatus = true"
             style="--el-switch-on-color:  #e94062; --el-switch-off-color: #3182df" />
           </el-form-item>
@@ -392,7 +392,7 @@ const handleUploadSuccess = (Url: string) => {
             <!-- 影人简介修改 -->
             <el-form-item label="影人简介" prop="introduction"
               :rules="{ required: true, message: '影人简介不能为空', trigger: 'blur' }">
-              <el-input v-model="staff.introduction" type="textarea" @change="formStatus = true" maxlength="40"
+              <el-input v-model="staff.introduction" type="textarea" @change="formStatus = true" maxlength="200"
                 show-word-limit :autosize="{ minRows: 3, maxRows: 5 }" placeholder="请输入影人简介" />
             </el-form-item>
             <!-- 影人图片URL -->
