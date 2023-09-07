@@ -315,7 +315,7 @@ defineExpose({ halls, search })
 <template>
     <h1 class="text-2xl font-bold">影厅管理</h1>
     <el-divider />
-    <div class="content">
+    <div>
         <div class="line"></div>
         <div >
             <div>
@@ -400,7 +400,7 @@ defineExpose({ halls, search })
         </template>
     </el-dialog>
     </div>
-    
+
 
 </template>
 

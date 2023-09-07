@@ -5,7 +5,7 @@ import type { FormInstance } from 'element-plus'
 import Staff from '@/models/Staff'
 import { onMounted, ref } from 'vue'
 import type { Ref } from 'vue';
-import TopBar from '@/components/manager/TopBar.vue'
+import topBar from '@/components/admin/TopBar.vue'
 import UploadImage from '@/helpers/UploadImage.vue'
 
 const targetIndex = ref(0)
@@ -49,6 +49,7 @@ const updateTable = () => {
         .then((res) => {
           if (res.data && res.data.status && res.data.status === '10000') {
             staffs.value = res.data.data
+            console.log(staffs.value)
           }
           loading.value = false
         })
@@ -78,31 +79,6 @@ const updateTable = () => {
       })
     })
 }
-
-// onMounted(() => {
-//   loading.value = true
-//   axios
-//     .get('/api/Staff')
-//     .then((res) => {
-//       staffs.value = res.data.data
-
-//       //分页初始化
-//       total.value = staffs.value.length
-//       loading.value = false
-//     })
-//     .catch((err) => {
-//       // 处理错误情况
-//       console.log(err)
-//       ElMessageBox.alert('数据加载失败！', '错误', {
-//         // if you want to disable its autofocus
-//         // autofocus: false,
-//         confirmButtonText: 'OK',
-//         callback: () => {
-//           ElMessage.error('数据加载错误')
-//         }
-//       })
-//     })
-// })
 
 const staffDelete = function (name: string, id: string) {
   ElMessageBox.confirm(`确定要删除 ${name} 吗`, 'Warning', {
@@ -283,6 +259,30 @@ const dialogClose = function () {
     formReset()
   })
 }
+
+const topbarHandleSuccess = (data: Staff[]) => {
+  // 搜索结果不分页
+  total.value = data.length
+  pageSize.value = data.length
+  currentPage.value = 1
+  staffs.value = data
+  // console.log(data)
+  // console.log(movies.value)
+}
+const topbarHandleFail = () => {
+  ElMessage({
+    message: `查询失败或结果不存在`,
+    type: 'warning'
+  })
+  pageSize.value = 12
+  currentPage.value = 1
+  updateTable()
+}
+
+const handleUploadSuccess = (Url: string) => {
+  staff.value.imageUrl = Url
+  formStatus.value = true
+}
 </script>
 
 <template>
@@ -291,7 +291,7 @@ const dialogClose = function () {
   <!-- 顶栏 -->
   <el-row align="middle" justify="space-between">
     <el-col :span="20">
-      <TopBar />
+      <topBar currentItem="1" @success="topbarHandleSuccess" @fail="topbarHandleFail" />
     </el-col>
     <el-col :span="2" :offset="2">
       <el-button size="large" type="success" @click="addForm()">添加</el-button>
@@ -318,8 +318,7 @@ const dialogClose = function () {
       </template>
       <template #default>
         <el-row :gutter="10">
-          <el-col :span="4" v-for="staff in staffs.slice((currentPage - 1) * pageSize, currentPage * pageSize)"
-            :key="staff">
+          <el-col :span="4" v-for="staff in staffs" :key="staff">
             <el-card shadow="hover" style="padding: 0; margin-bottom: 20px; height: 280px">
               <el-image :src="staff.imageUrl" fit="cover" style="height: 160px; width: 100%; margin: 0; padding: 0" />
               <div class="staffInfo" style="
@@ -401,7 +400,7 @@ const dialogClose = function () {
               </el-input>
             </el-form-item>
             <el-form-item>
-              <UploadImage prefix="staff" @Success="(url) => (staff.imageUrl = url)" />
+              <UploadImage prefix="staff" @Success="handleUploadSuccess" />
             </el-form-item>
           </el-col>
         </el-row>
