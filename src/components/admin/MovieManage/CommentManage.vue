@@ -122,7 +122,8 @@ export default {
         ...comment,
         isOpen: false,
         rating: comment.score / 2,
-        avatarUrl: comment.avatarUrl ? comment.avatarUrl : 'https://randomuser.me/api/portraits/men/1.jpg'
+        avatarUrl: comment.avatarUrl ? comment.avatarUrl : 'https://randomuser.me/api/portraits/men/1.jpg',
+        publishDate: new Date(comment.publishDate).toLocaleString()
       }))
     },
 

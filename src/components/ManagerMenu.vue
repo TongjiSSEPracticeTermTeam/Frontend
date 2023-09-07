@@ -18,10 +18,7 @@ const handle_select = (path: string) => {
             }
             else { console.log(store.state.currentUser.type); }
       break
-    case '2':
-      router.push('/')
-      break
-    case '3-1':
+    case '2-1':
       window.localStorage.removeItem('token')
       store.commit('logout')
       router.push('/')
@@ -39,13 +36,16 @@ defineExpose({ handle_select })
       <span style="font-size: 1.4em">&nbsp;&nbsp;后台管理</span>
     </router-link>
   </el-menu-item>
-  <el-menu-item index="2"><span style="font-size: 1.3em">返回前台</span></el-menu-item>
-  <el-sub-menu v-if="store.state.isLogged" index="3">
+  <el-sub-menu v-if="store.state.isLogged" index="3" class="el-sub-menu">
     <template #title>
       <span style="font-size: 1.3em">欢迎，{{ store.state.currentUser.displayName }}</span>
     </template>
-    <el-menu-item index="3-1">登出</el-menu-item>
+    <el-menu-item index="2-1">登出</el-menu-item>
   </el-sub-menu>
 </template>
 
-<style scoped></style>
+<style scoped>
+.el-sub-menu{
+  float: right;
+}
+</style>

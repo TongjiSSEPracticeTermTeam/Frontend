@@ -496,6 +496,7 @@ const handleUploadSuccess = (Url: string) => {
         <el-table-column prop="score" label="评分" />
         <el-table-column prop="releaseDate" label="上映日期" width="200" />
         <el-table-column prop="removalDate" label="到期日期" width="200" />
+
         <el-table-column fixed="right" prop="operation" label="操作" width="130">
           <template #default="{ $index }">
             <el-button
@@ -536,6 +537,7 @@ const handleUploadSuccess = (Url: string) => {
             </el-button>
           </template>
         </el-table-column>
+
       </el-table>
     </div>
     <div style="display: flex">
