@@ -12,6 +12,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@chenfengyuan/vue-qrcode": "2",
     "@element-plus/icons-vue": "^2.1.0",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-regular-svg-icons": "^6.4.2",
@@ -19,12 +20,11 @@
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "axios": "^1.4.0",
     "color-thief-ts": "^1.1.1",
-    "echarts": "^5.4.3",
     "element-china-area-data": "^6.0.2",
     "element-plus": "^2.3.7",
-    "element-ui": "^2.15.13",
     "font-pingfang-sc": "^1.0.5",
     "moment": "^2.29.4",
+    "qrcode": "1",
     "sass": "^1.63.6",
     "tinygradient": "^1.1.5",
     "uuid": "^9.0.0",

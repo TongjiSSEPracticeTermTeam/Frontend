@@ -34,6 +34,7 @@ onMounted(async () => {
           username: string
           display_name: string | null
           avatar: string | null
+          vip: boolean
         } = r.data
 
         if (data.status == '10000') {
@@ -41,6 +42,7 @@ onMounted(async () => {
           currentUser.id = data.username
           currentUser.displayName = data.display_name ?? ''
           currentUser.type = data.type
+          currentUser.vip = data.vip
         }
       })
       .catch((err) => {
