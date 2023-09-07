@@ -5,13 +5,15 @@ import Movie from '@/models/Movie'
 import axios from 'axios'
 import MovieCard from '@/components/customer/movie/MovieCard.vue'
 import { ElMessage } from 'element-plus'
-import Cinema from "@/models/Cinema";
-import CinemaCard from "@/components/customer/cinema/CinemaCard.vue";
+import Cinema from '@/models/Cinema'
+import CinemaCard from '@/components/customer/cinema/CinemaCard.vue'
 import PersonCard from '@/components/customer/person/PersonCard.vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import personPage from '@/components/customer/person/PersonPage.vue'
-
+import type { HeaderImageDetail } from '@/models/QuickType/HeaderImageDetail'
+import { HeaderImage } from '@/models/HeaderImage'
+import HeaderImageComponent from '@/components/customer/movie/HeaderImageComponent.vue'
 
 const movies = ref<Movie[]>([])
 const hotMovies = ref<Movie[]>([])
@@ -30,7 +32,7 @@ const isOnPlay = (releaseDate: string | null, removalDate: string | null) => {
   return release <= now && now <= removal
 }
 
-const isCommingSoon = (releaseDate: string | null) => {
+const isComingSoon = (releaseDate: string | null) => {
   if (!releaseDate) return false
   const now = new Date()
   const release = new Date(releaseDate)
@@ -48,7 +50,7 @@ const loadMovies = () => {
 }
 
 const loadHotMovies = async () => {
-  hotMovies.value = movies.value.filter((movie) => isOnPlay(movie.releaseDate, movie.removalDate));
+  hotMovies.value = movies.value.filter((movie) => isOnPlay(movie.releaseDate, movie.removalDate))
   hotMovies.value = hotMovies.value.sort((a, b) => {
     if (a.score === null) {
       return 1
@@ -60,9 +62,8 @@ const loadHotMovies = async () => {
   })
 }
 
-
 const loadComingSoonMovies = async () => {
-  comingSoonMovies.value = movies.value.filter((movie) => isCommingSoon(movie.releaseDate));
+  comingSoonMovies.value = movies.value.filter((movie) => isComingSoon(movie.releaseDate))
 }
 
 const loadCinemas = () => {
@@ -77,6 +78,7 @@ onMounted(() => {
   loadMovies()
   loadBoxOffice()
   loadCinemas()
+  loadHeaderImage()
 })
 
 /**
@@ -121,6 +123,23 @@ const handlePersoncardClick = () => {
     })
   }
 }
+
+const headerImage = ref<HeaderImageDetail[]>([])
+
+const loadHeaderImage = () => {
+  axios
+    .get('/api/HeaderImage/detail')
+    .then((res) => {
+      if (res.data.status && res.data.status === '10000') {
+        headerImage.value = res.data.data
+      } else {
+        ElMessage.warning(`获取封面信息失败：${res.data.message}`)
+      }
+    })
+    .catch(() => {
+      ElMessage.warning(`获取封面信息失败：网络错误`)
+    })
+}
 </script>
 
 <template>
@@ -133,11 +152,15 @@ const handlePersoncardClick = () => {
             <el-space direction="vertical" alignment="normal" size="large" style="min-width: 600px">
               <el-card class="translucent-card">
                 <h1 class="title ml-5">首页推荐</h1>
-
-                <el-carousel class="mx-3" :interval="3000" indicator-position="outside" type="card" autoplay>
-                  <el-carousel-item v-for="movie in hotMovies.slice(0, 5)" :key="movie.movieId"
-                    style="display: flex; justify-content: center">
-                    <MovieCard :movie="movie" />
+                <el-carousel
+                  class="mx-3"
+                  :interval="3000"
+                  indicator-position="outside"
+                  type="card"
+                  autoplay
+                >
+                  <el-carousel-item v-for="hi in headerImage" :key="hi.id">
+                    <HeaderImageComponent :info="hi" />
                   </el-carousel-item>
                 </el-carousel>
               </el-card>
@@ -151,7 +174,7 @@ const handlePersoncardClick = () => {
 
                 <div class="mx-auto px-5">
                   <el-space wrap>
-                    <div v-for="(movie, index) in hotMovies.slice(0,12)" :key="index">
+                    <div v-for="(movie, index) in hotMovies.slice(0, 12)" :key="index">
                       <div class="my-3">
                         <MovieCard :movie="movie" />
                         <div class="mt-3 text-center">{{ movie.name }}</div>
@@ -261,7 +284,10 @@ const handlePersoncardClick = () => {
                   </span>
                 </div>
               </el-card>
-              <personPage :user="store.state.currentUser" v-model:detail-person="personPageShow"></personPage>
+              <personPage
+                :user="store.state.currentUser"
+                v-model:detail-person="personPageShow"
+              ></personPage>
             </el-space>
           </el-col>
         </el-row>

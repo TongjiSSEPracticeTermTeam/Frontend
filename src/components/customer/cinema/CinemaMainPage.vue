@@ -109,14 +109,14 @@ onMounted(()=>{
       <div style="flex-grow: 1" />
       <div class="mx-5" style="">
         <el-row >
-          <el-col :span="6"/>
-          <el-col :span="12" class="translucent-card">
+          <el-col :span="4"/>
+          <el-col :span="16" class="translucent-card">
             <el-card>
               <el-row>
                 <div style="display: flex; align-items: center;">
                   <div style="display: flex; align-items:center;">
                     <label for="area-select" class="mx-5" style="color: darkblue;">地区</label>
-                    <AreaSelect id="area-select" @selected="areaSelected" style="margin-right: 110px;"></AreaSelect>
+                    <AreaSelect id="area-select" @selected="areaSelected" style="margin-right: 350px;"></AreaSelect>
                   </div>
                   <div style="display: flex; align-items: center;">
                     <!-- 搜索框 -->
@@ -126,19 +126,19 @@ onMounted(()=>{
                       </template>
                     </el-input>
                     <el-button type="primary" class="mx-2.5" @click="updateCinemasBySearch">搜索</el-button>
-                    </div>
+                  </div>
                 </div>
               </el-row>
               <tagSelect @selected="tagSelected" :label="'类型'" :tags="tags"></tagSelect>
             </el-card>
           </el-col>
-          <el-col :span="6"/>
+          <el-col :span="4"/>
         </el-row>
       </div>
       <div class="m-5 ">
         <el-row>
-          <el-col :span="6"/>
-          <el-col :span="12">
+          <el-col :span="4"/>
+          <el-col :span="16">
             <el-card class="translucent-card">
               <el-space wrap>
                 <div v-for="(cinema, index) in paginatedCinemas" :key="index">
@@ -160,7 +160,7 @@ onMounted(()=>{
             </el-card>
           </el-col>
 
-          <el-col :span="6"/>
+          <el-col :span="4"/>
         </el-row>
       </div>
     </div>
