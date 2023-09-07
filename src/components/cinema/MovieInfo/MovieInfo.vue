@@ -353,72 +353,79 @@ onMounted(() => {
     <el-container>
       <el-container>
         <el-aside style="width: auto;margin-left: 20px;">
-          <br>
           <h3 class="text-xl">电影排片</h3>
           <div class="demo-datetime-picker">
             <div class="block">
               电影开始时间&nbsp;&nbsp;
               <el-date-picker v-model="valueTime" type="datetime" placeholder="请选择日期和时间" size="large"
-                style="width: 220px;" />
+                style="width: 180px;" />
               <br>
               &nbsp;&nbsp;电影影厅选择
-              <el-select v-model="currentHall" class="m-2" placeholder="请选择影厅" size="large" style="width: 220px;"
+              <el-select v-model="currentHall" class="m-2" placeholder="请选择影厅" size="large" style="width: 180px;"
                 @change="updateCurrentHall">
                 <el-option v-for="item in halls" :key="item.hallID" :label="item.hallID" :value="item.hallID" />
               </el-select>
               <br>
 
-              电影价格&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;电影价格&nbsp;&nbsp;
               <el-input-number v-model="price" :precision="2" :step="0.1" :min="1" :max="1000" style="width: 146px;"
                 size="large" class="m-2" />
-              &nbsp;元&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;元
               <br>
 
-              电影语言&nbsp;&nbsp;&nbsp;<el-input v-model="language" placeholder="语言" style="width: 120px;" size="large"
-                class="m-2" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;电影语言&nbsp;&nbsp;&nbsp;<el-input v-model="language" placeholder="语言" style="width: 120px;" size="large"
+                class="m-2" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <br>
-              电影维度&nbsp;&nbsp;&nbsp;<el-input v-model="dimension" placeholder="维度" style="width: 120px;" size="large"
-                class="m-2" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;电影维度&nbsp;&nbsp;&nbsp;<el-input v-model="dimension" placeholder="维度" style="width: 120px;" size="large"
+                class="m-2" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <br>
               <div style="text-align: right;">
-                <el-button type="primary" @click="sessionAdd">确定</el-button>&nbsp;&nbsp;
+                <el-button type="primary" @click="sessionAdd">确定</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
               </div>
             </div>
           </div>
-        </el-aside>
+        </el-aside>        
+        <el-divider direction="vertical" />
         <el-container>
-          <el-header style="height: 240px;">
-            <br>
+          <el-header style="height: 200px;">
             <h3 class="text-xl">&nbsp;&nbsp;&nbsp;&nbsp;电影相关数据</h3>
             <br>
             <el-row justify="center">
               <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="电影名" :value="movieDetail.name" />
+                <el-statistic title="电影名" :value="movieDetail.name" size="small" />
               </el-col>
-              <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="时长" :value="movieDetail.duration + ' 分钟'" />
+              <el-col :span="4" class="statistic_bgcolor">
+                <el-statistic title="时长" :value="movieDetail.duration + ' 分钟'" />
+              </el-col>
+              <el-col :span="6" class="statistic_bgcolor">
+                <el-statistic title="标签" :value="movieDetail.tags" />
               </el-col>
             </el-row>
             <br>
             <el-row justify="center">
-              <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="评分" :value="movieDetail.score" />
-              </el-col>
-              <el-col :span="10" class="statistic_bgcolor">
-                <el-statistic class="pt10 pb10 pl10 pr10" title="标签" :value="movieDetail.tags" />
-              </el-col>
+                <el-col :span="4" class="statistic_bgcolor">
+                  <el-statistic title="评分" :value="movieDetail.score? movieDetail.score:'暂无评分'" />
+                </el-col>
+                <el-col :span="8" class="statistic_bgcolor">
+                  <el-statistic title="上映日期" :value="movieDetail.releaseDate?new Date(movieDetail.releaseDate).toLocaleString():''" />
+                </el-col>
+                <el-col :span="8" class="statistic_bgcolor">
+                  <el-statistic title="下映日期" :value="movieDetail.removalDate?new Date(movieDetail.removalDate).toLocaleString():''" />
+                </el-col>
             </el-row>
             <br>
           </el-header>
-          <el-main style="width: auto;margin-left: 24px;height: 100px;">
+          <el-main style="width: auto;margin-left: 24px;height: 8px;">
             <h3 class="text-xl">电影简介</h3>
             <div style="margin: 10px;">{{ movieDetail.instruction }}</div>
 
           </el-main>
         </el-container>
       </el-container>
-      <el-footer style=" height: 270px;">
-        <el-select v-model="currentHall" class="m-2" placeholder="请选择影厅" size="large" @change="updateCurrentHall">
+      <el-divider />
+      <el-footer style=" height: 290px;">
+        <span style="font-size: 2.2ch;">影厅排片情况&nbsp;&nbsp;&nbsp;</span>
+        <el-select v-model="currentHall" class="m-2" placeholder="请选择影厅" @change="updateCurrentHall">
           <el-option v-for="item in halls" :key="item.hallID" :label="item.hallID" :value="item.hallID" />
         </el-select>
         号影厅
