@@ -4,7 +4,7 @@ import { ref, computed} from 'vue'
 import UploadImage from '@/helpers/UploadImage.vue'
 import type { FormInstance, FormRules } from 'element-plus'
 import User from '@/models/User'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, affixProps } from 'element-plus'
 
 const props = defineProps({
     user: {
@@ -45,6 +45,9 @@ const detailPerson = computed({
 
 let editStatus = ref(false)
 const savingDetail = ref(false)
+const modifyPassword = ref(false)
+const originPassword = ref('')
+const newPassword = ref('')
 let formRef = ref<FormInstance | null>(null)
 let saving = ref(false)
 
@@ -72,7 +75,8 @@ const rules = ref<FormRules<any>>({
         },
         {
             validator: function (rule, value, callback) {
-                const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+                const regEmail = /^[A-Za-z0-9]+([-._][A-Za-z0-9]+)*@[A-Za-z0-9]+(-[A-Za-z0-9]+)*(\.[A-Za-z]{2,6}|[A-Za-z]{2,4}\.[A-Za-z]{2,3})$/
+
                 if (regEmail.test(value)) {
                     // 合法的邮箱
                     return callback()
@@ -114,6 +118,24 @@ const handleDrawerClose = () => {
         detailPerson.value = false
         editStatus.value = false
     }
+}
+
+const handleModifyPassword = () => {
+    modifyPassword.value = false
+    ElMessageBox.confirm('确定要修改密码吗？', 'Warning', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+    })
+    .then(() => {
+        modifyPassword.value = true
+        console.log("修改密码")
+        axios.post('/api/Customer/modifyPassword', {
+            customerId: tempUser.value.id,
+        })
+    })
+    .catch(() => {
+    })
 }
 
 const saveDetail = async () => {
@@ -205,6 +227,12 @@ const saveDetail = async () => {
 
             <el-form-item label="邮箱" prop="email">
                 <el-input v-model="tempUser.email" @change="() => { editStatus = true }" />
+            </el-form-item>
+
+            <el-form-item label="修改密码">
+                <el-input v-if="modifyPassword" v-model="originPassword" type="password" placeholder="请输入原密码" />
+                <el-input v-if="modifyPassword" v-model="newPassword" type="password" placeholder="请输入新密码" />
+                <el-button type="primary" @click="handleModifyPassword">修改密码</el-button>
             </el-form-item>
 
             <el-form-item>
