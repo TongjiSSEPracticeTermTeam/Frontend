@@ -35,7 +35,8 @@ const rules = ref<FormRules<any>>({
         },
         {
             validator: function (rule, value, callback) {
-                const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+                const regEmail = /^[A-Za-z0-9]+([-._][A-Za-z0-9]+)*@[A-Za-z0-9]+(-[A-Za-z0-9]+)*(\.[A-Za-z]{2,6}|[A-Za-z]{2,4}\.[A-Za-z]{2,3})$/
+
                 if (regEmail.test(value)) {
                     // 合法的邮箱
                     return callback()
@@ -75,10 +76,13 @@ const adminAndManagerLogin=()=>{
           })
         }
       }else{
-        ElMessage({
-          message:`登录失败`,
-          type:'warning'
-        })
+        if(r.data&&r.data.status&&r.data.status!='10000'){
+          ElMessage({
+            message:`登录失败,${r.data.message}`,
+            type:'warning'
+          })
+          return
+        }
       }
     })
   }
@@ -113,10 +117,13 @@ const customerLogin = async () => {
               window.location.reload()
             })
           }else{
-            ElMessage({
-              message:`登录失败`,
-              type:'warning'
-            })
+            if(r.data&&r.data.status&&r.data.status!='10000'){
+              ElMessage({
+                message:`登录失败,${r.data.message}`,
+                type:'warning'
+              })
+              return
+            }
           }
         })
       }
