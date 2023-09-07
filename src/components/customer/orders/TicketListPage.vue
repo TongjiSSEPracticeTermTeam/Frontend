@@ -9,6 +9,7 @@ import type { TicketSideInfo } from '@/models/QuickType/TicketSideInfo'
 const loadFinished = ref(false)
 const tickets = ref<{ [key: string]: TicketDetail[] }>({})
 const ticketSideInfo = ref<{ [key: string]: TicketSideInfo }>({})
+const commentedMovies = ref<Set<string>>(new Set<string>())
 
 onMounted(() => {
   const loading = ElLoading.service({
@@ -60,6 +61,33 @@ onMounted(() => {
               type: 'warning'
             })
           })
+
+        // 获取包含的电影
+        let movieIdSet = new Set<string>()
+        result.forEach((v) => movieIdSet.add(v.movieId))
+
+        // 获取评论过的电影
+        let movieIdParams = new URLSearchParams()
+        movieIdSet.forEach((p) => movieIdParams.append('id', p))
+        axios
+          .get('/api/Comment/commented', { params: movieIdParams })
+          .then((res) => {
+            if (res.data.status && res.data.status === '10000') {
+              let result: string[] = res.data.data
+              result.forEach((v) => commentedMovies.value.add(v))
+            } else {
+              ElMessage({
+                message: `请求评论信息失败：${res.data.message}`,
+                type: 'warning'
+              })
+            }
+          })
+          .catch(() => {
+            ElMessage({
+              message: `请求评论信息失败：网络错误`,
+              type: 'warning'
+            })
+          })
       } else {
         ElMessage({
           message: `请求订单信息失败：${res.data.message}`,
@@ -97,10 +125,11 @@ onMounted(() => {
         </el-card>
         <div v-if="loadFinished">
           <TicketComponent
-            v-for="ts in Object.keys(tickets)"
+            v-for="ts in Object.keys(tickets).sort().reverse()"
             :key="ts"
             :ticket="tickets[ts]"
             :sideInfo="ticketSideInfo[ts]"
+            :commented="commentedMovies.has(tickets[ts][0].movieId)"
             class="mt-5"
           />
         </div>
