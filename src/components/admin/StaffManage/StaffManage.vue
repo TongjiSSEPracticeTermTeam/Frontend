@@ -7,7 +7,7 @@ import { onMounted, ref } from 'vue'
 import type { Ref } from 'vue';
 import topBar from '@/components/admin/TopBar.vue'
 import UploadImage from '@/helpers/UploadImage.vue'
-
+import { Male, Female } from '@element-plus/icons-vue'
 const targetIndex = ref(0)
 const staff = ref(new Staff())
 const staffs = ref<Staff[]>([])
@@ -213,7 +213,7 @@ const updateForm = function (id: string) {
   // console.log(id);
   targetIndex.value = staffs.value.findIndex((staff) => staff.staffId == id)
   Object.assign(staff.value, staffs.value[targetIndex.value])
-  staff.value.gender = staff.value.gender.toString()
+ // staff.value.gender = staff.value.gender.toString()
   idInputDisabled.value = true
   dialogTitle.value = '影人修改'
   dialogVisible.value = true
@@ -266,7 +266,7 @@ const topbarHandleSuccess = (data: Staff[]) => {
   pageSize.value = data.length
   currentPage.value = 1
   staffs.value = data
-  // console.log(data)
+  console.log(data)
   // console.log(movies.value)
 }
 const topbarHandleFail = () => {
@@ -333,7 +333,7 @@ const handleUploadSuccess = (Url: string) => {
                   <span class="staffId" style="color: rgba(90, 90, 90, 0.5)">{{
                     staff.staffId
                   }}</span>
-                  <span class="gender">{{ staff.gender == '1' ? '女' : '男' }}</span>
+                  <span class="gender">{{ staff.gender == 1 ? '女' : '男' }}</span>
                 </div>
                 <div class="staffName">
                   <span class="staffName" style="font-size: 1.2em">{{ staff.name }}</span>
@@ -357,7 +357,7 @@ const handleUploadSuccess = (Url: string) => {
   </main>
 
   <!-- 弹出框 -->
-  <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="dialogClose">
+  <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="dialogClose" width="1000px">
     <!-- 表单 -->
     <el-form :model="staff" label-width="80px" class="staffForm" ref="formRef" status-icon style="margin-right: 30px">
       <el-col>
@@ -376,13 +376,15 @@ const handleUploadSuccess = (Url: string) => {
               <el-input v-model="staff.name" maxlength="20" @change="formStatus = true" show-word-limit
                 placeholder="请输入影人姓名" />
             </el-form-item>
-            <el-form-item label="性别" prop="gender">
-              <el-select v-model="staff.gender" placeholder="请选择性别" @change="formStatus = true"
-                :rules="{ required: true, message: '影人性别不能为空', trigger: 'blur' }">
-                <el-option label="男性" value="0" />
-                <el-option label="女性" value="1" />
-              </el-select>
-            </el-form-item>
+
+          <el-form-item label="性别" prop="gender">
+            <el-switch v-model="staff.gender" 
+            :active-value=1 :inactive-value=0 
+            :inactive-icon="Female" :active-icon="Male" 
+            @change="formStatus = true"
+            style="--el-switch-on-color:  #e94062; --el-switch-off-color: #3182df" />
+          </el-form-item>
+
           </el-col>
         </el-row>
         <el-row>

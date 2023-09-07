@@ -270,17 +270,17 @@ const pickSessionsDialogOpen = ref(false)
 </script>
 
 <template>
-  <div class="content py-10">
+  <div class="content py-10" >
     <div class="flex w-full">
       <div class="grow" />
       <div style="width: 1200px;">
           <el-card class="mx-10 my-5 poster-card">
             <div class="poster-card-background" :style="`background: ${posterCardBackground};`" />
             <div class="poster-card-content flex">
-              <div class="movie-poster">
-                <img id="poster" :src="movie.postUrl ?? ''" alt="" @load="posterLoaded" />
+              <div class="movie-poster basis-3/10">
+                <img id="poster" class="w-full" :src="movie.postUrl ?? ''" :alt="movie.name" object-fit="cover" @load="posterLoaded" />
               </div>
-              <div class="ml-10 py-5" :style="`color: ${posterCardFontColor}`">
+              <div class="ml-5 py-5" :style="`color: ${posterCardFontColor}`">
                 <h1 class="text-4xl font-extrabold">{{ movie.name }}</h1>
                 <h2 class="mt-5">时长：{{ movie.duration }}分钟</h2>
                 <h2 class="mt-1 mb-5" v-if="movie.acts.length > 0 && movie.acts[0].role === '1'">
@@ -300,7 +300,7 @@ const pickSessionsDialogOpen = ref(false)
             </div>
           </el-card>
           <div>
-            <el-card class="mx-10 my-5 px-5">
+            <el-card class="mx-10 my-5 px-5" >
               <div class="flex items-center">
                 <h2 class="text-red-500 text-2xl font-bold">演职员</h2>
               </div>
@@ -322,7 +322,7 @@ const pickSessionsDialogOpen = ref(false)
               </div>
             </el-card>
           </div>
-          <el-card class="mx-10 my-5 px-5">
+          <el-card class="mx-10 my-5 px-5" >
             <div class="flex items-center">
               <h2 class="text-red-500 text-2xl font-bold">近期场次</h2>
               <div class="grow" />
@@ -382,7 +382,8 @@ const pickSessionsDialogOpen = ref(false)
 
 <style scoped lang="scss">
 .movie-poster {
-  max-width: 280px;
+  max-width: 300px;
+  min-width: 280px;
 }
 
 .poster-card {

@@ -7,6 +7,7 @@ import type { FormInstance } from 'element-plus'
 import TopBar from '@/components/admin/TopBar.vue'
 import CinemaInfo from '@/components/admin/CinemaManage/CinemaInfo.vue'
 import UploadImage from '@/helpers/UploadImage.vue'
+import AreaSelect from '@/helpers/AreaSelect.vue'
 
 let currentTags = computed({
   get(): string[] {
@@ -140,39 +141,6 @@ const updateTable = () => {
       })
     })
 }
-
-// onMounted(() => {
-//   // console.log("准备初始化数据");
-//   // 前后端交互，初始化数据和相关参数
-//   loading.value = true //加载等待动画
-//   axios
-//     .get('/api/Cinema')
-//     .then(function (response) {
-//       // 处理成功情况
-//       // console.log("连接成功！");
-//       cinemas.value = response.data.data
-//       // console.log(cinemas.value)
-
-//       //分页相关设置
-//       total.value = cinemas.value.length
-//       pageSize.value = 10
-//       // loading.value = false
-//     })
-//     .catch(function (error) {
-//       // 处理错误情况
-//       console.log(error)
-//       ElMessageBox.alert('数据加载失败！', '错误', {
-//         // if you want to disable its autofocus
-//         // autofocus: false,
-//         confirmButtonText: 'OK',
-//         callback: () => {
-//           ElMessage.error('数据加载错误')
-//         }
-//       })
-//     })
-//   loading.value = false
-//   console.log(cinemas.value)
-// })
 
 const cinemaDelete = (name: string, id: string) => {
   //删除对应ID的影院
@@ -351,6 +319,11 @@ const topbarHandleFail = () => {
   currentPage.value = 1
   updateTable()
 }
+
+const handleSelected = (selectedOptions: string) => {
+  newCinema.value.location = selectedOptions
+  console.log(newCinema.value.location)
+  }
 </script>
 
 <template>
@@ -413,8 +386,9 @@ const topbarHandleFail = () => {
       </el-form-item>
 
       <el-form-item label="影院地址" prop="location" :rules="{ required: true, message: '影院地址不能为空', trigger: 'blur' }">
-        <el-input v-model="newCinema.location" type="textarea" @change="formStatus = true"
-          :autosize="{ minRows: 2, maxRows: 3 }" placeholder="请输入影院地址" />
+        <AreaSelect :defaultPlace="newCinema.location" @selected="handleSelected"></AreaSelect>
+        <el-input v-model="newCinema.location" type="textarea" @change="formStatus = true" maxlength="25"
+                show-word-limit :autosize="{ minRows: 2, maxRows: 3 }" placeholder="请输入详情地址" />
       </el-form-item>
 
       <el-form-item label="影院标签">

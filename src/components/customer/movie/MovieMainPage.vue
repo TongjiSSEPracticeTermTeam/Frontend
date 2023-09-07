@@ -4,25 +4,22 @@ import tagSelect from '@/components/customer/movie/AttributeSelect.vue'
 import type Movie from '@/models/Movie'
 import axios from 'axios'
 import MovieCard from '@/components/customer/movie/MovieCard.vue'
+import { ElCard, ElLoading, ElMessage } from 'element-plus'
 
 const tags = ref<string[]>([])
-const years = ref<string[]>([])
-years.value = ['2023', '2022', '2021', '2020', '2019', '2018', '2017', '2016', '2015']
 const selectedTags = ref<string[]>([])
-const selectedYears = ref<string[]>([])
 
 const movies = ref<Movie[]>([])
 const currentClass = ref('1') //表示当前处于正在热映还是即将上映,1表示正在热映，2表示即将上映
 const onPlayMovies = ref<Movie[]>([])
 const commingSoonMovies = ref<Movie[]>([])
 const currentPage = ref(1)
-const pageSize = ref(10) //一页展示的电影数量
+const pageSize = ref(12) //一页展示的电影数量
 
 const start = computed(() => (currentPage.value - 1) * pageSize.value)
 const paginatedMovies = computed(() =>
   movies.value.slice(start.value, start.value + pageSize.value)
 )
-const totalMovies = computed(() => movies.value.length)
 
 const orderType = ref('1') //电影排列按照什么排序,1为按照评分排序，2为按照时间排序
 
@@ -33,41 +30,9 @@ const tagSelected = (t: string[]) => {
   updateMovies()
 }
 
-const yearSelected = (t: string[]) => {
-  selectedYears.value = t
-  updateMoviesByYear()
-}
-const getAllTags = () => {
-  axios.get('/api/Movies/tags/getAllTags').then((r) => {
-    if (r.data && r.data.status === '10000') {
-      tags.value = r.data.data
-    }
-  })
-}
 
-const initMovies = () => {
-  let allMovies = new Array<Movie>()
-  axios.get('/api/Movies/tags').then((r) => {
-    if (r.data && r.data.status === '10000') {
-      allMovies = r.data.data
-      if (allMovies.length) {
-        allMovies.forEach((movie) => {
-          if (isOnPlay(movie.releaseDate, movie.removalDate)) {
-            onPlayMovies.value.push(movie)
-          } else if (isCommingSoon(movie.releaseDate)) {
-            commingSoonMovies.value.push(movie)
-          }
-        })
-        if (currentClass.value === '1') {
-          movies.value = onPlayMovies.value
-        } else if (currentClass.value === '2') {
-          movies.value = commingSoonMovies.value
-        }
-        orderMovie()
-      }
-    }
-  })
-}
+
+
 
 const orderMovie = () => {
   currentPage.value = 1
@@ -163,12 +128,7 @@ const handleSelect = (index: string) => {
   updateMoviesByTag()
 }
 
-const updateMoviesByYear = () => {
-  movies.value = movies.value.filter((movie) => {
-    console.log(movie.releaseDate?.substring(0, 4))
-    return selectedYears.value.includes(movie.releaseDate?.substring(0, 4) ?? '')
-  })
-}
+
 
 const updateMoviesBySearch = () => {
   movies.value = movies.value.filter((movie) => {
@@ -183,6 +143,78 @@ const updateMovies = () => {
 }
 
 onMounted(() => {
+  const loading = ElLoading.service({
+    lock: true,
+    text: '加载中',
+    fullscreen: true
+  })
+
+  let finished = 0
+  const callFinish = () => {
+    finished += 1
+    if (finished >= 2) {
+      loading.close()
+    }
+  }
+
+  const getAllTags = () => {
+    axios.get('/api/Movies/tags/getAllTags').then((r) => {
+      if (r.data && r.data.status === '10000') {
+        tags.value = r.data.data
+        callFinish()
+      }else{
+        callFinish()
+        ElMessage({
+          message:'获取标签失败',
+          type:'error'
+        })
+      }
+    }).catch(()=>{
+      callFinish()
+      ElMessage({
+        message:`获取标签失败:网络错误`,
+        type:'error'
+      })
+    })
+  }
+
+  const initMovies = () => {
+    let allMovies = new Array<Movie>()
+    axios.get('/api/Movies/tags').then((r) => {
+      if (r.data && r.data.status === '10000') {
+        allMovies = r.data.data
+        if (allMovies.length) {
+          allMovies.forEach((movie) => {
+            if (isOnPlay(movie.releaseDate, movie.removalDate)) {
+              onPlayMovies.value.push(movie)
+            } else if (isCommingSoon(movie.releaseDate)) {
+              commingSoonMovies.value.push(movie)
+            }
+          })
+          if (currentClass.value === '1') {
+            movies.value = onPlayMovies.value
+          } else if (currentClass.value === '2') {
+            movies.value = commingSoonMovies.value
+          }
+          orderMovie()
+          callFinish()
+        }
+      }else{
+        callFinish()
+        ElMessage({
+          message:'获取电影信息失败',
+          type:'error'
+        })
+      }
+    }).catch(()=>{
+      callFinish()
+      ElMessage({
+        message:`获取电影信息失败:网络错误`,
+        type:'error'
+      })
+    })
+  }
+
   getAllTags()
   initMovies()
 })
@@ -223,8 +255,8 @@ onMounted(() => {
               <el-button type="primary" class="ml-10" @click="updateMovies">搜索</el-button>
             </el-col>
           </el-row>
-          <el-space class="mt-4" wrap>
-            <div v-for="(movie, index) in paginatedMovies" :key="index">
+          <el-space class="mt-4" wrap style="display: flex; flex-wrap: wrap;">
+            <div v-for="(movie, index) in paginatedMovies" :key="index" style="flex: 1 0 25%;">
               <div class="my-3">
                 <MovieCard :movie="movie" />
                 <div class="mt-3 text-center">{{ movie.name }}</div>

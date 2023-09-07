@@ -57,7 +57,7 @@ const handleMovieDetail = (movieId: string) => {
               </div>
               <div>
                 <h2 class="text-lg font-extrabold">影人性别：</h2>
-                <span class="text-gray-400">{{ staff.gender == 'female' ? '女' : '男' }}</span>
+                <span class="text-gray-400">{{ staff.gender == 1 ? '女' : '男' }}</span>
               </div>
               <div>
                 <h2 class="text-lg font-extrabold">影人介绍：</h2>
@@ -100,9 +100,9 @@ const handleMovieDetail = (movieId: string) => {
                 v-for="movie in staff.starMovies"
                 :key="movie.movieId"
                 @click="handleMovieDetail(movie.movieId)"
-                class="cursor-pointer"
+                class="cursor-pointer flex flex-col justify-center"
               >
-                <el-image :src="movie.postUrl" fit="cover" style="height: 300px; width: 200px" />
+                <el-image :src="movie.postUrl" fit="cover" class="mx-auto" style="height: 300px; width: 200px" />
                 <div class="mt-3 text-center">{{ movie.name }}</div>
               </div>
             </el-space>
