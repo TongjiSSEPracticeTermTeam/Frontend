@@ -123,7 +123,11 @@ onMounted(async () => {
         </el-table-column>
         <el-table-column label="总票房（当前影院）" prop="totalBoxOffice" sortable/>
             
-        <el-table-column label="影院上座率" prop="attendance" sortable/>
+        <el-table-column label="影院上座率" prop="attendance" sortable>
+            <template #default="scope">
+                <span>{{ (scope.row.attendance * 100).toFixed(2) }}%</span>
+            </template>
+        </el-table-column>
             
         <el-table-column label="观影人次" prop="audienceNumber" sortable/>
             
