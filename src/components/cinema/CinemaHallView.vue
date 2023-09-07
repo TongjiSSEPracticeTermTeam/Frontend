@@ -9,7 +9,7 @@ const settingItems: {
     needCard: boolean // 默认为true，无特殊需要保持true即可。
 }[] = [
         {
-            name: '影厅总览',
+            name: '数据总览',
             icon: defineAsyncComponent(() =>
                 import('@element-plus/icons-vue').then((module) => module.Film)
             ),

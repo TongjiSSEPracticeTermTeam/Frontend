@@ -100,7 +100,7 @@ onMounted(async () => {
 
 <template>
     <!-- <div class="content"> -->
-    <h1 class="text-2xl font-bold">影厅总览</h1>
+    <h1 class="text-2xl font-bold">数据总览</h1>
     <div class="el-divider el-divider--horizontal" role="separator" style="--el-border-style: solid;" />
 
     <el-row justify="center">
