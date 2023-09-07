@@ -349,6 +349,19 @@ const filterNameData = computed(() => {
     return '';
   };
 });
+const filterDurationData = computed(() => {
+  return (movieId: string, startTime: Date) => {
+    for (let i = 0; i < movieInHall.value.length; i++) {
+      if (movieInHall.value[i].movieId === movieId) {
+        const duration = parseInt(movieInHall.value[i].duration, 10);
+        const endTime = new Date(startTime);
+        endTime.setUTCMinutes(endTime.getUTCMinutes() + duration);
+        return endTime.toLocaleString();
+      }
+    }
+    return 0;
+  };
+});
 
 const updateCurrentHall = () => {
   console.log(currentHall.value)
@@ -476,10 +489,10 @@ onMounted(() => {
         <el-scrollbar>
           <div class="scrollbar-flex-content">
             <div v-for="session in sessions" :key="session.movieId" class="scrollbar-item">
-              <el-image style="height: 120px" :src="filterPictureData(session.movieId)" />              
+              <el-image style="height: 140px;object-fit: scale-down;" :src="filterPictureData(session.movieId)" />              
               <div><b>{{ filterNameData(session.movieId) }}</b></div>
-              <div>{{ new Date(session.startTime).toLocaleDateString() }}</div>
-              <div>{{ new Date(session.startTime).toLocaleTimeString() }}</div>
+              <div style="font-size: small;">{{ new Date(session.startTime).toLocaleString() }}<br>至</div>
+              <div style="font-size: small;">{{ filterDurationData(session.movieId, session.startTime) }}</div>
             </div>
             </div>
         </el-scrollbar>
@@ -562,7 +575,7 @@ onMounted(() => {
 }
 
 .demo-datetime-picker .block {
-  padding: 30px 0;
+  padding-top: 20px;
   text-align: center;
   border-right: solid 1px var(--el-border-color);
   flex: 1;
