@@ -153,13 +153,26 @@ const handleConfirm = () => {
                     {{ (userVipStatus ? '续费' : '开通') + vipSet.length }}</h1>
             </el-card>
         </div>
+
         <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="dialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="handleConfirm">
-                    {{ userVipStatus ? '续费' : '开通' }}
-                </el-button>
-            </span>
+            <el-row>
+                <el-col :span="6">
+                    <el-button>
+                        价格：<p style="color: red;">￥{{vipSets[currentMode - 1].mode * vipSets[currentMode - 1].mode * 10 }}</p>
+                    </el-button>
+                </el-col>
+                <el-col :span="8"/>
+                <el-col :span="10">
+                    <span class="dialog-footer">
+                        <el-button @click="dialogVisible = false">取消</el-button>
+                        <el-button type="primary" @click="handleConfirm">
+                            {{ userVipStatus ? '续费' : '开通' }}
+                        </el-button>
+                    </span>
+                </el-col>
+            </el-row>
+
+
         </template>
     </el-dialog>
 </template>
