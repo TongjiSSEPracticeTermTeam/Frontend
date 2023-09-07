@@ -99,7 +99,7 @@ export default {
   methods: {
     async fetchComments() {
       try {
-        const response = await axios.get(`/api/Comment/by${this.searchWay}/${this.searchIforInput}`);//动态构建API
+        const response = await axios.get(`/api/Comment/by${this.searchWay}(Admin)/${this.searchIforInput}`);//动态构建API
         this.allCommentData = response.data;
         this.handleData();
       } catch (error) {
