@@ -121,20 +121,45 @@ const handleDrawerClose = () => {
 }
 
 const handleModifyPassword = () => {
-    modifyPassword.value = false
     ElMessageBox.confirm('确定要修改密码吗？', 'Warning', {
         confirmButtonText: '确认',
         cancelButtonText: '取消',
         type: 'warning'
     })
     .then(() => {
-        modifyPassword.value = true
+        if(!originPassword.value || !newPassword.value){
+            ElMessage({
+                message: '密码不能为空',
+                type: 'warning'
+            })
+            return
+        }
         console.log("修改密码")
-        axios.post('/api/Customer/modifyPassword', {
-            customerId: tempUser.value.id,
-        })
-    })
-    .catch(() => {
+        axios.post('/api/Customer/ChangePwd', {
+             customerId: tempUser.value.id,
+             oldPwd: originPassword.value,
+             newPwd: newPassword.value
+            }).then((r)=>{
+                if(r.data && r.data.status && r.data.status === '10000'){
+                    ElMessage({
+                        message: '修改成功',
+                        type: 'success'
+                    })
+                    modifyPassword.value = false
+                }else if(r.data && r.data.status && r.data.status != '10000'){
+                    ElMessage({
+                        message: `修改失败,${r.data.message}`,
+                        type: 'warning'
+                    })
+                    modifyPassword.value = false
+                }
+            }).catch(()=>{
+                ElMessage({
+                    message: '修改失败,网络错误',
+                    type: 'warning'
+                })
+                modifyPassword.value = false
+            })
     })
 }
 
@@ -230,9 +255,10 @@ const saveDetail = async () => {
             </el-form-item>
 
             <el-form-item label="修改密码">
-                <el-input v-if="modifyPassword" v-model="originPassword" type="password" placeholder="请输入原密码" />
-                <el-input v-if="modifyPassword" v-model="newPassword" type="password" placeholder="请输入新密码" />
-                <el-button type="primary" @click="handleModifyPassword">修改密码</el-button>
+                <el-input v-if="modifyPassword" v-model="originPassword" show-password placeholder="请输入原密码" class="mb-2.5"/>
+                <el-input v-if="modifyPassword" v-model="newPassword" show-password placeholder="请输入新密码" class="mb-2.5" />
+                <el-button v-if="!modifyPassword" type="primary" @click="()=>modifyPassword=true">修改密码</el-button>
+                <el-button v-if="modifyPassword" type="primary" @click="handleModifyPassword">确认修改</el-button>
             </el-form-item>
 
             <el-form-item>
