@@ -369,7 +369,7 @@ defineExpose({ halls, search })
         <!--弹出框-->
         <el-dialog v-model="dialogVisible" :title="dialogTitle" :before-close="dialogClose">
         <!-- 表单 -->
-        <el-form :model="hall" label-width="80px" ref="formRef" status-icon style="margin-right: 30px">
+        <el-form :model="hall" label-width="100px" ref="formRef" status-icon style="margin-right: 30px">
             <el-col>
                 <el-row align="middle">
                     <el-col :span="12">
@@ -381,7 +381,7 @@ defineExpose({ halls, search })
                         </el-form-item>
 
                         <!-- 使用v-for循环生成每一行的列数输入框 -->
-                        <el-form-item v-for="(_, index) in hall.seat.rows" :key="index" :label="'第' + (index + 1) + '列'" :rules="{ required: true, trigger: 'blur' }">
+                        <el-form-item v-for="(_, index) in hall.seat.rows" :key="index" :label="'第' + (index + 1) + '行列数'" :rules="{ required: true, trigger: 'blur' }">
                             <el-input-number v-model="hall.seat.cols[index]" :min="1" :max="50" @change="formStatus = true"/>
                         </el-form-item>
 
