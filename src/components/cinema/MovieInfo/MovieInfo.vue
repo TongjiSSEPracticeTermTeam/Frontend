@@ -271,7 +271,14 @@ const sessionAdd = async function () {
         updateSession()
         ElMessage({
           type: 'error',
-          message: '排片时间不在电影上映时间内'
+          message: '排片时间不在电影上映时间内或在过去时间段内'
+        })
+      }
+      else if (res.data && res.data.status && res.data.status == '40004') {
+        updateSession()
+        ElMessage({
+          type: 'error',
+          message: '该时间段已被排片'
         })
       }
       else {
