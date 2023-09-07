@@ -271,6 +271,7 @@ const saveDetail = async () => {
     }
 
     if (valid) {
+      // console.log(currentMovie.value)
       if (addingMovie.value) {
         addSaveMovie()
         return
@@ -288,6 +289,10 @@ const saveDetail = async () => {
               type: 'success'
             })
             detailView.value = false
+            //解决搜索后修改的页面问题
+            if (pageSize.value == 1) {
+              pageSize.value = 10
+            }
             updateTable()
           } else {
             ElMessage({
@@ -319,10 +324,11 @@ const addMovie = () => {
 
 const addSaveMovie = () => {
   savingDetail.value = true
-
+  // console.log(currentMovie.value)
   axios
     .put('/api/Movies', currentMovie.value)
     .then((res) => {
+      // console.log(currentMovie.value)
       savingDetail.value = false
       if (res.data && res.data.status && res.data.status === '10000') {
         ElMessage({
@@ -364,6 +370,11 @@ const deleteMovie = () => {
               message: '删除成功',
               type: 'success'
             })
+            //解决搜索后修改的页数Bug
+            if (pageSize.value == 1) {
+              pageSize.value = 10
+            }
+
             updateTable()
           } else {
             ElMessage({
@@ -633,6 +644,8 @@ const handleUploadSuccess = (Url: string) => {
         <el-date-picker
           v-model="currentMovie.releaseDate"
           type="date"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
           @change="editStatus = true"
           :disabled-date="disableDateforStart"
         />
@@ -641,6 +654,8 @@ const handleUploadSuccess = (Url: string) => {
         <el-date-picker
           v-model="currentMovie.removalDate"
           type="date"
+          format="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
           @change="editStatus = true"
           :disabled-date="disableDateforEnd"
         />

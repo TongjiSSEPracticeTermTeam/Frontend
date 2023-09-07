@@ -55,27 +55,27 @@ const tagShowInput = async () => {
   await nextTick()
   InputRef.value?.focus()
 }
-const emailRules = ref([
-  {
-    required: true,
-    message: '请输入邮箱',
-    trigger: 'blur'
-  },
-  {
-    validator: function (rule, value, callback) {
-      //邮箱校验
-      // console.log("邮箱通过！");
-      // return callback()
-      const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
-      if (regEmail.test(value)) {
-        // 合法的邮箱
-        return callback()
-      }
-      callback(new Error('请输入合法的邮箱'))
-    },
-    trigger: 'blur'
-  }
-])
+// const emailRules = ref([
+//   {
+//     required: true,
+//     message: '请输入邮箱',
+//     trigger: 'blur'
+//   },
+//   {
+//     validator: function (rule, value, callback) {
+//       //邮箱校验
+//       // console.log("邮箱通过！");
+//       // return callback()
+//       const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+//       if (regEmail.test(value)) {
+//         // 合法的邮箱
+//         return callback()
+//       }
+//       callback(new Error('请输入合法的邮箱'))
+//     },
+//     trigger: 'blur'
+//   }
+// ])
 const newCinema = ref(new CinemaCreator())
 const cinemas = ref<Cinema[]>([])
 
@@ -404,13 +404,13 @@ const handleSelected = (selectedOptions: string) => {
         </el-space>
       </el-form-item>
 
-      <el-form-item label="管理员名称" prop="managerName" :rules="{ required: true, message: '管理员名称不能为空', trigger: 'blur' }">
+      <!-- <el-form-item label="管理员名称" prop="managerName" :rules="{ required: true, message: '管理员名称不能为空', trigger: 'blur' }">
         <el-input v-model="newCinema.managerName" @change="formStatus = true" placeholder="请输入管理员名称" />
       </el-form-item>
 
       <el-form-item label="管理员邮箱" prop="managerEmail" :rules="emailRules">
         <el-input v-model="newCinema.managerEmail" @change="formStatus = true" placeholder="请输入管理员邮箱" clearable />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="管理密码" prop="managerPassword" :rules="{ required: true, message: '管理密码不能为空', trigger: 'blur' }">
         <el-input v-model="newCinema.managerPassword" @change="formStatus = true" placeholder="请输入管理密码" show-password />
       </el-form-item>

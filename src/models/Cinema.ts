@@ -17,15 +17,15 @@ export default class Cinema {
 }
 
 export class CinemaCreator extends Cinema {
-  managerName: string
+  // managerName: string
   managerPassword: string
-  managerEmail: string
+  // managerEmail: string
 
   public constructor() {
     super()
     this.cinemaId = '系统自动生成'
-    this.managerName = ''
+    // this.managerName = ''
     this.managerPassword = ''
-    this.managerEmail = ''
+    // this.managerEmail = ''
   }
 }

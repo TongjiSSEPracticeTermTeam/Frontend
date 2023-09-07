@@ -35,7 +35,8 @@ const rules = ref<FormRules<any>>({
         },
         {
             validator: function (rule, value, callback) {
-                const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+                const regEmail = /^[A-Za-z0-9]+([-._][A-Za-z0-9]+)*@[A-Za-z0-9]+(-[A-Za-z0-9]+)*(\.[A-Za-z]{2,6}|[A-Za-z]{2,4}\.[A-Za-z]{2,3})$/
+
                 if (regEmail.test(value)) {
                     // 合法的邮箱
                     return callback()
@@ -46,7 +47,48 @@ const rules = ref<FormRules<any>>({
     ],
 })
 
-const login = async () => {
+const adminAndManagerLogin=()=>{
+  let apiPath = '/api/Administrator/login'
+  if (isAdmin.value) apiPath = '/api/Administrator/login'
+  else apiPath = '/api/Manager/login'
+  let adminForm = adminloginForm.value
+  if(isCustomer.value&&(adminForm.username.length===0||adminForm.password.length===0)){
+    ElMessage({
+      message:'用户名或密码为空',
+      type:'warning'
+    })
+    return
+  }else{
+    axios.post(apiPath,adminForm).then((r)=>{
+      if (r.data && r.data.status && r.data.status === '10000') {
+        ElMessage({
+          message: `登录成功`,
+          type: 'success'
+        })
+        window.localStorage.setItem('token', `Bearer ${r.data.token}`)
+        if (isAdmin.value){
+          router.push('/admin').then(()=>{
+            window.location.reload()
+          })
+        }else{
+          router.push('/manager').then(()=>{
+            window.location.reload()
+          })
+        }
+      }else{
+        if(r.data&&r.data.status&&r.data.status!='10000'){
+          ElMessage({
+            message:`登录失败,${r.data.message}`,
+            type:'warning'
+          })
+          return
+        }
+      }
+    })
+  }
+}
+
+const customerLogin = async () => {
   if(!formRef.value){
     return
   }
@@ -55,15 +97,6 @@ const login = async () => {
     console.log(valid, fields)
     if (valid) {
       let userForm = userloginForm.value
-      let adminForm = adminloginForm.value
-      if (!isCustomer.value&&(adminForm.username.length === 0 || adminForm.password.length === 0)) {
-        ElMessage({
-          message: '用户名或密码为空',
-          type: 'warning'
-        })
-        return
-      }
-
       if (isCustomer.value&&(userForm.email.length===0||userForm.password.length===0)){
         ElMessage({
           message:'邮箱或密码为空',
@@ -72,11 +105,6 @@ const login = async () => {
         return
       }
       let apiPath = '/api/Customer/login'
-      if (!isCustomer.value) {
-        if (isAdmin.value) apiPath = '/api/Administrator/login'
-        else apiPath = '/api/Manager/login'
-      }
-
       if (isCustomer.value){
         axios.post(apiPath,userForm).then((r)=>{
           if (r.data && r.data.status && r.data.status==='10000'){
@@ -89,34 +117,13 @@ const login = async () => {
               window.location.reload()
             })
           }else{
-            ElMessage({
-              message:`登录失败`,
-              type:'warning'
-            })
-          }
-        })
-      }else{
-        axios.post(apiPath,adminForm).then((r)=>{
-          if (r.data && r.data.status && r.data.status === '10000') {
-            ElMessage({
-              message: `登录成功`,
-              type: 'success'
-            })
-            window.localStorage.setItem('token', `Bearer ${r.data.token}`)
-            if (isAdmin.value){
-              router.push('/admin').then(()=>{
-                window.location.reload()
+            if(r.data&&r.data.status&&r.data.status!='10000'){
+              ElMessage({
+                message:`登录失败,${r.data.message}`,
+                type:'warning'
               })
-            }else{
-              router.push('/manager').then(()=>{
-                window.location.reload()
-              })
+              return
             }
-          }else{
-            ElMessage({
-              message:`登录失败`,
-              type:'warning'
-            })
           }
         })
       }
@@ -151,7 +158,7 @@ const register = () => {
             <el-form-item label="密码">
               <el-input show-password v-model="userloginForm.password"/>
             </el-form-item>
-            <el-button class="w-auto" type="primary" @click="login">登录</el-button>
+            <el-button class="w-auto" type="primary" @click="customerLogin">登录</el-button>
               <el-button class="w-auto" @click="register">注册</el-button>
               <el-button class="w-auto" link @click="switchCustomer">
                 管理员登录
@@ -171,7 +178,8 @@ const register = () => {
               <el-input show-password v-model="adminloginForm.password" />
             </el-form-item>
             <el-form-item style="min-width: 100%">
-              <el-button class="w-auto" type="primary" @click="login">登录</el-button>
+              <el-button class="w-auto" type="primary" v-if="isCustomer" @click="customerLogin">登录</el-button>
+              <el-button class="w-auto" type="primary" v-if="!isCustomer" @click="adminAndManagerLogin">登录</el-button>
               <el-button class="w-auto" v-if="!isCustomer" link @click="switchCustomer">客户登录</el-button>
             </el-form-item>
           </el-form>
