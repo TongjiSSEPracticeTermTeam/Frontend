@@ -9,6 +9,7 @@ import Cinema from "@/models/Cinema";
 import CinemaCard from "@/components/customer/cinema/CinemaCard.vue";
 import PersonCard from '@/components/customer/person/PersonCard.vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import personPage from '@/components/customer/person/PersonPage.vue'
 
 
@@ -19,6 +20,7 @@ const cinemas = ref<Cinema[]>([])
 const personPageShow = ref(false)
 
 const store = useStore()
+const router = useRouter()
 
 const isOnPlay = (releaseDate: string | null, removalDate: string | null) => {
   if (!releaseDate || !removalDate) return false
@@ -111,9 +113,13 @@ const loadBoxOffice = () => {
     })
 }
 
-const displayPersonPage = () => {
+const handlePersoncardClick = () => {
   personPageShow.value = true&&store.state.isLogged
-  console.log(store.state.currentUser)
+  if(!store.state.isLogged){
+    router.push('/login').then(()=>{
+      window.location.reload()
+    })
+  }
 }
 </script>
 
@@ -195,7 +201,7 @@ const displayPersonPage = () => {
           </el-col>
           <el-col :span="6">
             <el-space size="large" direction="vertical" alignment="normal" fill class="w-full">
-              <PersonCard :user="store.state.currentUser" @show-person-page="displayPersonPage"></PersonCard>
+              <PersonCard :user="store.state.currentUser" @click="handlePersoncardClick"></PersonCard>
 
 
               <el-card>
