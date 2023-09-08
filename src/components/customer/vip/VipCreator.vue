@@ -127,7 +127,11 @@ const handleConfirm = () => {
 </script>
 
 <template>
-    <el-dialog v-model="dialogVisible" title="同济院线VIP" width="30%" @open="handleOpen">
+    <el-dialog v-model="dialogVisible" width="30%" @open="handleOpen">
+        <template #header>
+            <h2 class="text-red-500 text-2xl font-bold">同济院线VIP</h2>
+        </template>
+
         <div class="w-full h-40 mx-auto py-2">
             <el-card class="h-full w-full" shadow="never"
                 v-bind:style="{ background: bgColorTransformer(userVipColor, 'white', 'right bottom') }">

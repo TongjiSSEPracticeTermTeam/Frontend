@@ -11,7 +11,6 @@ const cinema = ref(new Cinema())
 const sessions = ref<{ [key: string]: SessionDetail[] }>({})
 const activeSessionDate = ref('0')
 const route = useRoute()
-const router = useRouter()
 
 onMounted(() => {
   const loading = ElLoading.service({
