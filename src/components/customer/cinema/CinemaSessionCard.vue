@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { SessionDetail } from '@/models/QuickType/SessionDetail'
+import { type SessionDetail } from '@/models/QuickType/SessionDetail'
 import moment from 'moment'
 import { useRouter } from 'vue-router'
 
@@ -37,9 +37,11 @@ const handleBuyTicket = (session: SessionDetail) => {
         :name="i"
       >
         <div v-for="(s, j) in dt" :key="j" class="pt-2">
-          <div class="flex items-center">
+          <div class="flex items-center ">
             <h3 class="text-xl">{{ moment(s.startTime).format('HH:mm') }}</h3>
-            <h3 class="ml-5">{{ s.hallLocatedAt.cinemaBelongTo.name }}</h3>
+            <h3 class="text-xl"> -- </h3>
+            <h3 class="text-xl">{{ moment(s.endTime).format('HH:mm') }}</h3>
+            <h3 class="ml-5">{{ s.movieName }}</h3>
             <h3 class="ml-5">{{ parseInt(s.hallLocatedAt.id) }}号厅</h3>
             <h3 class="ml-5">{{ s.language }}</h3>
             <h3 class="ml-5">{{ s.dimesion }}</h3>
