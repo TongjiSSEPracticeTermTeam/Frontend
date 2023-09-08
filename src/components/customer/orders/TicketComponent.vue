@@ -6,6 +6,8 @@ import moment from 'moment'
 import { computed, onMounted, ref } from 'vue'
 import axios from 'axios'
 import CommentComponent from '@/components/customer/orders/CommentComponent.vue'
+import { HeaderImage } from '@/models/HeaderImage'
+import router from '@/router'
 
 interface Props {
   ticket: TicketDetail[]
@@ -20,6 +22,9 @@ const isOver = computed(() =>
   moment().isAfter(moment(props.sideInfo.session.startTime).add(30, 'minutes'))
 )
 const cantGet = computed(() => selected.value.size === 0 || isOver.value)
+const canRefund = computed(
+  () => isOpen.value && props.ticket.filter((t) => t.state === 0).length > 0
+)
 
 const selected = ref<Set<string>>(new Set())
 
@@ -93,6 +98,32 @@ const getTicket = () => {
     })
 }
 
+const refundTicket = () => {
+  selected.value.forEach((id) => {
+    let t = props.ticket.find((t) => t.id === id)
+    if (!t || t.state !== 0) {
+      ElMessage.warning('包含不可退的票')
+    }
+  })
+
+  let form = new FormData()
+  selected.value.forEach((id) => form.append('ids', id))
+
+  axios
+    .post('/api/Ticket/cancel', form)
+    .then((res) => {
+      if (res.data.status && res.data.status === '10000') {
+        ElMessage.success(`退票成功`)
+        window.location.reload()
+      } else {
+        ElMessage.warning(`退票失败：${res.data.message}`)
+      }
+    })
+    .catch(() => {
+      ElMessage.warning(`退票失败：网络错误`)
+    })
+}
+
 const showCommentDialog = ref(false)
 const scd = () => {
   showCommentDialog.value = true
@@ -110,6 +141,7 @@ const cs = () => {
           :src="sideInfo.movie.postUrl"
           fit="contain"
           style="max-width: 80px; max-height: 150px"
+          @click="router.push(`/movie/${sideInfo.movie.movieId}`)"
         />
         <div class="ml-4">
           <div class="flex items-center">
@@ -158,6 +190,13 @@ const cs = () => {
     <div class="mt-4 flex items-center">
       <el-checkbox v-model="selectAll" label="全选" />
       <div class="grow" />
+      <el-button
+        v-if="canRefund"
+        @click="refundTicket"
+        type="danger"
+        :disabled="selected.size === 0"
+        >退票
+      </el-button>
       <el-button v-if="isOver && !commented" @click="scd">发表评论</el-button>
       <el-button v-else-if="isOver && commented" @click="scd">修改评论</el-button>
       <el-button type="success" :disabled="cantGet" @click="getTicket">查看取票码</el-button>
