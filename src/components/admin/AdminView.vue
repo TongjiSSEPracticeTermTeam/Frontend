@@ -43,6 +43,16 @@ const settingItems: {
       () => import('@/components/admin/MovieManage/CommentManage.vue')
     ),
     needCard: true
+  },
+  {
+    name: '首页头图管理',
+    icon: defineAsyncComponent(() =>
+      import('@element-plus/icons-vue').then((module) => module.Picture)
+    ),
+    component: defineAsyncComponent(
+      () => import('@/components/admin/HomePageHeader/HomePageHeaderManage.vue')
+    ),
+    needCard: true
   }
 ]
 

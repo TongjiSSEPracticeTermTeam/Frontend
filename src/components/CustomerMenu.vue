@@ -19,7 +19,6 @@ const handle_select = (path: string) => {
       router.push('/movie')
       break
     case '3': //进入影院界面
-      console.log('3')
       router.push('/cinema')
       break
     case '4':

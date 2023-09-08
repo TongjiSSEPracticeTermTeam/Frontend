@@ -11,31 +11,38 @@ const settingItems: {
   icon: any
   needCard: boolean // 默认为true，无特殊需要保持true即可。
 }[] = [
-  {
-    name: '影厅总览',
-    icon: defineAsyncComponent(() =>
-      import('@element-plus/icons-vue').then((module) => module.Film)
-    ),
-    component: defineAsyncComponent(() => import('@/components/cinema/CinemaHome/CinemaHome.vue')),
-    needCard: true
-  },
-  {
-    name: '排片管理',
-    icon: defineAsyncComponent(() =>
-      import('@element-plus/icons-vue').then((module) => module.UserFilled)
-    ),
-    component: defineAsyncComponent(() => import('@/components/cinema/MovieInfo/MovieInfo.vue')),
-    needCard: true
-  },
-  {
-    name: '影厅管理',
-    icon: defineAsyncComponent(() =>
-      import('@element-plus/icons-vue').then((module) => module.HomeFilled)
-    ),
-    component: defineAsyncComponent(() => import('@/components/cinema/HallInfo/HallInfo.vue')),
-    needCard: true
-  }
-]
+        {
+            name: '数据总览',
+            icon: defineAsyncComponent(() =>
+                import('@element-plus/icons-vue').then((module) => module.Film)
+            ),
+            component: defineAsyncComponent(
+                () => import('@/components/cinema/CinemaHome/CinemaHome.vue')
+            ),
+            needCard: true
+        },
+        {
+            name: '排片管理',
+            icon: defineAsyncComponent(() =>
+                import('@element-plus/icons-vue').then((module) => module.UserFilled)
+            ),
+            component: defineAsyncComponent(
+                () => import('@/components/cinema/MovieInfo/MovieInfo.vue')
+            ),
+            needCard: true
+        },
+        {
+            name: '影厅管理',
+            icon: defineAsyncComponent(() =>
+                import('@element-plus/icons-vue').then((module) => module.HomeFilled)
+            ),
+            component: defineAsyncComponent(
+                () => import('@/components/cinema/HallInfo/HallInfo.vue')
+            ),
+            needCard: true
+        }
+
+    ]
 
 let currentItem = ref(0)
 let isCollapse = ref(false)

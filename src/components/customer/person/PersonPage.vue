@@ -88,6 +88,7 @@ const rules = ref<FormRules<any>>({
 })
 
 const handleDrawerClose = () => {
+    modifyPassword.value = false
     if (editStatus.value) {
         console.log("have change")
         console.log(detailPerson.value)
