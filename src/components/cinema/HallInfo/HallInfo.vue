@@ -57,6 +57,7 @@ const dialogClose = function () {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(() => {
+        GetHallsByMID(store.state.currentUser.id)
         dialogVisible.value = false
         formReset()
     }).catch(() => {
