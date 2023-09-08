@@ -9,6 +9,7 @@ import Cinema from '@/models/Cinema'
 import CinemaCard from '@/components/customer/cinema/CinemaCard.vue'
 import PersonCard from '@/components/customer/person/PersonCard.vue'
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import personPage from '@/components/customer/person/PersonPage.vue'
 import type { HeaderImageDetail } from '@/models/QuickType/HeaderImageDetail'
 import { HeaderImage } from '@/models/HeaderImage'
@@ -21,6 +22,7 @@ const cinemas = ref<Cinema[]>([])
 const personPageShow = ref(false)
 
 const store = useStore()
+const router = useRouter()
 
 const isOnPlay = (releaseDate: string | null, removalDate: string | null) => {
   if (!releaseDate || !removalDate) return false
@@ -113,9 +115,13 @@ const loadBoxOffice = () => {
     })
 }
 
-const displayPersonPage = () => {
-  personPageShow.value = store.state.isLogged
-  console.log(store.state.currentUser)
+const handlePersoncardClick = () => {
+  personPageShow.value = true&&store.state.isLogged
+  if(!store.state.isLogged){
+    router.push('/login').then(()=>{
+      window.location.reload()
+    })
+  }
 }
 
 const headerImage = ref<HeaderImageDetail[]>([])
@@ -218,10 +224,8 @@ const loadHeaderImage = () => {
           </el-col>
           <el-col :span="6">
             <el-space size="large" direction="vertical" alignment="normal" fill class="w-full">
-              <PersonCard
-                :user="store.state.currentUser"
-                @show-person-page="displayPersonPage"
-              ></PersonCard>
+              <PersonCard :user="store.state.currentUser" @click="handlePersoncardClick"></PersonCard>
+
 
               <el-card>
                 <h2 class="text-xl font-bold">今日全国票房</h2>
