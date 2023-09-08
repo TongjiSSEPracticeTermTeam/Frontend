@@ -42,6 +42,11 @@ const handleBuyTicket = (session: SessionDetail) => {
             <h3 class="text-xl">{{ moment(s.endTime).format('HH:mm') }}</h3>
             <h3 class="ml-5">{{ s.hallLocatedAt.cinemaBelongTo.name }}</h3>
             <h3 class="ml-5">{{ parseInt(s.hallLocatedAt.id) }}号厅</h3>
+            <el-space wrap size="small">
+              <el-tag v-for="tag,index in s.hallLocatedAt.hallType.split(',')" :key="index" >
+                {{ tag }}
+              </el-tag>
+            </el-space>
             <h3 class="ml-5">{{ s.language }}</h3>
             <h3 class="ml-5">{{ s.dimesion }}</h3>
             <div class="grow" />
