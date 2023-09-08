@@ -23,6 +23,38 @@ let halls = ref(new Array<Hall>())
 let cinema = ref(new Cinema())
 let sessions = ref(new Array<Session>())
 
+const languages = [
+  {
+    value: '国语',
+  },
+  {
+    value: '英语',
+  },
+  {
+    value: '日语',
+  },
+  {
+    value: '韩语',
+  },
+  {
+    value: '法语',
+  },
+]
+const dimensions = [
+  {
+    value: '2D',
+  },
+  {
+    value: '3D',
+  },
+  {
+    value: '4D',
+  },
+  {
+    value: '5D',
+  },
+]
+
 const updateSession = () => {
   axios
     .get(`/api/Session?cinema_id=${cinema.value.cinemaId}&hall_id=${currentHall.value}`)
@@ -35,7 +67,7 @@ const updateSession = () => {
       else if (res.data && res.data.status && res.data.status === '40004') {
         sessions.value = res.data.data
         ElMessage({
-          type: 'info',
+          type: 'warning',
           message: '当前影厅下无排片！'
         })
       }
@@ -317,6 +349,19 @@ const filterNameData = computed(() => {
     return '';
   };
 });
+const filterDurationData = computed(() => {
+  return (movieId: string, startTime: Date) => {
+    for (let i = 0; i < movieInHall.value.length; i++) {
+      if (movieInHall.value[i].movieId === movieId) {
+        const duration = parseInt(movieInHall.value[i].duration, 10);
+        const endTime = new Date(startTime);
+        endTime.setUTCMinutes(endTime.getUTCMinutes() + duration);
+        return endTime.toLocaleString();
+      }
+    }
+    return 0;
+  };
+});
 
 const updateCurrentHall = () => {
   console.log(currentHall.value)
@@ -365,29 +410,35 @@ onMounted(() => {
             <div class="block">
               电影开始时间&nbsp;&nbsp;
               <el-date-picker v-model="valueTime" type="datetime" placeholder="请选择日期和时间" size="large"
-                style="width: 180px;" />
+                style="width: 200px;" />
               <br>
               &nbsp;&nbsp;电影影厅选择
-              <el-select v-model="currentHall" class="m-2" placeholder="请选择影厅" size="large" style="width: 180px;"
+              <el-select v-model="currentHall" class="m-2" placeholder="请选择影厅" size="large" style="width: 200px;"
                 @change="updateCurrentHall">
-                <el-option v-for="item in halls" :key="item.hallID" :label="item.hallID" :value="item.hallID" />
+                <el-option v-for="item in halls" :key="item.hallID" :label="parseInt(item.hallID, 10)+' 号影厅'" :value="item.hallID" />
               </el-select>
               <br>
 
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;电影价格&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;电影价格
               <el-input-number v-model="price" :precision="2" :step="0.1" :min="1" :max="1000" style="width: 146px;"
                 size="large" class="m-2" />
               &nbsp;元
               <br>
 
-              &nbsp;&nbsp;&nbsp;&nbsp;电影语言&nbsp;&nbsp;&nbsp;<el-input v-model="language" placeholder="语言" style="width: 120px;" size="large"
-                class="m-2" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;电影语言
+              <el-select v-model="language" class="m-2" placeholder="请选择语言" size="large" style="width: 120px;">
+                <el-option v-for="item in languages" :key="item.value" :label="item.value" :value="item.value" />
+              </el-select>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <br>
-              &nbsp;&nbsp;&nbsp;&nbsp;电影维度&nbsp;&nbsp;&nbsp;<el-input v-model="dimension" placeholder="维度" style="width: 120px;" size="large"
-                class="m-2" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;电影维度
+              <el-select v-model="dimension" class="m-2" placeholder="请选择维度" size="large" style="width: 120px;">
+                <el-option v-for="item in dimensions" :key="item.value" :label="item.value" :value="item.value" />
+              </el-select>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               <br>
               <div style="text-align: right;">
-                <el-button type="primary" @click="sessionAdd">确定</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+                <el-button type="primary" @click="sessionAdd">确定</el-button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               </div>
             </div>
           </div>
@@ -433,16 +484,15 @@ onMounted(() => {
       <el-footer style=" height: 290px;">
         <span style="font-size: 2.2ch;">影厅排片情况&nbsp;&nbsp;&nbsp;</span>
         <el-select v-model="currentHall" class="m-2" placeholder="请选择影厅" @change="updateCurrentHall">
-          <el-option v-for="item in halls" :key="item.hallID" :label="item.hallID" :value="item.hallID" />
+          <el-option v-for="item in halls" :key="item.hallID" :label="parseInt(item.hallID, 10) + ' 号影厅'" :value="item.hallID" />
         </el-select>
-        号影厅
         <el-scrollbar>
           <div class="scrollbar-flex-content">
             <div v-for="session in sessions" :key="session.movieId" class="scrollbar-item">
-              <el-image style="height: 120px" :src="filterPictureData(session.movieId)" />              
+              <el-image style="height: 140px;object-fit: scale-down;" :src="filterPictureData(session.movieId)" />              
               <div><b>{{ filterNameData(session.movieId) }}</b></div>
-              <div>{{ new Date(session.startTime).toLocaleDateString() }}</div>
-              <div>{{ new Date(session.startTime).toLocaleTimeString() }}</div>
+              <div style="font-size: small;">{{ new Date(session.startTime).toLocaleString() }}<br>至</div>
+              <div style="font-size: small;">{{ filterDurationData(session.movieId, session.startTime) }}</div>
             </div>
             </div>
         </el-scrollbar>
@@ -525,7 +575,7 @@ onMounted(() => {
 }
 
 .demo-datetime-picker .block {
-  padding: 30px 0;
+  padding-top: 20px;
   text-align: center;
   border-right: solid 1px var(--el-border-color);
   flex: 1;
