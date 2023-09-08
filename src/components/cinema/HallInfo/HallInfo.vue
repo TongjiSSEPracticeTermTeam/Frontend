@@ -346,7 +346,7 @@ defineExpose({ halls, search })
         <div class="line"></div>
         <div >
             <div>
-                <el-table :data="filterTableData"  :height="tableHeight" style="width: 100%">
+                <el-table :data="filterTableData"  style="width: 100%">
                     <el-table-column label="影厅编号" prop="hallID" sortable :sort-method="mySort">
                         <template #default="scope" >
                             <div>
