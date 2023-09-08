@@ -214,7 +214,9 @@ export default {
       this.searchIforInput = this.initialSearchInfo
     },
     pagedComments() {
-      this.pageLength = this.showedComments.filter(comment => comment.display === '1' || this.isShowAll).length//计算总的评论数
+      this.pageLength = this.showedComments
+        .filter(comment => ((comment.display === '1' || this.isShowAll) && (this.contendInclude == '' || comment.content.includes(this.contendInclude))))
+        .length//计算总的评论数
     }
   }
 }
