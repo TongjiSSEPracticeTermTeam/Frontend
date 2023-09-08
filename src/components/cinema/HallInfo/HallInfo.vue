@@ -205,6 +205,20 @@ const hallDelete = async function (hallID: string) {
                     message: '删除成功'
                 })
             }
+            else if (res.data && res.data.status && res.data.status == '4005') {
+                console.log(res.data)
+                ElMessage({
+                    type: 'error',
+                    message: '该影厅已被排片，无法删除'
+                })
+            }
+            else if (res.data && res.data.status && res.data.status == '4004') {
+                console.log(res.data)
+                ElMessage({
+                    type: 'error',
+                    message: '影厅不存在，无法删除'
+                })
+            }
             else {
                 console.log(res.data)
                 ElMessage({
