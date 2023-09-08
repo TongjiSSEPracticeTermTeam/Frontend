@@ -88,6 +88,7 @@ const rules = ref<FormRules<any>>({
 })
 
 const handleDrawerClose = () => {
+    modifyPassword.value = false
     if (editStatus.value) {
         console.log("have change")
         console.log(detailPerson.value)
@@ -222,8 +223,12 @@ const saveDetail = async () => {
 
 
 <template>
-    <el-dialog @open="handleOpen" v-model="detailPerson" title="个人主页"  :before-close="handleDrawerClose"
+    <el-dialog @open="handleOpen" v-model="detailPerson" :before-close="handleDrawerClose"
          width="40%">
+         <template #header>
+            <h2 class="text-red-500 text-2xl font-bold">个人信息</h2>
+        </template>
+
         <el-form :model="tempUser" label-width="120px" :rules="rules" ref="formRef">
 
             <el-form-item label="头像" class="w-full" prop="avatarUrl">

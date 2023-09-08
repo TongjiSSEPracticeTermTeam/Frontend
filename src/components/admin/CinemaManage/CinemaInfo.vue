@@ -197,7 +197,7 @@ defineExpose({ cancelForm })
             <!-- 电影院Id查看 -->
             <el-form-item>
               <el-input v-model="cinema.cinemaId" disabled>
-                <template #append>电影ID</template>
+                <template #append>电影院ID</template>
               </el-input>
             </el-form-item>
             <!-- 管理员Id -->

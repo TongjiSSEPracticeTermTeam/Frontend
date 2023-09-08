@@ -289,11 +289,12 @@ const saveDetail = async () => {
               type: 'success'
             })
             detailView.value = false
-            //解决搜索后修改的页面问题
-            if (pageSize.value == 1) {
-              pageSize.value = 10
-            }
-            updateTable()
+            
+            //同时维护前端数组
+            let targetIndex = movies.value.findIndex((movie) => movie.movieId == currentMovie.value.movieId)
+            Object.assign(movies.value[targetIndex], currentMovie.value)
+
+            // updateTable()
           } else {
             ElMessage({
               message: `修改失败：${res.data.message}`,
@@ -370,12 +371,10 @@ const deleteMovie = () => {
               message: '删除成功',
               type: 'success'
             })
-            //解决搜索后修改的页数Bug
-            if (pageSize.value == 1) {
-              pageSize.value = 10
-            }
+            // updateTable()
+            let targetIndex = movies.value.findIndex((movie) => movie.movieId == currentMovie.value.movieId)
+            movies.value.splice(targetIndex, 1)
 
-            updateTable()
           } else {
             ElMessage({
               message: `删除失败：${res.data.message}`,

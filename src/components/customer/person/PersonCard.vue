@@ -6,6 +6,7 @@ import ColorThief from 'color-thief-ts'
 import tinygradient from 'tinygradient'
 import { useStore } from 'vuex'
 import User from '@/models/User'
+import router from '@/router'
 
 const store = useStore()
 
@@ -66,14 +67,10 @@ const avatarLoaded = () => {
   }
 }
 
-const emits = defineEmits(['showPersonPage'])
-function handleClick() {
-  emits('showPersonPage')
-}
 </script>
 
 <template>
-  <el-card shadow="hover" class="avatar-card" @click="handleClick">
+  <el-card shadow="hover" class="avatar-card">
     <div class="avatar-card-background" :style="`background: ${avatarCardBackground};`" />
     <div class="avatar-card-content flex" style="display: flex;align-items: center;">
       <div class="person-avatar">

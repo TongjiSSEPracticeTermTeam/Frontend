@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus'
 import eStaff from '@/models/Staff'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import axios from 'axios'
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
 }
 const props = defineProps<Props>()
 const emit = defineEmits(['update:actor'])
+const searchText = ref('')
 
 let actors = ref<eStaff[]>([])
 let selectedActors = ref<eStaff[]>([])
@@ -19,6 +20,19 @@ let dialogVisible = ref(false)
 let dialogTitle = ref('')
 let status = ref(false)
 let loading = ref(false)
+let searchedActors = ref<eStaff[]>([])
+
+
+
+watch(searchText, (newSearchText) => {
+    if (newSearchText != '') {
+        searchedActors.value = avalActors.value.filter((actor) => {
+            return actor.name.includes(searchText.value)
+        })
+    }else{
+        searchedActors.value = avalActors.value.slice(0)
+    }
+})
 
 // const transformer = (selecte: eStaff[] | eStaff | null): eStaff[] => {
 //     let ret: eStaff[] = []
@@ -45,16 +59,21 @@ onMounted(() => {
     dialogTitle.value = props.title
 })
 
-const actorCancel = (index: number) => {
+const actorCancel = (id: string) => {
     status.value = true;
-    const actor = selectedActors.value[index];
-    selectedActors.value.splice(index, 1);
+    const actor = selectedActors.value.find((actor) => actor.staffId == id);
+    if(actor == undefined){
+        console.log("actor is undefined");
+        return;
+    }
+    selectedActors.value=selectedActors.value.filter((actor) => actor.staffId != id);
     avalActors.value.push(actor);
     avalActors.value.sort((a, b) => {
         return a.name.localeCompare(b.name);
     });
+    searchedActors.value = avalActors.value.filter((actor) => actor.name.includes(searchText.value));
 }
-const actorSelect = (index: number) => {
+const actorSelect = (id: string) => {
     //导演模式下只能选择一个影人
     if (props.mode == true && selectedActors.value.length >= 1) {
         console.log("导演模式选人只能一个！");
@@ -62,12 +81,17 @@ const actorSelect = (index: number) => {
     }
 
     status.value = true;
-    const actor = avalActors.value[index];
-    avalActors.value.splice(index, 1);
+    const actor = avalActors.value.find((actor) => actor.staffId == id);
+    if(actor == undefined){
+        console.log("actor is undefined");
+        return;
+    }
+    avalActors.value=avalActors.value.filter((actor) => actor.staffId != id);
     selectedActors.value.push(actor);
     selectedActors.value.sort((a, b) => {
         return a.name.localeCompare(b.name);
     });
+    searchedActors.value = avalActors.value.filter((actor) => actor.name.includes(searchText.value));
 }
 const showDialog = () => {
     dialogVisible.value = true;
@@ -88,6 +112,7 @@ const showDialog = () => {
                     avalActors.value.splice(index, 1);
                     // console.log(`index is ${index}, actor is ${actor.name}`);
                 })
+                searchedActors.value = avalActors.value.slice(0);
             })
             .catch((err) => {
                 console.log(err);
@@ -107,6 +132,7 @@ const showDialog = () => {
             avalActors.value.splice(index, 1);
             // console.log(`index is ${index}, actor is ${actor.name}`);
         })
+        searchedActors.value = avalActors.value.slice(0);
     }
 }
 //弹窗关闭刷新状态
@@ -156,13 +182,15 @@ const dialogClose = () => {
         <text>已选择影人</text>
         <div class="selectedActor">
             <div v-if="selectedActors.length > 0">
-                <el-tag class="actor" disable-transitions @click="actorCancel(index)"
-                    v-for="(actor, index) in selectedActors" :key="actor.name">
+                <el-tag class="actor" disable-transitions @click="actorCancel(actor.staffId)"
+                    v-for="(actor, index) in selectedActors" :key="index">
                     {{ actor.name }}
                 </el-tag>
             </div>
             <span v-else>暂无</span>
         </div>
+
+        
 
         <text>可选择影人</text>
         <!-- 加载时骨架屏 -->
@@ -171,9 +199,19 @@ const dialogClose = () => {
                 <el-skeleton-item variant="rect" style="height: 150px;" />
             </template>
             <template #default>
+                <div class="search-box">
+                    <el-input placeholder="请输入影人名" v-model="searchText" class="mr-2.5 my-2.5">
+                        <template #prefix>
+                            <el-icon class="el-input__icon"><search /></el-icon>
+                        </template>
+                    </el-input>
+                </div>
+                <div>
+                    <text>搜索结果</text>
+                </div>
                 <div class="avalActor">
-                    <el-tag class="actor" disable-transitions type="info" @click="actorSelect(index)"
-                        v-for="(actor, index) in avalActors" :key="actor.name">
+                    <el-tag class="actor" disable-transitions type="info" @click="actorSelect(actor.staffId)"
+                        v-for="(actor, index) in searchedActors" :key="index">
                         {{ actor.name }}
                     </el-tag>
                 </div>
@@ -220,7 +258,7 @@ const dialogClose = () => {
 .avalActor {
     overflow: auto;
     padding: 10px;
-    max-height: 150px;
+    max-height: 300px;
     overflow-y: auto;
 
     display: flex;
@@ -245,4 +283,9 @@ const dialogClose = () => {
     margin: 20px 0;
     justify-content: center;
 } */
+
+.search-box {
+    display: flex;
+    justify-content: center;
+}
 </style>
