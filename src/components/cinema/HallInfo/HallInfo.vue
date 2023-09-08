@@ -346,7 +346,7 @@ defineExpose({ halls, search })
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="列数" prop="seat.cols">
+                    <el-table-column label="每行列数" prop="seat.cols">
                         <template #default="scope">
                             <div>
                                 <span>{{ scope.row.seat.cols }}</span>
