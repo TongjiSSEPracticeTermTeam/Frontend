@@ -73,6 +73,7 @@ const dialogConfirm = async function () {
     console.log('开始进行表单检查！')
     await formRef.value.validate((valid, fields) => {
         if (valid) {
+            console.log(':+ ' + hallTypes.value)
             if (hallTypes.value.length == 0) {
                 // ElMessage({
                 //     type: 'error',
@@ -81,8 +82,30 @@ const dialogConfirm = async function () {
                 // return
                 hall.value.hallType = '普通2D'
             }
-            else hall.value.hallType = hallTypes.value[hallTypes.value.length - 1]
-            console.log('hallTypes.value= ' + hallTypes.value)
+            else {
+                let _map = function (s: string): boolean {
+                    // 如果字串s包含了D，则返回true
+                    return s.includes('D')
+                }
+                // 级联选择器选择了多个，需要根据选择的值进行拼接，用,进行拼接
+                // hallTypes.value是一个数组，里面存放了选择的值，我们需要对数组每个元素进行处理
+                // 如果字串s包含了D，则进行拼接
+                // 数组元素格式为 【VIP影厅,VIP 2D】，我们只需要【,】后面的字串
+                hallTypes.value.forEach(item => {
+                    let it = JSON.stringify(item)
+                    if (_map(it)) {
+                        console.log('it= ' + it)
+                        //去除引号和中括号
+                        it = it.replace(/\"/g, '').replace(/\[/g, '').replace(/\]/g, '')
+                        hall.value.hallType += it.split(',')[1] + ','
+                    }
+                }
+                )
+                // 删除最后一个逗号
+                hall.value.hallType = hall.value.hallType.substring(0, hall.value.hallType.length - 1)
+
+            }
+            console.log('hall.value.hallType= ' + hall.value.hallType)
             if (dialogTitle.value == '修改影厅') hallUpdate()
             else if (dialogTitle.value == '添加影厅') hallAdd()
         } else {
@@ -451,6 +474,7 @@ export default {
             debounceTimeout: null,
             props: {
                 expandTrigger: 'hover' as const,
+                multiple: true,
             },
             options: [
                 {
