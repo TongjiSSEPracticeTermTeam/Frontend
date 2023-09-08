@@ -22,6 +22,7 @@ const getUserInfo = function () {
                 }
             })
             .then((res) => {
+                console.log(`Bearer ${localStorage.getItem('token')}`)
                 user = res.data;
                 console.log('已登录用户信息-:', res.data);
                 resolve(res.data)
