@@ -9,9 +9,11 @@
 
 export interface SessionDetail {
   movieId: string;
+  movieName: string;
   cinemaId: string;
   hallId: string;
   startTime: Date;
+  endTime: Date;
   attendence: number;
   price: number;
   language: string;
