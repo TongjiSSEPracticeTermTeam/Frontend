@@ -1,46 +1,21 @@
-# cinema-system
+# 前端部署说明
 
-This template should help get you started developing with Vue 3 in Vite.
+**摘要：编译后将整个 dist 文件夹放入后端 wwwroot 下。**
 
-## Recommended IDE Setup
+首先，安装项目依赖：
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+```shell
+npm i
 ```
 
-### Compile and Hot-Reload for Development
+推荐使用`pnpm`和/或`yarn`。
 
-```sh
-npm run dev
+接下来，运行：
+
+```shell
+npm run build-only
 ```
 
-### Type-Check, Compile and Minify for Production
+然后，将产物`dist`文件夹**完整**复制到后端的`Cinema/wwwroot`目录下。（wwwroot 目录可能需要手动创建）
 
-```sh
-npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+**请注意：前端架构设计时未考虑使用 Nginx 作为 Web 服务器的情况，直接部署至 Nginx 会导致跨域问题和 Vue-router 历史记录问题！**
