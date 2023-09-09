@@ -16,6 +16,8 @@ const handleInteraction = (type: number) => {
   }
   emits('Interact', props.comment.commentId, type)
 }
+
+let score= props.comment.score/2
 </script>
 
 <template>
@@ -28,6 +30,12 @@ const handleInteraction = (type: number) => {
       <h3 class="mx-3 text-gray-400">
         {{ moment(comment.publishDate).format('YYYY-MM-DD HH:mm:SS') }}
       </h3>
+      <el-rate
+        v-model="score"
+        :max="5"
+        disabled
+        text-color="#ff9900"
+      />
       <div class="grow" />
       <div class="text-sm">
         <el-button link @click="handleInteraction(1)">
