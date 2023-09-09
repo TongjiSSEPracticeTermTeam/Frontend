@@ -153,17 +153,27 @@ const cinemaDelete = (name: string, id: string) => {
       loading.value = true
       axios
         .delete('/api/Cinema/' + id)
-        .then(() => {
-          let targetIndex = cinemas.value.findIndex((cinema) => cinema.cinemaId == id)
-          cinemas.value.splice(targetIndex, 1) //同时维护前端电影数组
-          // console.log(movies.value)
-          loading.value = false
-          ElMessage({
-            type: 'success',
-            message: '删除成功'
-          })
+        .then((res) => {
+          if (res.data && res.data.status && res.data.status === '10000') {
+            let targetIndex = cinemas.value.findIndex((cinema) => cinema.cinemaId == id)
+            cinemas.value.splice(targetIndex, 1) //同时维护前端电影数组
+            // console.log(movies.value)
+            loading.value = false
+            ElMessage({
+              type: 'success',
+              message: '删除成功'
+            })
+            } else {
+              loading.value = false
+              ElMessage({
+              type: 'warning',
+              message: '删除失败！'
+            })
+            }
+
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log(err)
           ElMessage({
             type: 'error',
             message: '删除失败！'

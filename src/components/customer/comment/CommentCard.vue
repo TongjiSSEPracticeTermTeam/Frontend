@@ -3,11 +3,13 @@ import { Comment } from '@/models/QuickType/CommentData'
 import moment from 'moment'
 import Interaction from '@/models/interaction'
 
+
+
 const props = defineProps<{
   comment: Comment
   interaction?: Interaction
 }>()
-
+const score = props.comment.score/2
 const emits = defineEmits(['Interact'])
 
 const handleInteraction = (type: number) => {
@@ -28,6 +30,12 @@ const handleInteraction = (type: number) => {
       <h3 class="mx-3 text-gray-400">
         {{ moment(comment.publishDate).format('YYYY-MM-DD HH:mm:SS') }}
       </h3>
+      <el-rate
+        v-model="score"
+        :max="5"
+        disabled
+        text-color="#ff9900"
+      />
       <div class="grow" />
       <div class="text-sm">
         <el-button link @click="handleInteraction(1)">
