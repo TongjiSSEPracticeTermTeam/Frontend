@@ -83,6 +83,7 @@ const dialogConfirm = async function () {
                 hall.value.hallType = '普通2D'
             }
             else {
+                hall.value.hallType = ''
                 let _map = function (s: string): boolean {
                     // 如果字串s包含了D，则返回true
                     return s.includes('D')
