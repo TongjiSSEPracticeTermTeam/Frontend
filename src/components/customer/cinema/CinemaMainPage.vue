@@ -55,6 +55,9 @@ const updateCinemasByTag=()=>{
   cinemas.value = cinemas.value.filter((cinema) => {
     return cinema.location.includes(AreaSelected.value)
   })
+  cinemas.value=cinemas.value.filter((cinema)=>{
+    return cinema.name.includes(searchText.value)
+  })
 }
 
 
@@ -94,7 +97,9 @@ const areaSelected = (selectedOptions:  string) => {
     })
     return flag
   })
-  
+  cinemas.value=cinemas.value.filter((cinema)=>{
+    return cinema.name.includes(searchText.value)
+  })
 }
 
 onMounted(()=>{

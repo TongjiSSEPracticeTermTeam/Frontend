@@ -58,7 +58,11 @@ const submitDelete = (row: HeaderImage) => {
     type: 'warning'
   }).then(() => {
     axios
-      .delete('/api/HeaderImage', row)
+      .delete('/api/HeaderImage', {
+        params: {
+          headerImageId: row.id
+        }
+      })
       .then((res) => {
         if (res.data.status && res.data.status === '10000') {
           ElMessage.success('删除成功')

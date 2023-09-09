@@ -15,6 +15,8 @@ const formStatus = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref('添加影厅')
 const hall = ref(new Hall())
+const hallTypes = ref([])
+let _hallTypes = ref('')
 let halls = ref(new Array<Hall>())
 let search = ref('')
 let flag = ref(false)
@@ -55,6 +57,7 @@ const dialogClose = function () {
         cancelButtonText: '取消',
         type: 'warning'
     }).then(() => {
+        GetHallsByMID(store.state.currentUser.id)
         dialogVisible.value = false
         formReset()
     }).catch(() => {
@@ -70,6 +73,39 @@ const dialogConfirm = async function () {
     console.log('开始进行表单检查！')
     await formRef.value.validate((valid, fields) => {
         if (valid) {
+            console.log(':+ ' + hallTypes.value)
+            if (hallTypes.value.length == 0) {
+                // ElMessage({
+                //     type: 'error',
+                //     message: '影厅类型不能为空'
+                // })
+                // return
+                hall.value.hallType = '普通2D'
+            }
+            else {
+                let _map = function (s: string): boolean {
+                    // 如果字串s包含了D，则返回true
+                    return s.includes('D')
+                }
+                // 级联选择器选择了多个，需要根据选择的值进行拼接，用,进行拼接
+                // hallTypes.value是一个数组，里面存放了选择的值，我们需要对数组每个元素进行处理
+                // 如果字串s包含了D，则进行拼接
+                // 数组元素格式为 【VIP影厅,VIP 2D】，我们只需要【,】后面的字串
+                hallTypes.value.forEach(item => {
+                    let it = JSON.stringify(item)
+                    if (_map(it)) {
+                        console.log('it= ' + it)
+                        //去除引号和中括号
+                        it = it.replace(/\"/g, '').replace(/\[/g, '').replace(/\]/g, '')
+                        hall.value.hallType += it.split(',')[1] + ','
+                    }
+                }
+                )
+                // 删除最后一个逗号
+                hall.value.hallType = hall.value.hallType.substring(0, hall.value.hallType.length - 1)
+
+            }
+            console.log('hall.value.hallType= ' + hall.value.hallType)
             if (dialogTitle.value == '修改影厅') hallUpdate()
             else if (dialogTitle.value == '添加影厅') hallAdd()
         } else {
@@ -190,6 +226,20 @@ const hallDelete = async function (hallID: string) {
                 ElMessage({
                     type: 'success',
                     message: '删除成功'
+                })
+            }
+            else if (res.data && res.data.status && res.data.status == '4005') {
+                console.log(res.data)
+                ElMessage({
+                    type: 'error',
+                    message: '该影厅已被排片，无法删除'
+                })
+            }
+            else if (res.data && res.data.status && res.data.status == '4004') {
+                console.log(res.data)
+                ElMessage({
+                    type: 'error',
+                    message: '影厅不存在，无法删除'
                 })
             }
             else {
@@ -319,11 +369,11 @@ defineExpose({ halls, search })
         <div class="line"></div>
         <div >
             <div>
-                <el-table :data="filterTableData"  :height="tableHeight" style="width: 100%">
+                <el-table :data="filterTableData"  style="width: 100%">
                     <el-table-column label="影厅编号" prop="hallID" sortable :sort-method="mySort">
                         <template #default="scope" >
                             <div>
-                                <span>{{ scope.row.hallID }}</span>
+                                <span>{{ parseInt(scope.row.hallID, 10) }}</span>
                             </div>
                         </template>
                     </el-table-column>
@@ -334,7 +384,7 @@ defineExpose({ halls, search })
                             </div>
                         </template>
                     </el-table-column>
-                    <el-table-column label="列数" prop="seat.cols">
+                    <el-table-column label="每行列数" prop="seat.cols">
                         <template #default="scope">
                             <div>
                                 <span>{{ scope.row.seat.cols }}</span>
@@ -344,7 +394,7 @@ defineExpose({ halls, search })
                     <el-table-column label="影厅类型" prop="hallType" >
                         <template #default="scope">
                             <div>
-                                <span>{{ scope.row.hallType }}</span>
+                                <el-tag class="mx-1" type="info" color='#F8829C' effect="dark" round>{{ scope.row.hallType }}</el-tag>
                             </div>
                         </template>
                     </el-table-column>
@@ -385,8 +435,17 @@ defineExpose({ halls, search })
                             <el-input-number v-model="hall.seat.cols[index]" :min="1" :max="50" @change="formStatus = true"/>
                         </el-form-item>
 
-                        <el-form-item label="影厅类型" prop="hallType" :rules="{ required: true, message: '影厅类型不能为空', trigger: 'blur' }">
-                            <el-input v-model="hall.hallType" maxlength="10" @change="formStatus = true" placeholder="影厅类型"></el-input>
+                        <el-form-item label="影厅类型" prop="_hallTypes">
+                            <!-- <el-input v-model="hall.hallType" maxlength="10" @change="formStatus = true" placeholder="影厅类型"></el-input> -->
+                            <el-cascader v-model="hallTypes" :options="options" :props="props" placeholder="普通2D" @change="formStatus = true"/>
+                            <span style="font-weight: lighter; color: darkgrey;">&nbsp;默认为普通2D影厅</span>
+                             <!-- <el-select v-model="hall.hallType" class="m-2" placeholder="Select" size="large">
+                                <el-option v-for="item in options"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
+                                />
+                            </el-select> -->
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -413,9 +472,83 @@ export default {
             User: new User(),
             curIndex: 1,
             debounceTimeout: null,
-            isLeft: true,
-            editIndex: -1,
-            newHallID: -1,
+            props: {
+                expandTrigger: 'hover' as const,
+                multiple: true,
+            },
+            options: [
+                {
+                    value: '普通影厅',
+                    label: '普通影厅',
+                    children: [
+                        {
+                            value: '普通2D',
+                            label: '普通2D',
+                        },
+                        {
+                            value: '普通3D',
+                            label: '普通3D',
+                        },
+                        {
+                            value: '普通4D',
+                            label: '普通4D',
+                        },
+                    ]
+                },
+                {
+                    value: 'VIP影厅',
+                    label: 'VIP影厅',
+                    children: [
+                        {
+                            value: 'VIP 2D',
+                            label: 'VIP 2D',
+                        },
+                        {
+                            value: 'VIP 3D',
+                            label: 'VIP 3D',
+                        },
+                        {
+                            value: 'VIP 4D',
+                            label: 'VIP 4D',
+                        },
+                    ]
+                },
+                {
+                    value: 'IMAX影厅',
+                    label: 'IMAX影厅',
+                    children: [
+                        {
+                            value: 'IMAX2D',
+                            label: 'IMAX2D',
+                        },
+                    ]
+                },
+                {
+                    value: '杜比影厅',
+                    label: '杜比影厅',
+                    children: [
+                        {
+                            value: '杜比2D',
+                            label: '杜比2D',
+                        },
+                        {
+                            value: '杜比3D',
+                            label: '杜比3D',
+                        },
+                    ]
+                },
+                {
+                    value: 'CGS中国巨幕',
+                    label: 'CGS中国巨幕',
+                    children: [
+                        {
+                            value: 'CGS2D',
+                            label: 'CGS2D',
+                        },
+                    ]
+                }
+            ],
+
             tableHeight: window.innerHeight - 500,
             WindowHeight: window.innerHeight,
         }
