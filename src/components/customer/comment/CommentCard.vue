@@ -18,6 +18,8 @@ const handleInteraction = (type: number) => {
   }
   emits('Interact', props.comment.commentId, type)
 }
+
+let score= props.comment.score/2
 </script>
 
 <template>

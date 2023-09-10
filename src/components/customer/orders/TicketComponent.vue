@@ -66,6 +66,28 @@ const selectAll = computed({
 const ticketSecretCode = ref('')
 const showQrDialog = ref(false)
 
+let fetchTicketStatusTicker: number | null = null
+
+const fetchTicketStatus = () => {
+  axios
+    .get('/api/Ticket/getTicket', {
+      params: {
+        code: ticketSecretCode.value
+      }
+    })
+    .then((res) => {
+      if (res.data.status && res.data.status === '10000') {
+        let status: number = res.data.data
+        if (status === 202) return
+        else if (status === 200) ticketFetchStatus.value = 1
+        else if (status === 410) ticketFetchStatus.value = 2
+        clearInterval(fetchTicketStatusTicker!)
+        fetchTicketStatusTicker = null
+      }
+    })
+    .catch(() => {})
+}
+
 const getTicket = () => {
   const loading = ElLoading.service({
     lock: true,
@@ -82,6 +104,8 @@ const getTicket = () => {
       if (res.data.status && res.data.status === '10000') {
         ticketSecretCode.value = res.data.data
         showQrDialog.value = true
+
+        fetchTicketStatusTicker = setInterval(fetchTicketStatus, 1000)
       } else {
         ElMessage({
           message: `请求取票码失败：${res.data.message}`,
@@ -131,6 +155,15 @@ const scd = () => {
 const cs = () => {
   window.location.reload()
 }
+const ct = () => {
+  if (fetchTicketStatusTicker) {
+    clearInterval(fetchTicketStatusTicker)
+    fetchTicketStatusTicker = null
+  }
+  window.location.reload()
+}
+
+const ticketFetchStatus = ref(0)
 </script>
 
 <template>
@@ -202,12 +235,28 @@ const cs = () => {
       <el-button type="success" :disabled="cantGet" @click="getTicket">查看取票码</el-button>
     </div>
 
-    <el-dialog v-model="showQrDialog" title="取票码" align-center width="400">
+    <el-dialog v-model="showQrDialog" title="取票码" align-center width="400" @close="ct">
       <div class="flex">
         <div class="grow" />
         <div class="text-center">
-          <vue-qrcode :value="ticketSecretCode" />
-          <h3 class="mb-5">十分钟内使用有效</h3>
+          <div v-if="ticketFetchStatus === 0">
+            <vue-qrcode :value="ticketSecretCode" />
+            <h3 class="mb-5">十分钟内使用有效</h3>
+          </div>
+          <div v-else-if="ticketFetchStatus === 1">
+            <el-result icon="success" title="取票成功" sub-title="您现在可以关闭对话框了">
+              <template #extra>
+                <el-button type="primary" @click="showQrDialog = false">好的</el-button>
+              </template>
+            </el-result>
+          </div>
+          <div v-else-if="ticketFetchStatus === 2">
+            <el-result icon="warning" title="取票码已过期" sub-title="请您重新获取取票码">
+              <template #extra>
+                <el-button type="primary" @click="showQrDialog = false">好的</el-button>
+              </template>
+            </el-result>
+          </div>
         </div>
         <div class="grow" />
       </div>

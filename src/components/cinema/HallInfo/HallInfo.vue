@@ -83,6 +83,7 @@ const dialogConfirm = async function () {
                 hall.value.hallType = '普通2D'
             }
             else {
+                hall.value.hallType = ''
                 let _map = function (s: string): boolean {
                     // 如果字串s包含了D，则返回true
                     return s.includes('D')
@@ -427,7 +428,7 @@ defineExpose({ halls, search })
                             <el-input v-model="hall.hallID" maxlength="10" disabled placeholder="系统自行计算"></el-input>
                         </el-form-item>
                         <el-form-item label="行数" prop="seat.rows" :rules="{ required: true, trigger: 'blur' }">
-                            <el-input-number v-model="hall.seat.rows" :min="1" :max="10" @change="formStatus = true"/>
+                            <el-input-number v-model="hall.seat.rows" :min="1" :max="30" @change="formStatus = true"/>
                         </el-form-item>
 
                         <!-- 使用v-for循环生成每一行的列数输入框 -->

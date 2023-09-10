@@ -337,8 +337,6 @@ const pickSessionsDialogOpen = ref(false)
           <el-card class="mx-10 my-5 px-5">
             <div class="flex items-center">
               <h2 class="text-red-500 text-2xl font-bold">评论</h2>
-              <div class="grow" />
-              <el-button link>全部</el-button>
             </div>
             <div class="my-5">
               <div>
