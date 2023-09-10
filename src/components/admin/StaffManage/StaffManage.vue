@@ -106,6 +106,11 @@ const staffDelete = function (name: string, id: string) {
               type: 'success',
               message: '删除成功'
             })
+          } else {
+            ElMessage({
+              type: 'warning',
+              message: '删除失败'
+            })
           }
         })
         .catch(() => {

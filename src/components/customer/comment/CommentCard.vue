@@ -3,11 +3,13 @@ import { Comment } from '@/models/QuickType/CommentData'
 import moment from 'moment'
 import Interaction from '@/models/interaction'
 
+
+
 const props = defineProps<{
   comment: Comment
   interaction?: Interaction
 }>()
-
+const score = props.comment.score/2
 const emits = defineEmits(['Interact'])
 
 const handleInteraction = (type: number) => {
